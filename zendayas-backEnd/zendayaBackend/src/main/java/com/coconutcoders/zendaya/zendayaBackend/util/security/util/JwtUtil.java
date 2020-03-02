@@ -34,25 +34,25 @@ public class JwtUtil {
 
     }
 
-    private Claims extractAllClaims(String token)
+    public Claims extractAllClaims(String token)
     {
        return Jwts.parser().setSigningKey(SECRET_KEY)
                .parseClaimsJws(token).getBody();
 
     }
 
-    private Boolean isTokenExpired(String token)
+    public Boolean isTokenExpired(String token)
     {
         return extractExpiration(token).before(new Date());
     }
 
-    private String generateToken(UserDetails userDetails)
+    public String generateToken(UserDetails userDetails)
     {
         Map<String,Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername());
     }
 
-    private String createToken(Map<String, Object> claims, String subject)
+    public String createToken(Map<String, Object> claims, String subject)
     {
         return Jwts.builder()
                 .setClaims(claims)
