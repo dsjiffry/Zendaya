@@ -1,6 +1,7 @@
 package com.coconutcoders.zendaya.zendayaBackend.util.filter;
 
 import com.coconutcoders.zendaya.zendayaBackend.util.security.M_UserDetailsService;
+import com.coconutcoders.zendaya.zendayaBackend.util.security.MyUserDetailService;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +21,7 @@ import java.io.IOException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
-    private M_UserDetailsService userDetailsService;
+    private MyUserDetailService userDetailsService;
 
     @Autowired
     private JwtUtil jwtUtil;

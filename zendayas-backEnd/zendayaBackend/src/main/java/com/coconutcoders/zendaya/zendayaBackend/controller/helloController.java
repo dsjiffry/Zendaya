@@ -1,7 +1,9 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
 import com.coconutcoders.zendaya.zendayaBackend.model.Greeting;
+import com.coconutcoders.zendaya.zendayaBackend.model.User;
 import com.coconutcoders.zendaya.zendayaBackend.repo.GreetingRepo;
+import com.coconutcoders.zendaya.zendayaBackend.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,20 @@ public class helloController {
 
     @Autowired
     GreetingRepo greetingRepo;
+
+    @Autowired
+    UserRepo userRepo;
+
+    //Create Dummy User
+
+    @PostMapping(value = "/createUser")
+    public ResponseEntity<?> createUser(@RequestParam String username , @RequestParam String password)
+    {
+        User user = new User(username,password);
+        userRepo.save(user);
+        System.out.println(userRepo.findUserByUsername(username).getUsername() +  " " + userRepo.findUserByUsername(username).getUsername());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
 
 
     //Simple GET request Handling

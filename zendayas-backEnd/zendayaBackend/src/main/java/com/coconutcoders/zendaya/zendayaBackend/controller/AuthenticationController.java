@@ -1,7 +1,10 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
 
+import com.coconutcoders.zendaya.zendayaBackend.model.User;
+import com.coconutcoders.zendaya.zendayaBackend.repo.UserRepo;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.M_UserDetailsService;
+import com.coconutcoders.zendaya.zendayaBackend.util.security.MyUserDetailService;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.model.AuthenticationRequest;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.model.AuthenticationResponse;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.util.JwtUtil;
@@ -24,15 +27,31 @@ public class AuthenticationController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private M_UserDetailsService m_userDetailsService;
+    private MyUserDetailService m_userDetailsService;
 
     @Autowired
     private JwtUtil jwtTokenUtil;
+
+    @Autowired
+    UserRepo userRepo;
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception
     {
         try {
+
+            //Testting Stuff-----
+
+
+            try {
+                User user =  userRepo.findUserByUsernameAndPassword(authenticationRequest.getUserName(),authenticationRequest.getPassword());
+                System.out.println(user.getUsername() + " - " + user.getPassword() + authenticationRequest.getPassword());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //----------------
+
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             authenticationRequest.getUserName(),

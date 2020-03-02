@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private M_UserDetailsService userDetailsService;
+    private MyUserDetailService userDetailsService;
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
@@ -35,7 +35,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/authenticate")
+                .antMatchers("/authenticate", "/createUser")
+
                 .permitAll()
 
                 .anyRequest().authenticated()
