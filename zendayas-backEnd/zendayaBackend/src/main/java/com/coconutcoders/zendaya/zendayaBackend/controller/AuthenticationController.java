@@ -39,19 +39,6 @@ public class AuthenticationController {
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception
     {
         try {
-
-            //Testting Stuff-----
-
-
-            try {
-                User user =  userRepo.findUserByUsernameAndPassword(authenticationRequest.getUserName(),authenticationRequest.getPassword());
-                System.out.println(user.getUsername() + " - " + user.getPassword() + authenticationRequest.getPassword());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //----------------
-
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             authenticationRequest.getUserName(),
