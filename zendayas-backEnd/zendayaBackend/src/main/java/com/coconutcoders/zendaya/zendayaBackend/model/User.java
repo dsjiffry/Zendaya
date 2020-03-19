@@ -1,10 +1,12 @@
 package com.coconutcoders.zendaya.zendayaBackend.model;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
-public class User {
-
-
+public class User
+{
+    @Id
+    private ObjectId id;
 
     private String username;
     private String password;
