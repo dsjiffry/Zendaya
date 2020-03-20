@@ -26,7 +26,7 @@ public class WishListController {
 
     /**
      * Checks for product in database and then adds it to the user's wish list
-     * @param payload Should contain 2 key-value pairs with keys "username" and "productName"
+     * @param payload Should contain JSON key-value pairs with keys: "username" and "productName"
      * @return NOT FOUND if product is not in database, else OK
      */
     @RequestMapping(value = "/addToWishList", method = RequestMethod.POST, consumes = "application/json")
@@ -69,7 +69,7 @@ public class WishListController {
 
     /**
      * Checks for product in database and then removes it from the user's wish list
-     * @param payload Should contain 2 key-value pairs with keys "username" and "productName"
+     * @param payload Should contain JSON key-value pairs with keys: "username" and "productName"
      * @return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
      */
     @RequestMapping(value = "/removeFromWishList", method = RequestMethod.POST, consumes = "application/json")
