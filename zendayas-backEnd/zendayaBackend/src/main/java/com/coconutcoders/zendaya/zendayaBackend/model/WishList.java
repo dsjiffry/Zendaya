@@ -11,7 +11,7 @@ public class WishList
     private ObjectId id;
 
     private String username;
-    private ArrayList<Product> wishlist = new ArrayList<>();
+    private ArrayList<String> wishlist = new ArrayList<>();
 
     private WishList(){}
     public WishList(String username)
@@ -20,24 +20,24 @@ public class WishList
     }
 
 
-    public void addProduct(Product product)
+    public void addProduct(String productName)
     {
-        wishlist.add(product);
+        wishlist.add(productName);
     }
 
-    public void removeProduct(Product product)
+    public void removeProduct(String productName)
     {
-        wishlist.remove(product);
+        wishlist.remove(productName);
     }
 
     /**
-     * @return true means product had already been added to wish List
+     * @return true means product was found in wish List
      */
-    public boolean isProductAlreadyInWishList(Product product)
+    public boolean isProductAlreadyInWishList(String productName)
     {
-        for(Product p : wishlist)
+        for(String p : wishlist)
         {
-            if(p.getName().equals(product.getName()))
+            if(p.equals(productName))
             {
                 return true;
             }

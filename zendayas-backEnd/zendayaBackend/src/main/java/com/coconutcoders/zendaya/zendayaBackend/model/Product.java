@@ -8,7 +8,7 @@ public class Product
     @Id
     private ObjectId id;
 
-    private String name;
+    private String name;    //Should be unique
     private String description;
     private double avgRating;
 
