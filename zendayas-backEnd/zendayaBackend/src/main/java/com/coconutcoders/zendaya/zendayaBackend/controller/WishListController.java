@@ -32,6 +32,11 @@ public class WishListController {
     @RequestMapping(value = "/addToWishList", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity addToWishList(@RequestBody Map<String, String> payload)
     {
+        if(!payload.containsKey("productName") || !payload.containsKey("username"))
+        {
+            return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+
         //Checking for Product in DB
         Product product = productRepo.findByName(payload.get("productName"));
         if(product == null)
@@ -70,6 +75,11 @@ public class WishListController {
     @RequestMapping(value = "/removeFromWishList", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity removeFromWishList(@RequestBody Map<String, String> payload)
     {
+        if(!payload.containsKey("productName") || !payload.containsKey("username"))
+        {
+            return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+
         //Checking for Product in DB
         Product product = productRepo.findByName(payload.get("productName"));
         if(product == null)
