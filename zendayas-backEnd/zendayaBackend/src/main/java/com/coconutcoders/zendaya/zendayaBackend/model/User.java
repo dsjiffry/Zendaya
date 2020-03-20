@@ -8,7 +8,7 @@ public class User
     @Id
     private ObjectId id;
 
-    private String username;
+    private String username;  //Should be unique
     private String password;
 
     public User(String username, String password) {
