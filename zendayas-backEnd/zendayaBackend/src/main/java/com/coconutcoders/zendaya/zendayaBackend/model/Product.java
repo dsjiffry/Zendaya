@@ -14,6 +14,7 @@ public class Product
 
     private String name;    //Should be unique
     private String description;
+    private double discountPercentage = 0;
     private HashMap<String, Double> ratings;    //Username and the rating given
     private HashMap<String, Date> reviewTimeStamp;    //Username and the date of the Review
     private HashMap<String, String> reviews;    //Username and the review given
@@ -60,5 +61,13 @@ public class Product
     public void setDescription(String description)
     {
         this.description = description;
+    }
+
+    public double getDiscountPercentage() {
+        return discountPercentage;
+    }
+
+    public void setDiscountPercentage(double discountPercentage) {
+        this.discountPercentage = discountPercentage;
     }
 }

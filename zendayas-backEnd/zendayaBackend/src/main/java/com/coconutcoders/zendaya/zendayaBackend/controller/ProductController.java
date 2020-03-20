@@ -21,7 +21,7 @@ public class ProductController
 
     /**
      * Adds Product to Database
-     * @param payload should contain JSON key-value pairs with keys: "productName" and "description"
+     * @param payload should contain JSON key-value pairs with keys: "productName" and "description". Optional key "discount" can be included
      * @return CONFLICT if a product with same name is already in DB, else OK
      */
     @RequestMapping(value = "/addProduct", method = RequestMethod.POST, consumes = "application/json")
@@ -39,6 +39,11 @@ public class ProductController
         }
 
         product = new Product(payload.get("productName"),payload.get("description"));
+        if(payload.containsKey("discount"))     //Optional JSON value
+        {
+            double discount = Double.valueOf(payload.get("discount"));
+            product.setDiscountPercentage(discount);
+        }
         productRepo.save(product);
         return new ResponseEntity(product.getName()+" Added to Database", HttpStatus.OK);
     }
@@ -95,7 +100,7 @@ public class ProductController
 
     /**
      * Update existing Product in Database
-     * @param payload should contain JSON key-value pairs with keys: "productName" and "description"
+     * @param payload should contain JSON key-value pairs with keys: "productName" and "description". Optional key "discount" can be included
      * @return NOT_FOUND if no such Product in DB, else OK
      */
     @RequestMapping(value = "/updateProduct", method = RequestMethod.POST, consumes = "application/json")
@@ -113,6 +118,12 @@ public class ProductController
         }
 
         product.setDescription(payload.get("description"));
+        if(payload.containsKey("discount"))     //Optional JSON value
+        {
+            double discount = Double.valueOf(payload.get("discount"));
+            product.setDiscountPercentage(discount);
+        }
+
         productRepo.save(product);
         return new ResponseEntity(product.getName()+" updated in Database", HttpStatus.OK);
     }
