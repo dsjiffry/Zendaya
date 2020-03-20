@@ -19,7 +19,6 @@ public class WishList
         this.username = username;
     }
 
-
     public void addProduct(String productName)
     {
         wishlist.add(productName);
