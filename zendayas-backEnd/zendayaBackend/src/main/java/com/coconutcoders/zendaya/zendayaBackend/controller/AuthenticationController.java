@@ -1,9 +1,7 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
 
-import com.coconutcoders.zendaya.zendayaBackend.model.User;
 import com.coconutcoders.zendaya.zendayaBackend.repo.UserRepo;
-import com.coconutcoders.zendaya.zendayaBackend.util.security.M_UserDetailsService;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.MyUserDetailService;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.model.AuthenticationRequest;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.model.AuthenticationResponse;
@@ -13,12 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AuthenticationController {
@@ -35,6 +29,7 @@ public class AuthenticationController {
     @Autowired
     UserRepo userRepo;
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception
     {
