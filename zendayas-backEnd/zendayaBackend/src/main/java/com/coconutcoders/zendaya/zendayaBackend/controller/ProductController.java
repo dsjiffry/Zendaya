@@ -31,14 +31,16 @@ public class ProductController
         {
             return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
         }
+        final String productName = payload.get("productName");
+        final String description = payload.get("description");
 
-        Product product = productRepo.findByName(payload.get("productName"));
+        Product product = productRepo.findByName(productName);
         if(product != null)
         {
             return new ResponseEntity("Product already in database", HttpStatus.CONFLICT);
         }
 
-        product = new Product(payload.get("productName"),payload.get("description"));
+        product = new Product(productName,description);
         if(payload.containsKey("discount"))     //Optional JSON value
         {
             double discount = Double.valueOf(payload.get("discount"));
@@ -61,18 +63,22 @@ public class ProductController
         {
             return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
         }
+        final String productName = payload.get("productName");
+        final String username = payload.get("username");
+        final String description = payload.get("description");
+        final String ratingS = payload.get("rating");
 
-        Product product = productRepo.findByName(payload.get("productName"));
+        Product product = productRepo.findByName(productName);
         if(product == null)
         {
             return new ResponseEntity("Product Not Found in database", HttpStatus.NOT_FOUND);
         }
 
-        double rating = Double.valueOf(payload.get("rating"));
-        product.addOrUpdateReview(payload.get("username"), payload.get("description"), rating);
+        double rating = Double.valueOf(ratingS);
+        product.addOrUpdateReview(username, description, rating);
 
         productRepo.save(product);
-        return new ResponseEntity(payload.get("username")+"'s review for "+ product.getName() +" Added to Database", HttpStatus.OK);
+        return new ResponseEntity(username+"'s review for "+ product.getName() +" Added to Database", HttpStatus.OK);
     }
 
     /**
@@ -87,8 +93,9 @@ public class ProductController
         {
             return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
         }
+        final String productName = payload.get("productName");
 
-        Product product = productRepo.findByName(payload.get("productName"));
+        Product product = productRepo.findByName(productName);
         if(product == null)
         {
             return new ResponseEntity("No such Product in database", HttpStatus.NOT_FOUND);
@@ -110,14 +117,16 @@ public class ProductController
         {
             return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
         }
+        final String productName = payload.get("productName");
+        final String description = payload.get("description");
 
-        Product product = productRepo.findByName(payload.get("productName"));
+        Product product = productRepo.findByName(productName);
         if(product == null)
         {
             return new ResponseEntity("Product Not Found in database", HttpStatus.NOT_FOUND);
         }
 
-        product.setDescription(payload.get("description"));
+        product.setDescription(description);
         if(payload.containsKey("discount"))     //Optional JSON value
         {
             double discount = Double.valueOf(payload.get("discount"));
