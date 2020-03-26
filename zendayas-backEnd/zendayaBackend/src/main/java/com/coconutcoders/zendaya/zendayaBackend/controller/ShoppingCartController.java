@@ -25,7 +25,7 @@ public class ShoppingCartController
 
     /**
      * Checks for product in database and then adds it to the user's Shopping Cart
-     * @param payload Should contain JSON key-value pairs with keys: "username" and "productName"
+     * @param payload Should contain JSON key-value pairs with keys: "username" and "productName" and optional key "quantity"
      * @return NOT FOUND if product is not in database, else OK
      */
     @RequestMapping(value = "/addToShoppingCart", method = RequestMethod.POST, consumes = "application/json")
@@ -37,6 +37,13 @@ public class ShoppingCartController
         }
         final String productName = payload.get("productName");
         final String username = payload.get("username");
+        int quantity = 1;
+        try {
+            quantity = Integer.valueOf(payload.get("quantity"));
+        }catch (NumberFormatException e)
+        {
+            quantity = 1;
+        }
 
         //Checking for Product in DB
         Product product = productRepo.findByName(productName);
@@ -60,6 +67,10 @@ public class ShoppingCartController
             {
                 sCart.addProduct(productName);
             }
+        }
+        if(quantity > 1)    //The user is ordering more than 1 item
+        {
+            sCart.changeQuantity(productName,quantity);
         }
 
         shoppingCartRepo.save(sCart);
