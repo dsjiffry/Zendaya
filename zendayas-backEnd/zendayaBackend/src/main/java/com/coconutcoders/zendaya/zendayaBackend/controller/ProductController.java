@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -34,7 +36,7 @@ public class ProductController
         final String productName = payload.get("productName");
         final String description = payload.get("description");
 
-        Product product = productRepo.findByName(productName);
+        Product product = productRepo.findByNameIgnoreCase(productName);
         if(product != null)
         {
             return new ResponseEntity("Product already in database", HttpStatus.CONFLICT);
@@ -68,7 +70,7 @@ public class ProductController
         final String description = payload.get("description");
         final String ratingS = payload.get("rating");
 
-        Product product = productRepo.findByName(productName);
+        Product product = productRepo.findByNameIgnoreCase(productName);
         if(product == null)
         {
             return new ResponseEntity("Product Not Found in database", HttpStatus.NOT_FOUND);
@@ -95,7 +97,7 @@ public class ProductController
         }
         final String productName = payload.get("productName");
 
-        Product product = productRepo.findByName(productName);
+        Product product = productRepo.findByNameIgnoreCase(productName);
         if(product == null)
         {
             return new ResponseEntity("No such Product in database", HttpStatus.NOT_FOUND);
@@ -120,7 +122,7 @@ public class ProductController
         final String productName = payload.get("productName");
         final String description = payload.get("description");
 
-        Product product = productRepo.findByName(productName);
+        Product product = productRepo.findByNameIgnoreCase(productName);
         if(product == null)
         {
             return new ResponseEntity("Product Not Found in database", HttpStatus.NOT_FOUND);
@@ -135,5 +137,48 @@ public class ProductController
 
         productRepo.save(product);
         return new ResponseEntity(product.getName()+" updated in Database", HttpStatus.OK);
+    }
+
+    /**
+     * find all product that contains given string in name
+     * @param payload should contain JSON key-value pairs with keys: "productName".
+     * @return A JSON array of the matching products.
+     */
+    @RequestMapping(value = "/searchProductsByName", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity searchProducstByName(@RequestBody Map<String, String> payload)
+    {
+        if(!payload.containsKey("productName"))
+        {
+            return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String productName = payload.get("productName");
+
+        List<Product> products = productRepo.findByNameIgnoreCaseContaining(productName);
+        Map<String, Product> response = new HashMap<>();
+
+        for(Product product : products)
+        {
+            response.put(product.getName(),product);
+        }
+
+        return new ResponseEntity(response, HttpStatus.OK);
+    }
+
+    /**
+     * find all products that have a discount
+     * @return A JSON array of the matching products.
+     */
+    @RequestMapping(value = "/searchProductWithDiscount", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity searchProductWithDiscount()
+    {
+        List<Product> products = productRepo.findByDiscountPercentageGreaterThan(0);
+
+        Map<String, Product> response = new HashMap<>();
+        for(Product product : products)
+        {
+            response.put(product.getName(),product);
+        }
+
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 }

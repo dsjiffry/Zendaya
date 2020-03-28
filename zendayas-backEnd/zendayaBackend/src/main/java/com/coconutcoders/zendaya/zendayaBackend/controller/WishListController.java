@@ -45,7 +45,7 @@ public class WishListController {
         final String username = payload.get("username");
 
         //Checking for Product in DB
-        Product product = productRepo.findByName(productName);
+        Product product = productRepo.findByNameIgnoreCase(productName);
         if(product == null)
         {
             return new ResponseEntity("Product was not found", HttpStatus.NOT_FOUND);
@@ -90,7 +90,7 @@ public class WishListController {
         final String username = payload.get("username");
 
         //Checking for Product in DB
-        Product product = productRepo.findByName(productName);
+        Product product = productRepo.findByNameIgnoreCase(productName);
         if(product == null)
         {
             return new ResponseEntity("Product was not found", HttpStatus.NOT_FOUND);
@@ -135,7 +135,7 @@ public class WishListController {
 
 
         //Checking for Product in DB
-        Product product = productRepo.findByName(productName);
+        Product product = productRepo.findByNameIgnoreCase(productName);
         if(product == null)
         {
             return new ResponseEntity("Product was not found", HttpStatus.NOT_FOUND);
