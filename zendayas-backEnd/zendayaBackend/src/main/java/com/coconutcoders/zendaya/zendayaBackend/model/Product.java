@@ -51,6 +51,11 @@ public class Product
     public double getAvgRating()
     {
         double sumRating = 0;
+        if(ratings.size() == 0)
+        {
+            return sumRating;
+        }
+
         for(Map.Entry<String, Double> rating : ratings.entrySet())
         {
             sumRating += rating.getValue();
