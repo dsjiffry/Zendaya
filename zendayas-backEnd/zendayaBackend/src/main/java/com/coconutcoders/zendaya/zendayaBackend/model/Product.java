@@ -15,14 +15,17 @@ public class Product
     private String name;    //Should be unique
     private String description;
     private double discountPercentage = 0;
+    private double avgRating = 0;
+    private double price = 0;
     private HashMap<String, Double> ratings;    //Username and the rating given
     private HashMap<String, Date> reviewTimeStamp;    //Username and the date of the Review
     private HashMap<String, String> reviews;    //Username and the review given
 
     private Product(){}
-    public Product(String name, String description) {
+    public Product(String name, String description, double price) {
         this.name = name;
         this.description = description;
+        this.price = price;
         reviewTimeStamp = new HashMap<>();
         ratings = new HashMap<>();
         reviews = new HashMap<>();
@@ -38,6 +41,7 @@ public class Product
         reviewTimeStamp.put(username,new Date());
         reviews.put(username, review);
         ratings.put(username, rating);
+        avgRating = calculateAvgRating();
     }
 
     public String getName() {
@@ -49,6 +53,11 @@ public class Product
     }
 
     public double getAvgRating()
+    {
+        return avgRating;
+    }
+
+    public double calculateAvgRating()
     {
         double sumRating = 0;
         if(ratings.size() == 0)
@@ -74,5 +83,18 @@ public class Product
 
     public void setDiscountPercentage(double discountPercentage) {
         this.discountPercentage = discountPercentage;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price)
+    {
+        this.price = price;
+    }
+
+    public double getPriceWithDiscount() {
+        return price - (price * (discountPercentage/100));
     }
 }
