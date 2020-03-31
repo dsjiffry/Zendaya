@@ -23,18 +23,19 @@ public class ProductController
 
     /**
      * Adds Product to Database
-     * @param payload should contain JSON key-value pairs with keys: "productName" and "description". Optional key "discount" can be included
+     * @param payload should contain JSON key-value pairs with keys: "productName", "price" and "description". Optional key "discount" can be included
      * @return CONFLICT if a product with same name is already in DB, else OK
      */
     @RequestMapping(value = "/addProduct", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity addProduct(@RequestBody Map<String, String> payload)
     {
-        if(!payload.containsKey("productName") || !payload.containsKey("description"))
+        if(!payload.containsKey("productName") || !payload.containsKey("description") || !payload.containsKey("price"))
         {
             return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String description = payload.get("description");
+        final double price = Double.valueOf(payload.get("price"));
 
         Product product = productRepo.findByNameIgnoreCase(productName);
         if(product != null)
@@ -42,7 +43,7 @@ public class ProductController
             return new ResponseEntity("Product already in database", HttpStatus.CONFLICT);
         }
 
-        product = new Product(productName,description);
+        product = new Product(productName,description,price);
         if(payload.containsKey("discount"))     //Optional JSON value
         {
             double discount = Double.valueOf(payload.get("discount"));
@@ -115,12 +116,13 @@ public class ProductController
     @RequestMapping(value = "/updateProduct", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity updateProduct(@RequestBody Map<String, String> payload)
     {
-        if(!payload.containsKey("productName") || !payload.containsKey("description"))
+        if(!payload.containsKey("productName") || !payload.containsKey("description")|| !payload.containsKey("price"))
         {
             return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String description = payload.get("description");
+        final double price = Double.valueOf(payload.get("price"));
 
         Product product = productRepo.findByNameIgnoreCase(productName);
         if(product == null)
@@ -129,6 +131,7 @@ public class ProductController
         }
 
         product.setDescription(description);
+        product.setPrice(price);
         if(payload.containsKey("discount"))     //Optional JSON value
         {
             double discount = Double.valueOf(payload.get("discount"));
@@ -139,13 +142,20 @@ public class ProductController
         return new ResponseEntity(product.getName()+" updated in Database", HttpStatus.OK);
     }
 
+
+
+
+    /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Searching and Sorting Functions
+    */////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * find all product that contains given string in name
      * @param payload should contain JSON key-value pairs with keys: "productName".
      * @return A JSON array of the matching products.
      */
     @RequestMapping(value = "/searchProductsByName", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity searchProducstByName(@RequestBody Map<String, String> payload)
+    public ResponseEntity searchProductsByName(@RequestBody Map<String, String> payload)
     {
         if(!payload.containsKey("productName"))
         {
@@ -181,4 +191,31 @@ public class ProductController
 
         return new ResponseEntity(response, HttpStatus.OK);
     }
+
+    /**
+     * find all products that gave a rating greater than or equal to a value
+     * @param payload should contain JSON key-value pairs with keys: "rating".
+     * @return A JSON array of the matching products.
+     */
+    @RequestMapping(value = "/findProductsWithRatingGreaterThanAndEqual", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity findProductsWithRatingGreaterThanAndEqual(@RequestBody Map<String, String> payload)
+    {
+        if(!payload.containsKey("rating"))
+        {
+            return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        double rating = Double.valueOf(payload.get("rating"));
+
+        List<Product> products = productRepo.findByAvgRatingGreaterThanEqual(rating);
+
+        Map<String, Product> response = new HashMap<>();
+        for(Product product : products)
+        {
+            response.put(product.getName(),product);
+        }
+
+        return new ResponseEntity(response, HttpStatus.OK);
+    }
+
+
 }
