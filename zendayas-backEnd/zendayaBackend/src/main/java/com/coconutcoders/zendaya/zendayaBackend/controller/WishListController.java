@@ -39,7 +39,7 @@ public class WishListController {
     {
         if(!payload.containsKey("productName") || !payload.containsKey("username"))
         {
-            return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String username = payload.get("username");
@@ -48,7 +48,7 @@ public class WishListController {
         Product product = productRepo.findByNameIgnoreCase(productName);
         if(product == null)
         {
-            return new ResponseEntity("Product was not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Product was not found", HttpStatus.NOT_FOUND);
         }
         //Since this can only be called after the user signs in, will not be verifying username.
 
@@ -70,7 +70,7 @@ public class WishListController {
 
         wishListRepo.save(wishList);
 
-        return new ResponseEntity(productName+" added to "+username+"'s wish list", HttpStatus.OK);
+        return new ResponseEntity<>(productName+" added to "+username+"'s wish list", HttpStatus.OK);
     }
 
 
@@ -84,7 +84,7 @@ public class WishListController {
     {
         if(!payload.containsKey("productName") || !payload.containsKey("username"))
         {
-            return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String username = payload.get("username");
@@ -93,7 +93,7 @@ public class WishListController {
         Product product = productRepo.findByNameIgnoreCase(productName);
         if(product == null)
         {
-            return new ResponseEntity("Product was not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Product was not found", HttpStatus.NOT_FOUND);
         }
         //Since this can only be called after the user signs in, will not be verifying username.
 
@@ -102,7 +102,7 @@ public class WishListController {
 
         if(wishList == null)    //User doesn't have a wish list
         {
-            return new ResponseEntity("Wish list was not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Wish list was not found", HttpStatus.NOT_FOUND);
         }
         else    //this user has a wish list
         {
@@ -114,7 +114,7 @@ public class WishListController {
 
         wishListRepo.save(wishList);
 
-        return new ResponseEntity(productName+" removed from "+username+"'s wish list", HttpStatus.OK);
+        return new ResponseEntity<>(productName+" removed from "+username+"'s wish list", HttpStatus.OK);
     }
 
 
@@ -128,7 +128,7 @@ public class WishListController {
     {
         if(!payload.containsKey("productName") || !payload.containsKey("username"))
         {
-            return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String username = payload.get("username");
@@ -138,18 +138,18 @@ public class WishListController {
         Product product = productRepo.findByNameIgnoreCase(productName);
         if(product == null)
         {
-            return new ResponseEntity("Product was not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Product was not found", HttpStatus.NOT_FOUND);
         }
 
         WishList wishList = wishListRepo.findByUsername(username);
 
         if(wishList == null)    //user does not have a wishlist
         {
-            return new ResponseEntity("Wish list was not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Wish list was not found", HttpStatus.NOT_FOUND);
         }
         if(!wishList.isProductAlreadyInWishList(productName))    //Product was not found in wish list
         {
-            return new ResponseEntity("No such product in wish list", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("No such product in wish list", HttpStatus.NOT_FOUND);
         }
 
         ShoppingCart sCart = shoppingCartRepo.findByUsername(username);
@@ -161,7 +161,7 @@ public class WishListController {
         shoppingCartRepo.save(sCart);
         removeFromWishList(payload);
 
-        return new ResponseEntity(productName+" moved to Shopping Cart", HttpStatus.OK);
+        return new ResponseEntity<>(productName+" moved to Shopping Cart", HttpStatus.OK);
     }
 }
 

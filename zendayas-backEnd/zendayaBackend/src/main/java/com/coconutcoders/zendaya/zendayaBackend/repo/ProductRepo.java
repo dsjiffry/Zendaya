@@ -10,8 +10,8 @@ import java.util.List;
 @Repository
 public interface ProductRepo extends MongoRepository<Product, String>
 {
-    public Product findByNameIgnoreCase(String name);
-    public List<Product> findByNameIgnoreCaseContaining(String name);
-    public List<Product> findByDiscountPercentageGreaterThan(double value);
-    public List<Product> findByAvgRatingGreaterThanEqual(double value);
+    Product findByNameIgnoreCase(String name);
+    List<Product> findByNameIgnoreCaseContaining(String name);
+    List<Product> findByDiscountPercentageGreaterThan(double value);
+    List<Product> findByAvgRatingGreaterThanEqual(double value);
 }

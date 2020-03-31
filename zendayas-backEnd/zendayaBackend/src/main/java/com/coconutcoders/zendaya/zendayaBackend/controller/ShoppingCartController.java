@@ -33,13 +33,13 @@ public class ShoppingCartController
     {
         if(!payload.containsKey("productName") || !payload.containsKey("username"))
         {
-            return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String username = payload.get("username");
-        int quantity = 1;
+        int quantity;
         try {
-            quantity = Integer.valueOf(payload.get("quantity"));
+            quantity = Integer.parseInt(payload.get("quantity"));
         }catch (NumberFormatException e)
         {
             quantity = 1;
@@ -49,7 +49,7 @@ public class ShoppingCartController
         Product product = productRepo.findByNameIgnoreCase(productName);
         if(product == null)
         {
-            return new ResponseEntity("Product was not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Product was not found", HttpStatus.NOT_FOUND);
         }
         //Since this can only be called after the user signs in, will not be verifying username.
 
@@ -75,7 +75,7 @@ public class ShoppingCartController
 
         shoppingCartRepo.save(sCart);
 
-        return new ResponseEntity(productName+" added to "+username+"'s Shopping Cart", HttpStatus.OK);
+        return new ResponseEntity<>(productName+" added to "+username+"'s Shopping Cart", HttpStatus.OK);
     }
 
     /**
@@ -88,7 +88,7 @@ public class ShoppingCartController
     {
         if(!payload.containsKey("productName") || !payload.containsKey("username"))
         {
-            return new ResponseEntity("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String username = payload.get("username");
@@ -97,7 +97,7 @@ public class ShoppingCartController
         Product product = productRepo.findByNameIgnoreCase(productName);
         if(product == null)
         {
-            return new ResponseEntity("Product was not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Product was not found", HttpStatus.NOT_FOUND);
         }
         //Since this can only be called after the user signs in, will not be verifying username.
 
@@ -106,7 +106,7 @@ public class ShoppingCartController
 
         if(sCart == null)    //User doesn't have a Shopping Cart
         {
-            return new ResponseEntity("Shopping Cart was not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Shopping Cart was not found", HttpStatus.NOT_FOUND);
         }
         else    //this user has a Shopping Cart
         {
@@ -118,7 +118,7 @@ public class ShoppingCartController
 
         shoppingCartRepo.save(sCart);
 
-        return new ResponseEntity(productName+" removed from "+username+"'s Shopping Cart", HttpStatus.OK);
+        return new ResponseEntity<>(productName+" removed from "+username+"'s Shopping Cart", HttpStatus.OK);
     }
 
 }
