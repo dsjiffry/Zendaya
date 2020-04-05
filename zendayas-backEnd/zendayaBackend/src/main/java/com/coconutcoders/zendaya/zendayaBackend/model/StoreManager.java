@@ -3,7 +3,7 @@ package com.coconutcoders.zendaya.zendayaBackend.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
-public class User
+public class StoreManager
 {
     @Id
     private ObjectId id;
@@ -11,12 +11,11 @@ public class User
     private String username;  //Should be unique
     private String password;
 
-    private User() {}
-    public User(String username, String password) {
+    private StoreManager(){}
+    public StoreManager(String username, String password) {
         this.username = username;
         this.password = password;
     }
-
 
     public String getUsername() {
         return username;
