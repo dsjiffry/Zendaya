@@ -23,6 +23,7 @@ public class ProductController
 
     /**
      * Adds Product to Database
+     * POST to http://localhost:8080/addProduct
      * @param payload should contain JSON key-value pairs with keys: "productName", "price" and "description". Optional key "discount" can be included
      * @return CONFLICT if a product with same name is already in DB, else OK
      */
@@ -55,6 +56,7 @@ public class ProductController
 
     /**
      * Adds a Review for a product, if a review is already present it will be updated
+     * POST to http://localhost:8080/addReview
      * @param payload should contain JSON key-value pairs with keys: "productName", "username", "description" and "rating"
      * @return NOT FOUND if product is not in database, else OK
      */
@@ -86,6 +88,7 @@ public class ProductController
 
     /**
      * Removes Product to Database
+     * POST to http://localhost:8080/removeProduct
      * @param payload should contain JSON key-value pairs with keys: "productName"
      * @return NOT_FOUND if the product is not found in DB, else OK
      */
@@ -110,6 +113,7 @@ public class ProductController
 
     /**
      * Update existing Product in Database
+     * POST to http://localhost:8080/updateProduct
      * @param payload should contain JSON key-value pairs with keys: "productName" and "description". Optional key "discount" can be included
      * @return NOT_FOUND if no such Product in DB, else OK
      */
@@ -151,6 +155,7 @@ public class ProductController
 
     /**
      * find all product that contains given string in name
+     * POST to http://localhost:8080/searchProductsByName
      * @param payload should contain JSON key-value pairs with keys: "productName".
      * @return A JSON array of the matching products.
      */
@@ -176,6 +181,7 @@ public class ProductController
 
     /**
      * find all products that have a discount
+     * POST to http://localhost:8080/searchProductWithDiscount
      * @return A JSON array of the matching products.
      */
     @RequestMapping(value = "/searchProductWithDiscount", method = RequestMethod.POST, consumes = "application/json")
@@ -194,6 +200,7 @@ public class ProductController
 
     /**
      * find all products that gave a rating greater than or equal to a value
+     * POST to http://localhost:8080/findProductsWithRatingGreaterThanAndEqual
      * @param payload should contain JSON key-value pairs with keys: "rating".
      * @return A JSON array of the matching products.
      */
