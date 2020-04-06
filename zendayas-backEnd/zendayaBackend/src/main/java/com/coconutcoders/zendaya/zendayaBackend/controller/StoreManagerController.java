@@ -20,6 +20,7 @@ public class StoreManagerController
 
     /**
      * Adds Store Manager to Database
+     * POST to http://localhost:8080/addStoreManager
      * @param payload should contain JSON key-value pairs with keys: "username", "password".
      * @return CONFLICT if a Store Manager with same name is already in DB, else OK
      */
@@ -47,6 +48,7 @@ public class StoreManagerController
 
     /**
      * Changes Store Manager password in Database
+     * POST to http://localhost:8080/changeStoreManagerPassword
      * @param payload should contain JSON key-value pairs with keys:"username", "oldPassword", "newPassword".
      * @return CONFLICT if old password is incorrect, else OK
      */
@@ -79,6 +81,7 @@ public class StoreManagerController
 
     /**
      * Removes Store Manager from Database
+     * POST to http://localhost:8080/removeStoreManager
      * @param payload should contain JSON key-value pairs with keys: "username".
      * @return NOT FOUND if the Store Manager is not in DB, else OK
      */

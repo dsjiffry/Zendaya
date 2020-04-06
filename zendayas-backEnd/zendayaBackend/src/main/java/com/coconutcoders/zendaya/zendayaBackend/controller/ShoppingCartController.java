@@ -25,6 +25,7 @@ public class ShoppingCartController
 
     /**
      * Checks for product in database and then adds it to the user's Shopping Cart
+     * POST to http://localhost:8080/addToShoppingCart
      * @param payload Should contain JSON key-value pairs with keys: "username" and "productName" and optional key "quantity"
      * @return NOT FOUND if product is not in database, else OK
      */
@@ -80,6 +81,7 @@ public class ShoppingCartController
 
     /**
      * Checks for product in database and then removes it from the user's Shopping Cart
+     * POST to http://localhost:8080/removeFromShoppingCart
      * @param payload Should contain JSON key-value pairs with keys: "username" and "productName"
      * @return NOT FOUND if product is not in database or if user doesn't have a Shopping Cart, else OK
      */
