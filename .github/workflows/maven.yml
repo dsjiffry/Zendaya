@@ -32,8 +32,8 @@ jobs:
         mongodb-version: ${{ matrix.mongodb-version }}
         
     - name: import Database
-      run: 
-        yum install mongodb-org-tools
+      run: |
+        apt-get install mongodb-org-tools
         sudo mongoimport --db zendaya_db --collection user --file adminUser.json
 
     - name: Build with Maven
