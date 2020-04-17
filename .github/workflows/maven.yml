@@ -33,8 +33,8 @@ jobs:
         
     - name: import Database
       run: |
-        sudo apt-get install mongo-tools
-        sudo mongoimport --db zendaya_db --collection user --file adminUser.json
+        
+        sudo mongoimport --db zendaya_db --collection user --file User_Collection_Backup.json
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
