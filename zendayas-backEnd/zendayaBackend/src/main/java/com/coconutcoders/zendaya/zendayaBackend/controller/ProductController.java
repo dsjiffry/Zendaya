@@ -24,7 +24,7 @@ public class ProductController
     /**
      * Adds Product to Database
      * POST to http://localhost:8080/addProduct
-     * @param payload should contain JSON key-value pairs with keys: "productName", "price" and "description". Optional key "discount" can be included
+     * @param payload should contain JSON key-value pairs with key(s): "productName", "price" and "description". Optional key "discount" can be included
      * @return CONFLICT if a product with same name is already in DB, else OK
      */
     @RequestMapping(value = "/addProduct", method = RequestMethod.POST, consumes = "application/json")
@@ -32,7 +32,7 @@ public class ProductController
     {
         if(!payload.containsKey("productName") || !payload.containsKey("description") || !payload.containsKey("price"))
         {
-            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String description = payload.get("description");
@@ -57,7 +57,7 @@ public class ProductController
     /**
      * Adds a Review for a product, if a review is already present it will be updated
      * POST to http://localhost:8080/addReview
-     * @param payload should contain JSON key-value pairs with keys: "productName", "username", "description" and "rating"
+     * @param payload should contain JSON key-value pairs with key(s): "productName", "username", "description" and "rating"
      * @return NOT FOUND if product is not in database, else OK
      */
     @RequestMapping(value = "/addReview", method = RequestMethod.POST, consumes = "application/json")
@@ -66,7 +66,7 @@ public class ProductController
         if(!payload.containsKey("productName") || !payload.containsKey("username")
                 || !payload.containsKey("description") || !payload.containsKey("rating"))
         {
-            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String username = payload.get("username");
@@ -87,9 +87,9 @@ public class ProductController
     }
 
     /**
-     * Removes Product to Database
+     * Removes Product from Database
      * POST to http://localhost:8080/removeProduct
-     * @param payload should contain JSON key-value pairs with keys: "productName"
+     * @param payload should contain JSON key-value pairs with key(s): "productName"
      * @return NOT_FOUND if the product is not found in DB, else OK
      */
     @RequestMapping(value = "/removeProduct", method = RequestMethod.POST, consumes = "application/json")
@@ -97,7 +97,7 @@ public class ProductController
     {
         if(!payload.containsKey("productName"))
         {
-            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
 
@@ -114,7 +114,7 @@ public class ProductController
     /**
      * Update existing Product in Database
      * POST to http://localhost:8080/updateProduct
-     * @param payload should contain JSON key-value pairs with keys: "productName" and "description". Optional key "discount" can be included
+     * @param payload should contain JSON key-value pairs with key(s): "productName" and "description". Optional key "discount" can be included
      * @return NOT_FOUND if no such Product in DB, else OK
      */
     @RequestMapping(value = "/updateProduct", method = RequestMethod.POST, consumes = "application/json")
@@ -122,7 +122,7 @@ public class ProductController
     {
         if(!payload.containsKey("productName") || !payload.containsKey("description")|| !payload.containsKey("price"))
         {
-            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String description = payload.get("description");
@@ -156,7 +156,7 @@ public class ProductController
     /**
      * find all product that contains given string in name
      * POST to http://localhost:8080/searchProductsByName
-     * @param payload should contain JSON key-value pairs with keys: "productName".
+     * @param payload should contain JSON key-value pairs with key(s): "productName".
      * @return A JSON array of the matching products.
      */
     @RequestMapping(value = "/searchProductsByName", method = RequestMethod.POST, consumes = "application/json")
@@ -164,7 +164,7 @@ public class ProductController
     {
         if(!payload.containsKey("productName"))
         {
-            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
 
@@ -201,7 +201,7 @@ public class ProductController
     /**
      * find all products that gave a rating greater than or equal to a value
      * POST to http://localhost:8080/findProductsWithRatingGreaterThanAndEqual
-     * @param payload should contain JSON key-value pairs with keys: "rating".
+     * @param payload should contain JSON key-value pairs with key(s): "rating".
      * @return A JSON array of the matching products.
      */
     @RequestMapping(value = "/findProductsWithRatingGreaterThanAndEqual", method = RequestMethod.POST, consumes = "application/json")
@@ -209,7 +209,7 @@ public class ProductController
     {
         if(!payload.containsKey("rating"))
         {
-            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         double rating = Double.parseDouble(payload.get("rating"));
 

@@ -21,7 +21,7 @@ public class StoreManagerController
     /**
      * Adds Store Manager to Database
      * POST to http://localhost:8080/addStoreManager
-     * @param payload should contain JSON key-value pairs with keys: "username", "password".
+     * @param payload should contain JSON key-value pairs with key(s): "username", "password".
      * @return CONFLICT if a Store Manager with same name is already in DB, else OK
      */
     @RequestMapping(value = "/addStoreManager", method = RequestMethod.POST, consumes = "application/json")
@@ -29,7 +29,7 @@ public class StoreManagerController
     {
         if(!payload.containsKey("username") || !payload.containsKey("password"))
         {
-            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String username = payload.get("username");
         final String password = payload.get("password");
@@ -49,7 +49,7 @@ public class StoreManagerController
     /**
      * Changes Store Manager password in Database
      * POST to http://localhost:8080/changeStoreManagerPassword
-     * @param payload should contain JSON key-value pairs with keys:"username", "oldPassword", "newPassword".
+     * @param payload should contain JSON key-value pairs with key(s):"username", "oldPassword", "newPassword".
      * @return CONFLICT if old password is incorrect, else OK
      */
     @RequestMapping(value = "/changeStoreManagerPassword", method = RequestMethod.POST, consumes = "application/json")
@@ -57,7 +57,7 @@ public class StoreManagerController
     {
         if(!payload.containsKey("username") ||!payload.containsKey("oldPassword") || !payload.containsKey("newPassword"))
         {
-            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String username = payload.get("username");
         final String oldPassword = payload.get("oldPassword");
@@ -82,7 +82,7 @@ public class StoreManagerController
     /**
      * Removes Store Manager from Database
      * POST to http://localhost:8080/removeStoreManager
-     * @param payload should contain JSON key-value pairs with keys: "username".
+     * @param payload should contain JSON key-value pairs with key(s): "username".
      * @return NOT FOUND if the Store Manager is not in DB, else OK
      */
     @RequestMapping(value = "/removeStoreManager", method = RequestMethod.POST, consumes = "application/json")
@@ -90,7 +90,7 @@ public class StoreManagerController
     {
         if(!payload.containsKey("username"))
         {
-            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String username = payload.get("username");
 
