@@ -32,7 +32,7 @@ public class WishListController {
     /**
      * Checks for product in database and then adds it to the user's wish list
      * POST to http://localhost:8080/addToWishList
-     * @param payload Should contain JSON key-value pairs with keys: "username" and "productName"
+     * @param payload Should contain JSON key-value pairs with key(s): "username" and "productName"
      * @return NOT FOUND if product is not in database, else OK
      */
     @RequestMapping(value = "/addToWishList", method = RequestMethod.POST, consumes = "application/json")
@@ -40,7 +40,7 @@ public class WishListController {
     {
         if(!payload.containsKey("productName") || !payload.containsKey("username"))
         {
-            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String username = payload.get("username");
@@ -78,7 +78,7 @@ public class WishListController {
     /**
      * Checks for product in database and then removes it from the user's wish list
      * POST to http://localhost:8080/removeFromWishList
-     * @param payload Should contain JSON key-value pairs with keys: "username" and "productName"
+     * @param payload Should contain JSON key-value pairs with key(s): "username" and "productName"
      * @return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
      */
     @RequestMapping(value = "/removeFromWishList", method = RequestMethod.POST, consumes = "application/json")
@@ -86,7 +86,7 @@ public class WishListController {
     {
         if(!payload.containsKey("productName") || !payload.containsKey("username"))
         {
-            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String username = payload.get("username");
@@ -123,7 +123,7 @@ public class WishListController {
     /**
      * Transfers a product from the wish list to the Shopping Cart
      * POST to http://localhost:8080/moveToShoppingCart
-     * @param payload Should contain JSON key-value pairs with keys: "username" and "productName"
+     * @param payload Should contain JSON key-value pairs with key(s): "username" and "productName"
      * @return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
      */
     @RequestMapping(value = "/moveToShoppingCart", method = RequestMethod.POST, consumes = "application/json")
@@ -131,7 +131,7 @@ public class WishListController {
     {
         if(!payload.containsKey("productName") || !payload.containsKey("username"))
         {
-            return new ResponseEntity<>("required keys not found in JSON Body", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
         final String username = payload.get("username");
