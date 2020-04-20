@@ -24,7 +24,7 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 	* Update existing Product in Database
 		-> POST to http://localhost:8080/updateProduct
 		-> with JSON body with key(s): "productName" and "description". Optional key "discount" can be included
-     	-> will return NOT_FOUND if no such Product in DB, else OK
+     		-> will return NOT_FOUND if no such Product in DB, else OK
 		
 	* find all product that contains given string in name
 		-> POST to http://localhost:8080/searchProductsByName
@@ -91,7 +91,7 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 	* Checks for product in database and then removes it from the user's wish list
 		-> POST to http://localhost:8080/removeFromWishList
 		-> with JSON body with key(s): "username" and "productName"
-		-> @return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
+		-> will return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
 
 	* Transfers a product from the wish list to the Shopping Cart
 		-> POST to http://localhost:8080/moveToShoppingCart
