@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public class ShoppingCartController
-{
+public class ShoppingCartController {
     @Autowired
     private ProductRepo productRepo;
 
@@ -26,14 +26,13 @@ public class ShoppingCartController
     /**
      * Checks for product in database and then adds it to the user's Shopping Cart
      * POST to http://localhost:8080/addToShoppingCart
+     *
      * @param payload Should contain JSON key-value pairs with key(s): "username" and "productName" and optional key "quantity"
      * @return NOT FOUND if product is not in database, else OK
      */
     @RequestMapping(value = "/addToShoppingCart", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity addToShoppingCart(@RequestBody Map<String, String> payload)
-    {
-        if(!payload.containsKey("productName") || !payload.containsKey("username"))
-        {
+    public ResponseEntity addToShoppingCart(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName") || !payload.containsKey("username")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
@@ -41,15 +40,13 @@ public class ShoppingCartController
         int quantity;
         try {
             quantity = Integer.parseInt(payload.get("quantity"));
-        }catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             quantity = 1;
         }
 
         //Checking for Product in DB
         Product product = productRepo.findByNameIgnoreCase(productName);
-        if(product == null)
-        {
+        if (product == null) {
             return new ResponseEntity<>("Product was not found", HttpStatus.NOT_FOUND);
         }
         //Since this can only be called after the user signs in, will not be verifying username.
@@ -57,39 +54,36 @@ public class ShoppingCartController
 
         ShoppingCart sCart = shoppingCartRepo.findByUsername(username);
 
-        if(sCart == null)    //need to create a new Shopping Cart for this user
+        if (sCart == null)    //need to create a new Shopping Cart for this user
         {
             sCart = new ShoppingCart(username);
             sCart.addProduct(productName);
-        }
-        else    //this user already has a Shopping Cart
+        } else    //this user already has a Shopping Cart
         {
-            if(!sCart.isProductAlreadyInCart(productName))
-            {
+            if (!sCart.isProductAlreadyInCart(productName)) {
                 sCart.addProduct(productName);
             }
         }
-        if(quantity > 1)    //The user is ordering more than 1 item
+        if (quantity > 1)    //The user is ordering more than 1 item
         {
-            sCart.changeQuantity(productName,quantity);
+            sCart.changeQuantity(productName, quantity);
         }
 
         shoppingCartRepo.save(sCart);
 
-        return new ResponseEntity<>(productName+" added to "+username+"'s Shopping Cart", HttpStatus.OK);
+        return new ResponseEntity<>(productName + " added to " + username + "'s Shopping Cart", HttpStatus.OK);
     }
 
     /**
      * Checks for product in database and then removes it from the user's Shopping Cart
      * POST to http://localhost:8080/removeFromShoppingCart
+     *
      * @param payload Should contain JSON key-value pairs with key(s): "username" and "productName"
      * @return NOT FOUND if product is not in database or if user doesn't have a Shopping Cart, else OK
      */
     @RequestMapping(value = "/removeFromShoppingCart", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity removeFromShoppingCart(@RequestBody Map<String, String> payload)
-    {
-        if(!payload.containsKey("productName") || !payload.containsKey("username"))
-        {
+    public ResponseEntity removeFromShoppingCart(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName") || !payload.containsKey("username")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
@@ -97,8 +91,7 @@ public class ShoppingCartController
 
         //Checking for Product in DB
         Product product = productRepo.findByNameIgnoreCase(productName);
-        if(product == null)
-        {
+        if (product == null) {
             return new ResponseEntity<>("Product was not found", HttpStatus.NOT_FOUND);
         }
         //Since this can only be called after the user signs in, will not be verifying username.
@@ -106,21 +99,94 @@ public class ShoppingCartController
 
         ShoppingCart sCart = shoppingCartRepo.findByUsername(username);
 
-        if(sCart == null)    //User doesn't have a Shopping Cart
+        if (sCart == null)    //User doesn't have a Shopping Cart
         {
             return new ResponseEntity<>("Shopping Cart was not found", HttpStatus.NOT_FOUND);
-        }
-        else    //this user has a Shopping Cart
+        } else    //this user has a Shopping Cart
         {
-            if(sCart.isProductAlreadyInCart(productName))
-            {
+            if (sCart.isProductAlreadyInCart(productName)) {
                 sCart.removeProduct(productName);
             }
         }
 
         shoppingCartRepo.save(sCart);
 
-        return new ResponseEntity<>(productName+" removed from "+username+"'s Shopping Cart", HttpStatus.OK);
+        return new ResponseEntity<>(productName + " removed from " + username + "'s Shopping Cart", HttpStatus.OK);
+    }
+
+    /**
+     * returns the total price and number of items
+     * POST to http://localhost:8080/getTotalPriceAndNumberOfItems
+     *
+     * @param payload Should contain JSON key-value pairs with key(s): "username"
+     * @return response with JSON keys: "numberOfItems" and "totalPrice"
+     */
+    @RequestMapping(value = "/getTotalPriceAndNumberOfItems", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity getTotalPriceAndNumberOfItems(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+
+        ShoppingCart sCart = shoppingCartRepo.findByUsername(username);
+
+        if (sCart == null) {
+            return new ResponseEntity<>("No shopping cart found for user " + username, HttpStatus.NOT_FOUND);
+        } else {
+            double noOfItems = 0;
+            double totalPrice = 0;
+            HashMap<String, Integer> productList = sCart.getProductAndQuantity();
+            for (Map.Entry<String, Integer> product : productList.entrySet()) {
+                double price = productRepo.findByNameIgnoreCase(product.getKey()).getPrice();
+                totalPrice = totalPrice + (price * product.getValue());
+                noOfItems += product.getValue();
+            }
+
+            Map<String, Double> response = new HashMap<>();
+            response.put("numberOfItems", noOfItems);
+            response.put("totalPrice", totalPrice);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+    }
+
+    /**
+     * returns the items, their individual price and quantity
+     * POST to http://localhost:8080/getProductsAndDetails
+     *
+     * @param payload Should contain JSON key-value pairs with key(s): "username"
+     * @return response a JSON array.
+     */
+    @RequestMapping(value = "/getProductsAndDetails", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity getProductsAndDetails(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+
+        ShoppingCart sCart = shoppingCartRepo.findByUsername(username);
+
+        if (sCart == null) {
+            return new ResponseEntity<>("No shopping cart found for user " + username, HttpStatus.NOT_FOUND);
+        } else {
+            Map<String, HashMap<String, Number>> response = new HashMap<>();
+
+            HashMap<String, Integer> productList = sCart.getProductAndQuantity();
+            for (Map.Entry<String, Integer> product : productList.entrySet()) {
+                String productName = product.getKey();
+                int quantity = product.getValue();
+                double price = productRepo.findByNameIgnoreCase(productName).getPrice();
+
+                HashMap<String, Number> temp = new HashMap<>();
+                temp.put("quantity", quantity);
+                temp.put("price", price);
+
+                response.put(productName, temp);
+            }
+
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
 
 }
