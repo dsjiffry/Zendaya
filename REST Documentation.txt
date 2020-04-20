@@ -39,6 +39,16 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 		-> POST to http://localhost:8080/findProductsWithRatingGreaterThanAndEqual
 		-> with JSON body with key(s): "rating".
 		-> will return A JSON array of the matching products.
+		
+	* get the total price and number of items
+		-> POST to http://localhost:8080/getTotalPriceAndNumberOfItems
+		-> with JSON body with key(s): "username"
+		-> will return a response with JSON keys: "numberOfItems" and "totalPrice"
+
+	* get the items, their individual price and quantity
+		-> POST to http://localhost:8080/getProductsAndDetails
+		-> with JSON body with key(s): "username"
+		-> will return a JSON array.
 	
 	
 ----------------------------------------------- Shopping Cart -----------------------------------------------	
