@@ -3,9 +3,7 @@ package com.coconutcoders.zendaya.zendayaBackend;
 import com.google.gson.Gson;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -24,8 +22,8 @@ import static org.testng.Assert.assertTrue;
 public class ZendayaBackendApplicationTests {
 
     public final String baseURL = "http://localhost:8080";
-    private final String username = "admin";
-    private final String password = "admin";
+    private final String username = "testAdmin";
+    private final String password = "testAdmin";
     public String AUTHENTICATION_TOKEN;
 
     /**
@@ -37,23 +35,19 @@ public class ZendayaBackendApplicationTests {
         String url = baseURL + "/authenticate";
         Map<String, String> body = new HashMap<>();
         body.put("userName", username);
+        body.put("username", username);
         body.put("password", password);
+
+        createRequest(body, baseURL + "/createAdmin", false); //Creating the admin account to obtain jwt
 
         String token = null;
         try {
-            HttpClient httpClient = HttpClientBuilder.create().build();
-            StringEntity postingString = new StringEntity(new Gson().toJson(body));
-            HttpPost post = new HttpPost(url);
-            post.setEntity(postingString);
-            post.setHeader("Content-type", "application/json");
-            HttpResponse response = httpClient.execute(post);
+            HttpResponse response = createRequest(body, url, false);
             token = EntityUtils.toString(response.getEntity(), "UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
         }
         AUTHENTICATION_TOKEN = token.replaceAll("[\"{}]", "").replaceFirst("jwt:", "");
-
-
     }
 
     @Test
@@ -67,7 +61,7 @@ public class ZendayaBackendApplicationTests {
 
         //Creating a Product
         String url = baseURL + "/addProduct";
-        HttpResponse response = createRequest(body, url, "POST");
+        HttpResponse response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
@@ -77,7 +71,7 @@ public class ZendayaBackendApplicationTests {
         body.put("username", username);
         body.put("description", "I love this test product");
         body.put("rating", "4.2");
-        response = createRequest(body, url, "POST");
+        response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
@@ -85,7 +79,7 @@ public class ZendayaBackendApplicationTests {
         //Updating a Product
         url = baseURL + "/updateProduct";
         body.put("discount", "10");
-        response = createRequest(body, url, "POST");
+        response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
@@ -102,28 +96,28 @@ public class ZendayaBackendApplicationTests {
 
         //Adding to Shopping cart
         String url = baseURL + "/addToShoppingCart";
-        HttpResponse response = createRequest(body, url, "POST");
+        HttpResponse response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
 
         // Getting the combined details of the items
         url = baseURL + "/getTotalPriceAndNumberOfItems";
-        response = createRequest(body, url, "POST");
+        response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
 
         // Getting the individual details of the items
         url = baseURL + "/getProductsAndDetails";
-        response = createRequest(body, url, "POST");
+        response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
 
         //removing from Shopping cart
         url = baseURL + "/removeFromShoppingCart";
-        response = createRequest(body, url, "POST");
+        response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
@@ -137,28 +131,28 @@ public class ZendayaBackendApplicationTests {
 
         //Adding to wish list
         String url = baseURL + "/addToWishList";
-        HttpResponse response = createRequest(body, url, "POST");
+        HttpResponse response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
 
         //Moving to Shopping cart
         url = baseURL + "/moveToShoppingCart";
-        response = createRequest(body, url, "POST");
+        response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
 
         //removing from Shopping cart
         url = baseURL + "/removeFromShoppingCart";
-        response = createRequest(body, url, "POST");
+        response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
 
         //removing from wish list
         url = baseURL + "/removeFromWishList";
-        response = createRequest(body, url, "POST");
+        response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
@@ -175,7 +169,7 @@ public class ZendayaBackendApplicationTests {
 
         //Deleting a Product
         String url = baseURL + "/removeProduct";
-        HttpResponse response = createRequest(body, url, "POST");
+        HttpResponse response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
@@ -186,40 +180,23 @@ public class ZendayaBackendApplicationTests {
     /**
      * used by tests to make requests
      *
-     * @param body        JSON body of the request
-     * @param url         the url to which the request is made
-     * @param RequestType "POST", "PUT" or "DELETE"
+     * @param body              JSON body of the request
+     * @param url               the url to which the request is made
+     * @param useAuthentication if true Authentication header will also be added
      * @return HttpResponse
      */
-    public HttpResponse createRequest(Map<String, String> body, String url, String RequestType) {
+    public HttpResponse createRequest(Map<String, String> body, String url, boolean useAuthentication) {
         HttpResponse response = null;
         try {
             HttpClient httpClient = HttpClientBuilder.create().build();
             StringEntity postingString = new StringEntity(new Gson().toJson(body));
-            switch (RequestType) {
-                case "POST":
-                    HttpPost post = new HttpPost(url);
-                    post.setEntity(postingString);
-                    post.setHeader("Content-type", "application/json");
-                    post.setHeader("Authorization", "Bearer " + AUTHENTICATION_TOKEN);
-                    response = httpClient.execute(post);
-                    break;
-
-                case "PUT":
-                    HttpPut put = new HttpPut(url);
-                    put.setEntity(postingString);
-                    put.setHeader("Content-type", "application/json");
-                    put.setHeader("Authorization", "Bearer " + AUTHENTICATION_TOKEN);
-                    response = httpClient.execute(put);
-                    break;
-
-                case "DELETE":
-                    HttpDelete delete = new HttpDelete(url);
-                    delete.setHeader("Content-type", "application/json");
-                    delete.setHeader("Authorization", "Bearer " + AUTHENTICATION_TOKEN);
-                    response = httpClient.execute(delete);
-                    break;
+            HttpPost post = new HttpPost(url);
+            post.setEntity(postingString);
+            post.setHeader("Content-type", "application/json");
+            if (useAuthentication) {
+                post.setHeader("Authorization", "Bearer " + AUTHENTICATION_TOKEN);
             }
+            response = httpClient.execute(post);
         } catch (IOException e) {
             e.printStackTrace();
         }
