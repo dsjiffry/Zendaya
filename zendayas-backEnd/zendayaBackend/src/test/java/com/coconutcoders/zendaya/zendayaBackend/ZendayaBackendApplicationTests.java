@@ -56,7 +56,6 @@ public class ZendayaBackendApplicationTests {
 
     }
 
-
     @Test
     public void testProductCRUD() {
         Map<String, String> body = new HashMap<>();
@@ -164,38 +163,6 @@ public class ZendayaBackendApplicationTests {
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
     }
-
-    @Test
-    public void testStoreManagerCRUD() {
-        Map<String, String> body = new HashMap<>();
-        body.put("username", username);
-        body.put("password", password);
-
-        //Adding a Store Manager
-        String url = baseURL + "/addStoreManager";
-        HttpResponse response = createRequest(body, url, "POST");
-
-        assertNotNull(response);
-        assertTrue(response.getStatusLine().getStatusCode() <= 399);
-
-        //Change Store Manager Password
-        body.put("oldPassword", password);
-        body.put("newPassword", password + "12");
-        url = baseURL + "/changeStoreManagerPassword";
-        response = createRequest(body, url, "POST");
-
-        assertNotNull(response);
-        assertTrue(response.getStatusLine().getStatusCode() <= 399);
-
-        //removing Store Manager
-        url = baseURL + "/removeStoreManager";
-        response = createRequest(body, url, "POST");
-
-        assertNotNull(response);
-        assertTrue(response.getStatusLine().getStatusCode() <= 399);
-
-    }
-
 
     @AfterSuite
     public void DeleteAll() {

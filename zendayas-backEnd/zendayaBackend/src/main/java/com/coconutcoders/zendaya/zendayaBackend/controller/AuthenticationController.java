@@ -1,9 +1,7 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
 
-import com.coconutcoders.zendaya.zendayaBackend.model.User;
 import com.coconutcoders.zendaya.zendayaBackend.repo.UserRepo;
-import com.coconutcoders.zendaya.zendayaBackend.util.security.M_UserDetailsService;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.MyUserDetailService;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.model.AuthenticationRequest;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.model.AuthenticationResponse;
@@ -13,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +39,7 @@ public class AuthenticationController {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             authenticationRequest.getUserName(),
-                            authenticationRequest.getPassword())
+                            String.valueOf(authenticationRequest.getPassword().hashCode()))
                     );
         } catch (BadCredentialsException e) {
             throw new Exception("Incorrect Username and Password");
