@@ -31,10 +31,9 @@ jobs:
       with:
         mongodb-version: ${{ matrix.mongodb-version }}
         
-    - name: import Database
-      run: |
-        
-        sudo mongoimport --db zendaya_db --collection user --file User_Collection_Backup.json
+#    - name: import Database
+#      run: |        
+#        sudo mongoimport --db zendaya_db --collection user --file User_Collection_Backup.json
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
