@@ -115,7 +115,8 @@ public class ShoppingCartController {
     }
 
     /**
-     * returns the total price and number of items
+     * returns the total price and number of items.
+     * This will apply discounts to the products, if they have it.
      * POST to http://localhost:8080/getTotalPriceAndNumberOfItems
      *
      * @param payload Should contain JSON key-value pairs with key(s): "username"
@@ -137,7 +138,7 @@ public class ShoppingCartController {
             double totalPrice = 0;
             HashMap<String, Integer> productList = sCart.getProductAndQuantity();
             for (Map.Entry<String, Integer> product : productList.entrySet()) {
-                double price = productRepo.findByNameIgnoreCase(product.getKey()).getPrice();
+                double price = productRepo.findByNameIgnoreCase(product.getKey()).getPriceWithDiscount();
                 totalPrice = totalPrice + (price * product.getValue());
                 noOfItems += product.getValue();
             }
@@ -175,11 +176,14 @@ public class ShoppingCartController {
             for (Map.Entry<String, Integer> product : productList.entrySet()) {
                 String productName = product.getKey();
                 int quantity = product.getValue();
-                double price = productRepo.findByNameIgnoreCase(productName).getPrice();
 
+                Product tempProduct = productRepo.findByNameIgnoreCase(productName);
                 HashMap<String, Number> temp = new HashMap<>();
+
                 temp.put("quantity", quantity);
-                temp.put("price", price);
+                temp.put("originalPrice", tempProduct.getPrice());
+                temp.put("discountPercentage", tempProduct.getDiscountPercentage());
+                temp.put("finalPrice", tempProduct.getPriceWithDiscount());
 
                 response.put(productName, temp);
             }
