@@ -1,1 +1,3 @@
-{"_id":{"$oid":"5e71fc2f2c589d77171dd3e5"},"username":"admin","password":"admin","_class":"com.coconutcoders.zendaya.zendayaBackend.model.User"}
+{"_id":{"$oid":"5e9e9a60b645135099464155"},"username":"admin","password":"92668751","role":"ADMIN","_class":"com.coconutcoders.zendaya.zendayaBackend.model.User"}
+{"_id":{"$oid":"5e9e9fac8818a862aa4e734f"},"username":"tom","password":"115026","role":"USER","_class":"com.coconutcoders.zendaya.zendayaBackend.model.User"}
+{"_id":{"$oid":"5e9ea0228818a862aa4e7350"},"username":"sm1","password":"113943","role":"STORE_MANAGER","_class":"com.coconutcoders.zendaya.zendayaBackend.model.User"}
