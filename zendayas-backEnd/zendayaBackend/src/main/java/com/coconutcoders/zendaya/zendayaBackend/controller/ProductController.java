@@ -16,22 +16,20 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-public class ProductController
-{
+public class ProductController {
     @Autowired
     private ProductRepo productRepo;
 
     /**
      * Adds Product to Database
      * POST to http://localhost:8080/addProduct
+     *
      * @param payload should contain JSON key-value pairs with key(s): "productName", "price" and "description". Optional key "discount" can be included
      * @return CONFLICT if a product with same name is already in DB, else OK
      */
     @RequestMapping(value = "/addProduct", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity addProduct(@RequestBody Map<String, String> payload)
-    {
-        if(!payload.containsKey("productName") || !payload.containsKey("description") || !payload.containsKey("price"))
-        {
+    public ResponseEntity addProduct(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName") || !payload.containsKey("description") || !payload.containsKey("price")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
@@ -39,33 +37,31 @@ public class ProductController
         final double price = Double.parseDouble(payload.get("price"));
 
         Product product = productRepo.findByNameIgnoreCase(productName);
-        if(product != null)
-        {
+        if (product != null) {
             return new ResponseEntity<>("Product already in database", HttpStatus.CONFLICT);
         }
 
-        product = new Product(productName,description,price);
-        if(payload.containsKey("discount"))     //Optional JSON value
+        product = new Product(productName, description, price);
+        if (payload.containsKey("discount"))     //Optional JSON value
         {
             double discount = Double.parseDouble(payload.get("discount"));
             product.setDiscountPercentage(discount);
         }
         productRepo.save(product);
-        return new ResponseEntity<>(product.getName()+" Added to Database", HttpStatus.OK);
+        return new ResponseEntity<>(product.getName() + " Added to Database", HttpStatus.OK);
     }
 
     /**
      * Adds a Review for a product, if a review is already present it will be updated
      * POST to http://localhost:8080/addReview
+     *
      * @param payload should contain JSON key-value pairs with key(s): "productName", "username", "description" and "rating"
      * @return NOT FOUND if product is not in database, else OK
      */
     @RequestMapping(value = "/addReview", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity addReview(@RequestBody Map<String, String> payload)
-    {
-        if(!payload.containsKey("productName") || !payload.containsKey("username")
-                || !payload.containsKey("description") || !payload.containsKey("rating"))
-        {
+    public ResponseEntity addReview(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName") || !payload.containsKey("username")
+                || !payload.containsKey("description") || !payload.containsKey("rating")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
@@ -74,8 +70,7 @@ public class ProductController
         final String ratingS = payload.get("rating");
 
         Product product = productRepo.findByNameIgnoreCase(productName);
-        if(product == null)
-        {
+        if (product == null) {
             return new ResponseEntity<>("Product Not Found in database", HttpStatus.NOT_FOUND);
         }
 
@@ -83,45 +78,42 @@ public class ProductController
         product.addOrUpdateReview(username, description, rating);
 
         productRepo.save(product);
-        return new ResponseEntity<>(username+"'s review for "+ product.getName() +" Added to Database", HttpStatus.OK);
+        return new ResponseEntity<>(username + "'s review for " + product.getName() + " Added to Database", HttpStatus.OK);
     }
 
     /**
      * Removes Product from Database
      * POST to http://localhost:8080/removeProduct
+     *
      * @param payload should contain JSON key-value pairs with key(s): "productName"
      * @return NOT_FOUND if the product is not found in DB, else OK
      */
     @RequestMapping(value = "/removeProduct", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity removeProduct(@RequestBody Map<String, String> payload)
-    {
-        if(!payload.containsKey("productName"))
-        {
+    public ResponseEntity removeProduct(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
 
         Product product = productRepo.findByNameIgnoreCase(productName);
-        if(product == null)
-        {
+        if (product == null) {
             return new ResponseEntity<>("No such Product in database", HttpStatus.NOT_FOUND);
         }
 
         productRepo.delete(product);
-        return new ResponseEntity<>(product.getName()+" Deleted from Database", HttpStatus.OK);
+        return new ResponseEntity<>(product.getName() + " Deleted from Database", HttpStatus.OK);
     }
 
     /**
      * Update existing Product in Database
      * POST to http://localhost:8080/updateProduct
+     *
      * @param payload should contain JSON key-value pairs with key(s): "productName" and "description". Optional key "discount" can be included
      * @return NOT_FOUND if no such Product in DB, else OK
      */
     @RequestMapping(value = "/updateProduct", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity updateProduct(@RequestBody Map<String, String> payload)
-    {
-        if(!payload.containsKey("productName") || !payload.containsKey("description")|| !payload.containsKey("price"))
-        {
+    public ResponseEntity updateProduct(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName") || !payload.containsKey("description") || !payload.containsKey("price")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
@@ -129,21 +121,20 @@ public class ProductController
         final double price = Double.parseDouble(payload.get("price"));
 
         Product product = productRepo.findByNameIgnoreCase(productName);
-        if(product == null)
-        {
+        if (product == null) {
             return new ResponseEntity<>("Product Not Found in database", HttpStatus.NOT_FOUND);
         }
 
         product.setDescription(description);
         product.setPrice(price);
-        if(payload.containsKey("discount"))     //Optional JSON value
+        if (payload.containsKey("discount"))     //Optional JSON value
         {
             double discount = Double.parseDouble(payload.get("discount"));
             product.setDiscountPercentage(discount);
         }
 
         productRepo.save(product);
-        return new ResponseEntity<>(product.getName()+" updated in Database", HttpStatus.OK);
+        return new ResponseEntity<>(product.getName() + " updated in Database", HttpStatus.OK);
     }
 
 
@@ -156,14 +147,13 @@ public class ProductController
     /**
      * find all product that contains given string in name
      * POST to http://localhost:8080/searchProductsByName
+     *
      * @param payload should contain JSON key-value pairs with key(s): "productName".
      * @return A JSON array of the matching products.
      */
     @RequestMapping(value = "/searchProductsByName", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity searchProductsByName(@RequestBody Map<String, String> payload)
-    {
-        if(!payload.containsKey("productName"))
-        {
+    public ResponseEntity searchProductsByName(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
@@ -171,9 +161,8 @@ public class ProductController
         List<Product> products = productRepo.findByNameIgnoreCaseContaining(productName);
         Map<String, Product> response = new HashMap<>();
 
-        for(Product product : products)
-        {
-            response.put(product.getName(),product);
+        for (Product product : products) {
+            response.put(product.getName(), product);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -182,17 +171,16 @@ public class ProductController
     /**
      * find all products that have a discount
      * POST to http://localhost:8080/searchProductWithDiscount
+     *
      * @return A JSON array of the matching products.
      */
     @RequestMapping(value = "/searchProductWithDiscount", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity searchProductWithDiscount()
-    {
+    public ResponseEntity searchProductWithDiscount() {
         List<Product> products = productRepo.findByDiscountPercentageGreaterThan(0);
 
         Map<String, Product> response = new HashMap<>();
-        for(Product product : products)
-        {
-            response.put(product.getName(),product);
+        for (Product product : products) {
+            response.put(product.getName(), product);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -201,14 +189,13 @@ public class ProductController
     /**
      * find all products that gave a rating greater than or equal to a value
      * POST to http://localhost:8080/findProductsWithRatingGreaterThanAndEqual
+     *
      * @param payload should contain JSON key-value pairs with key(s): "rating".
      * @return A JSON array of the matching products.
      */
     @RequestMapping(value = "/findProductsWithRatingGreaterThanAndEqual", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity findProductsWithRatingGreaterThanAndEqual(@RequestBody Map<String, String> payload)
-    {
-        if(!payload.containsKey("rating"))
-        {
+    public ResponseEntity findProductsWithRatingGreaterThanAndEqual(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("rating")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         double rating = Double.parseDouble(payload.get("rating"));
@@ -216,13 +203,35 @@ public class ProductController
         List<Product> products = productRepo.findByAvgRatingGreaterThanEqual(rating);
 
         Map<String, Product> response = new HashMap<>();
-        for(Product product : products)
-        {
-            response.put(product.getName(),product);
+        for (Product product : products) {
+            response.put(product.getName(), product);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * Get a perticular products original price, discount and final price
+     * POST to http://localhost:8080/getProductPricingDetails
+     *
+     * @param payload should contain JSON key-value pairs with key(s): "productName".
+     * @return A JSON array with key(s): "originalPrice", "discountPercentage", "finalPrice"
+     */
+    @RequestMapping(value = "/getProductPricingDetails", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity getProductPricingDetails(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String productName = payload.get("productName");
+
+        Product product = productRepo.findByNameIgnoreCase(productName);
+
+        Map<String, Number> response = new HashMap<>();
+        response.put("originalPrice", product.getPrice());
+        response.put("discountPercentage", product.getDiscountPercentage());
+        response.put("finalPrice", product.getPriceWithDiscount());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
 }

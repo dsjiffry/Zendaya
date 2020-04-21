@@ -1,5 +1,5 @@
 
-# last update -> 18/04/2020
+# last update -> 21/04/2020
 
 We can make POST requests to these urls to obtain specific functionalities. They will return HTTP status codes based on the result.
 The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error code will be returned
@@ -39,16 +39,11 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 		-> POST to http://localhost:8080/findProductsWithRatingGreaterThanAndEqual
 		-> with JSON body with key(s): "rating".
 		-> will return A JSON array of the matching products.
-		
-	* get the total price and number of items
-		-> POST to http://localhost:8080/getTotalPriceAndNumberOfItems
-		-> with JSON body with key(s): "username"
-		-> will return a response with JSON keys: "numberOfItems" and "totalPrice"
 
-	* get the items, their individual price and quantity
-		-> POST to http://localhost:8080/getProductsAndDetails
-		-> with JSON body with key(s): "username"
-		-> will return a JSON array.
+	* Get a perticular products original price, discount and final price
+		-> POST to http://localhost:8080/getProductPricingDetails
+		-> with JSON body with key(s): "productName".
+		-> will return A JSON array with key(s): "originalPrice", "discountPercentage", "finalPrice"
 	
 	
 ----------------------------------------------- Shopping Cart -----------------------------------------------	
@@ -62,7 +57,16 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 		-> POST to http://localhost:8080/removeFromShoppingCart
 		-> with JSON body with key(s): "username" and "productName"
 		-> will return NOT FOUND if product is not in database or if user doesn't have a Shopping Cart, else OK
-	
+		
+	* get the total price and number of items (This will apply discounts to the products, if they have it.)
+		-> POST to http://localhost:8080/getTotalPriceAndNumberOfItems
+		-> with JSON body with key(s): "username"
+		-> will return a response with JSON keys: "numberOfItems" and "totalPrice"
+
+	* get the items, their individual price and quantity
+		-> POST to http://localhost:8080/getProductsAndDetails
+		-> with JSON body with key(s): "username"
+		-> will return a JSON array.
 	
 ----------------------------------------------- Store Managers -----------------------------------------------	
 
