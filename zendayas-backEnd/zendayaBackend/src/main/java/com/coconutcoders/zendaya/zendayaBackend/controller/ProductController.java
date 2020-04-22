@@ -1,7 +1,9 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
 
+import com.coconutcoders.zendaya.zendayaBackend.model.Image;
 import com.coconutcoders.zendaya.zendayaBackend.model.Product;
+import com.coconutcoders.zendaya.zendayaBackend.repo.ImageRepo;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,8 @@ import java.util.Map;
 public class ProductController {
     @Autowired
     private ProductRepo productRepo;
+    @Autowired
+    private ImageRepo imageRepo;
 
     /**
      * Adds Product to Database
@@ -101,6 +105,10 @@ public class ProductController {
         }
 
         productRepo.delete(product);
+        Image image = imageRepo.findByProductName(productName);
+        if (image != null) {
+            imageRepo.delete(image);
+        }
         return new ResponseEntity<>(product.getName() + " Deleted from Database", HttpStatus.OK);
     }
 
@@ -108,7 +116,7 @@ public class ProductController {
      * Update existing Product in Database
      * POST to http://localhost:8080/updateProduct
      *
-     * @param payload should contain JSON key-value pairs with key(s): "productName" and "description". Optional key "discount" can be included
+     * @param payload should contain JSON key-value pairs with key(s): "productName" "description", "price".
      * @return NOT_FOUND if no such Product in DB, else OK
      */
     @RequestMapping(value = "/updateProduct", method = RequestMethod.POST, consumes = "application/json")
@@ -127,11 +135,32 @@ public class ProductController {
 
         product.setDescription(description);
         product.setPrice(price);
-        if (payload.containsKey("discount"))     //Optional JSON value
-        {
-            double discount = Double.parseDouble(payload.get("discount"));
-            product.setDiscountPercentage(discount);
+
+        productRepo.save(product);
+        return new ResponseEntity<>(product.getName() + " updated in Database", HttpStatus.OK);
+    }
+
+    /**
+     * Set a discount for a product
+     * POST to http://localhost:8080/setProductDiscount
+     *
+     * @param payload should contain JSON key-value pairs with key(s): "productName" and "discount".
+     * @return NOT_FOUND if no such Product in DB, else OK
+     */
+    @RequestMapping(value = "/setProductDiscount", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity setProductDiscount(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName") || !payload.containsKey("discount")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
+        final String productName = payload.get("productName");
+        final double discount = Double.parseDouble(payload.get("discount"));
+
+        Product product = productRepo.findByNameIgnoreCase(productName);
+        if (product == null) {
+            return new ResponseEntity<>("Product Not Found in database", HttpStatus.NOT_FOUND);
+        }
+
+        product.setDiscountPercentage(discount);
 
         productRepo.save(product);
         return new ResponseEntity<>(product.getName() + " updated in Database", HttpStatus.OK);

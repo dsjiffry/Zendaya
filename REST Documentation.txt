@@ -40,9 +40,14 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 	
 	* Update existing Product in Database
 		-> POST to http://localhost:8080/updateProduct
-		-> with JSON body with key(s): "productName" and "description". Optional key "discount" can be included
-     		-> will return NOT_FOUND if no such Product in DB, else OK
+		-> with JSON body with key(s): "productName", "description", "price"
+		-> will return NOT_FOUND if no such Product in DB, else OK
 		
+	* Set a discount for a product
+		-> POST to http://localhost:8080/setProductDiscount
+		-> with JSON body with key(s): "productName" and "discount".
+		-. will return NOT_FOUND if no such Product in DB, else OK	
+			
 	* find all product that contains given string in name
 		-> POST to http://localhost:8080/searchProductsByName
 		-> with JSON body with key(s): "productName".
@@ -120,9 +125,23 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 		-> will return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
 
 
+----------------------------------------------- Image -----------------------------------------------
 
+	* obtain adds an image to a Product
+		* POST multipart Form to http://localhost:8080/addImage
+		*  with param productName
+		*  and param file a multipart file with the image
+		*  will return NOT_FOUND if no such Product in DB, else OK
 
+	* obtain all images for Product
+		-> POST to http://localhost:8080/getImages
+		-> with JSON body with key(s): "productName".
+		-> will return NOT_FOUND if no such Product in DB, else OK
 
+	* Remove an image from a product
+		-> POST to http://localhost:8080/removeImage
+		-> with JSON body with key(s): "productName" and "imageNumber".
+		-> will return NOT_FOUND if no such Product in DB, else OK
 
 
 
