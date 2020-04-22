@@ -116,7 +116,7 @@ public class ProductController {
      * Update existing Product in Database
      * POST to http://localhost:8080/updateProduct
      *
-     * @param payload should contain JSON key-value pairs with key(s): "productName" and "description". Optional key "discount" can be included
+     * @param payload should contain JSON key-value pairs with key(s): "productName" "description", "price".
      * @return NOT_FOUND if no such Product in DB, else OK
      */
     @RequestMapping(value = "/updateProduct", method = RequestMethod.POST, consumes = "application/json")
@@ -135,11 +135,32 @@ public class ProductController {
 
         product.setDescription(description);
         product.setPrice(price);
-        if (payload.containsKey("discount"))     //Optional JSON value
-        {
-            double discount = Double.parseDouble(payload.get("discount"));
-            product.setDiscountPercentage(discount);
+
+        productRepo.save(product);
+        return new ResponseEntity<>(product.getName() + " updated in Database", HttpStatus.OK);
+    }
+
+    /**
+     * Set a discount for a product
+     * POST to http://localhost:8080/setProductDiscount
+     *
+     * @param payload should contain JSON key-value pairs with key(s): "productName" and "discount".
+     * @return NOT_FOUND if no such Product in DB, else OK
+     */
+    @RequestMapping(value = "/setProductDiscount", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity setProductDiscount(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName") || !payload.containsKey("discount")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
+        final String productName = payload.get("productName");
+        final double discount = Double.parseDouble(payload.get("discount"));
+
+        Product product = productRepo.findByNameIgnoreCase(productName);
+        if (product == null) {
+            return new ResponseEntity<>("Product Not Found in database", HttpStatus.NOT_FOUND);
+        }
+
+        product.setDiscountPercentage(discount);
 
         productRepo.save(product);
         return new ResponseEntity<>(product.getName() + " updated in Database", HttpStatus.OK);
