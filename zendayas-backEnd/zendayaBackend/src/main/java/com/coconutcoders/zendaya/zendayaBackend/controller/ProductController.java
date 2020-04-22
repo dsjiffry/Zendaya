@@ -1,7 +1,9 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
 
+import com.coconutcoders.zendaya.zendayaBackend.model.Image;
 import com.coconutcoders.zendaya.zendayaBackend.model.Product;
+import com.coconutcoders.zendaya.zendayaBackend.repo.ImageRepo;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,8 @@ import java.util.Map;
 public class ProductController {
     @Autowired
     private ProductRepo productRepo;
+    @Autowired
+    private ImageRepo imageRepo;
 
     /**
      * Adds Product to Database
@@ -101,6 +105,8 @@ public class ProductController {
         }
 
         productRepo.delete(product);
+        Image image = imageRepo.findByProductName(productName);
+        imageRepo.delete(image);
         return new ResponseEntity<>(product.getName() + " Deleted from Database", HttpStatus.OK);
     }
 
