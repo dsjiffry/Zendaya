@@ -106,7 +106,9 @@ public class ProductController {
 
         productRepo.delete(product);
         Image image = imageRepo.findByProductName(productName);
-        imageRepo.delete(image);
+        if (image != null) {
+            imageRepo.delete(image);
+        }
         return new ResponseEntity<>(product.getName() + " Deleted from Database", HttpStatus.OK);
     }
 
