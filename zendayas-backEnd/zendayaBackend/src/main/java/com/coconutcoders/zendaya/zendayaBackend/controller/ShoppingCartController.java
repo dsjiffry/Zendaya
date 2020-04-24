@@ -1,7 +1,9 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
+import com.coconutcoders.zendaya.zendayaBackend.model.Payment;
 import com.coconutcoders.zendaya.zendayaBackend.model.Product;
 import com.coconutcoders.zendaya.zendayaBackend.model.ShoppingCart;
+import com.coconutcoders.zendaya.zendayaBackend.repo.PaymentRepo;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ProductRepo;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ShoppingCartRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class ShoppingCartController {
 
     @Autowired
     private ShoppingCartRepo shoppingCartRepo;
+
+    @Autowired
+    private PaymentRepo paymentRepo;
 
     /**
      * Checks for product in database and then adds it to the user's Shopping Cart
@@ -134,18 +139,10 @@ public class ShoppingCartController {
         if (sCart == null) {
             return new ResponseEntity<>("No shopping cart found for user " + username, HttpStatus.NOT_FOUND);
         } else {
-            double noOfItems = 0;
-            double totalPrice = 0;
-            HashMap<String, Integer> productList = sCart.getProductAndQuantity();
-            for (Map.Entry<String, Integer> product : productList.entrySet()) {
-                double price = productRepo.findByNameIgnoreCase(product.getKey()).getPriceWithDiscount();
-                totalPrice = totalPrice + (price * product.getValue());
-                noOfItems += product.getValue();
-            }
 
-            Map<String, Double> response = new HashMap<>();
-            response.put("numberOfItems", noOfItems);
-            response.put("totalPrice", totalPrice);
+            Map<String, Number> response = new HashMap<>();
+            response.put("numberOfItems", sCart.getNumberOfItems());
+            response.put("totalPrice", sCart.getTotalPrice(productRepo));
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
@@ -193,4 +190,33 @@ public class ShoppingCartController {
         }
     }
 
+    /**
+     * Make the Payment for the items in the shopping cart
+     * POST to http://localhost:8080/purchaseItemsInCart
+     *
+     * @param payload Should contain JSON key-value pairs with key(s): "username"
+     * @return NOT FOUND if no cart for user, else OK
+     */
+    @RequestMapping(value = "/purchaseItemsInCart", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity purchaseItemsInCart(@RequestBody Map<String, String> payload)
+    {
+        if (!payload.containsKey("username")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+        ShoppingCart shoppingCart = shoppingCartRepo.findByUsername(username);
+        if(shoppingCart == null)
+        {
+            return new ResponseEntity<>("No shopping cart found for this user", HttpStatus.NOT_FOUND);
+        }
+
+        //Implement Payment Gateway here
+
+        Payment payment = new Payment(username);
+        payment.setItems(shoppingCart,productRepo);
+        paymentRepo.save(payment);
+
+        shoppingCartRepo.delete(shoppingCart);
+        return new ResponseEntity<>("Payment Successful", HttpStatus.OK);
+    }
 }

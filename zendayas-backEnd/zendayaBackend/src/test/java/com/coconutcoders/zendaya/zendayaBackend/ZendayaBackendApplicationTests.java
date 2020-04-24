@@ -27,7 +27,7 @@ public class ZendayaBackendApplicationTests {
     public String AUTHENTICATION_TOKEN;
 
     /**
-     * Getting the Authentication token.
+     * Making a new admin and Getting the Authentication token.
      */
     @BeforeClass
     public void preRequisites() {
@@ -87,7 +87,42 @@ public class ZendayaBackendApplicationTests {
 
     }
 
-    @Test
+    @Test(dependsOnMethods = {"testProductCRUD"})
+    public void testWishListCRUD() {
+        Map<String, String> body = new HashMap<>();
+        body.put("productName", "testProduct");
+        body.put("username", username);
+
+        //Adding to wish list
+        String url = baseURL + "/addToWishList";
+        HttpResponse response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
+        //Moving to Shopping cart
+        url = baseURL + "/moveToShoppingCart";
+        response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
+        //removing from Shopping cart
+        url = baseURL + "/removeFromShoppingCart";
+        response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
+        //removing from wish list
+        url = baseURL + "/removeFromWishList";
+        response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+    }
+
+    @Test(dependsOnMethods = {"testWishListCRUD"})
     public void testShoppingCartCRUD() {
         Map<String, String> body = new HashMap<>();
         body.put("productName", "testProduct");
@@ -121,41 +156,56 @@ public class ZendayaBackendApplicationTests {
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
+        //purchase items in Shopping cart
+        url = baseURL + "/purchaseItemsInCart";
+        response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
     }
 
-    @Test
-    public void testWishListCRUD() {
+    @Test(dependsOnMethods = {"testShoppingCartCRUD"})
+    public void testPayment() {
         Map<String, String> body = new HashMap<>();
-        body.put("productName", "testProduct");
         body.put("username", username);
+        body.put("status", "delivered");
 
-        //Adding to wish list
-        String url = baseURL + "/addToWishList";
+        // Getting Payment History
+        String url = baseURL + "/getPaymentHistory";
         HttpResponse response = createRequest(body, url, true);
+        try {
+            String dateTime = EntityUtils.toString(response.getEntity(), "UTF-8");
+            dateTime = dateTime.split(",")[0].split("\"")[1];
+            body.put("dateTime", dateTime);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
 
-        //Moving to Shopping cart
-        url = baseURL + "/moveToShoppingCart";
+        // Getting the details of particular purchase
+        url = baseURL + "/getPaymentDetails";
         response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
 
-        //removing from Shopping cart
-        url = baseURL + "/removeFromShoppingCart";
+        // set the order status
+        url = baseURL + "/setOrderStatus";
         response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
 
-        //removing from wish list
-        url = baseURL + "/removeFromWishList";
+        // get the order status
+        url = baseURL + "/getOrderStatus";
         response = createRequest(body, url, true);
 
         assertNotNull(response);
         assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
     }
 
     @AfterSuite
