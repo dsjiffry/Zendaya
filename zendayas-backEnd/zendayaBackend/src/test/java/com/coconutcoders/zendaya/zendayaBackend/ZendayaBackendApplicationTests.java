@@ -208,6 +208,48 @@ public class ZendayaBackendApplicationTests {
 
     }
 
+    @Test(dependsOnMethods = {"testProductCRUD"})
+    public void testProductCategories() {
+        Map<String, String> body = new HashMap<>();
+        body.put("categoryName", "testCategory");
+        body.put("productName", "testProduct");
+
+        // Creating a Category
+        String url = baseURL + "/createCategory";
+        HttpResponse response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
+        // add Product to Category
+        url = baseURL + "/addToCategory";
+        response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
+        // remove Product from Category
+        url = baseURL + "/removeFromCategory";
+        response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
+        // get all categories
+        url = baseURL + "/getAllCategories";
+        response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
+        // deleting the category
+        url = baseURL + "/deleteCategory";
+        response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+    }
+
     @AfterSuite
     public void DeleteAll() {
         Map<String, String> body = new HashMap<>();
