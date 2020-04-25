@@ -3,7 +3,9 @@ package com.coconutcoders.zendaya.zendayaBackend.controller;
 
 import com.coconutcoders.zendaya.zendayaBackend.model.Image;
 import com.coconutcoders.zendaya.zendayaBackend.model.Product;
+import com.coconutcoders.zendaya.zendayaBackend.model.ProductCategory;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ImageRepo;
+import com.coconutcoders.zendaya.zendayaBackend.repo.ProductCategoryRepo;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,8 @@ public class ProductController {
     private ProductRepo productRepo;
     @Autowired
     private ImageRepo imageRepo;
+    @Autowired
+    private ProductCategoryRepo productCategoryRepo;
 
     /**
      * Adds Product to Database
@@ -109,6 +113,16 @@ public class ProductController {
         if (image != null) {
             imageRepo.delete(image);
         }
+        List<ProductCategory> productCategories = productCategoryRepo.findAll();
+        if (productCategories != null && !productCategories.isEmpty()) {
+            for (ProductCategory productCategory : productCategories) {
+                if (productCategory.doesCategoryContainProduct(productName)) {
+                    productCategory.removeProductFromCategory(productName);
+                    productCategoryRepo.save(productCategory);
+                }
+            }
+        }
+
         return new ResponseEntity<>(product.getName() + " Deleted from Database", HttpStatus.OK);
     }
 

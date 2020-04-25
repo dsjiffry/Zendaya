@@ -165,6 +165,43 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 		-> with JSON body with key(s): "username", "dateTime"
 		-> will return NOT FOUND if no payment history, else OK with Order status
 
+----------------------------------------------- Product Category -----------------------------------------------
+
+	* Create a new Product Category to Database
+		-> POST to http://localhost:8080/createCategory
+		-> with JSON body with key(s): "categoryName"
+		-> will return CONFLICT if a Category with same name is already in DB, else OK
+
+	* add a product to a Category
+		-> POST to http://localhost:8080/addToCategory
+		-> with JSON body with key(s): "categoryName", "productName"
+		-> will return NOT_FOUND if the category not found, else OK
+
+	* remove a product to a Category
+		-> POST to http://localhost:8080/removeFromCategory
+		-> with JSON body with key(s): "categoryName", "productName"
+		-> will return NOT_FOUND if the category is not found, else OK
+
+	* delete a Category
+		-> POST to http://localhost:8080/deleteCategory
+		-> with JSON body with key(s): "categoryName"
+		-> will return NOT_FOUND if the category is not found, else OK
+
+	* get All categories
+		-> POST to http://localhost:8080/getAllCategories
+		-> will return NOT_FOUND if the category is not found, else OK
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
