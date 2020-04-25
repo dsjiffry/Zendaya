@@ -143,10 +143,27 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 		-> with JSON body with key(s): "productName" and "imageNumber".
 		-> will return NOT_FOUND if no such Product in DB, else OK
 
+----------------------------------------------- Payment -----------------------------------------------
 
+	* Obtain a users Payment History
+		-> POST to http://localhost:8080/getPaymentHistory
+		-> with JSON body with key(s): "username"
+		-> will return NOT FOUND if no payment history, else JSON array
 
+	* Obtain a particular payment histories details
+		-> POST to http://localhost:8080/getPaymentDetails
+		-> with JSON body with key(s): "username","dateTime"
+		-> will return NOT FOUND if no payment history, else JSON array
 
+	* Set the order status as either "payment invalid", "delivered" or "in transit"
+		-> POST to http://localhost:8080/setOrderStatus
+		-> with JSON body with key(s): "username", "dateTime", "status"
+		-> will return NOT FOUND if no payment history, else OK
 
+	* get the current Order Status
+		-> POST to http://localhost:8080/getOrderStatus
+		-> with JSON body with key(s): "username", "dateTime"
+		-> will return NOT FOUND if no payment history, else OK with Order status
 
 
 
