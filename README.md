@@ -30,7 +30,7 @@ Online Fashion Store webapp for AF Module SLIIT 2020
       but until the step of payment the system should be implemented).
       
 ## Running the System
- * This requires doecker so once that is installed, run the docker file in the zendayas-backEnd/zendayaBackend/ folder
+ * This requires docker so once that is installed, run the docker-compose.yml file in the zendayas-backEnd/zendayaBackend/ folder
  * Then open a cmd in the targer/ folder and  run the zendayaBackend-0.0.1-SNAPSHOT.jar
  
  
