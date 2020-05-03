@@ -1,5 +1,5 @@
 
-# last update -> 21/04/2020
+# last update -> 03/05/2020
 
 We can make POST requests to these urls to obtain specific functionalities. They will return HTTP status codes based on the result.
 The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error code will be returned
@@ -127,7 +127,7 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 
 ----------------------------------------------- Image -----------------------------------------------
 
-	* obtain adds an image to a Product
+	* adds an image to a Product
 		* POST multipart Form to http://localhost:8080/addImage
 		*  with param productName
 		*  and param file a multipart file with the image
@@ -141,6 +141,17 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 	* Remove an image from a product
 		-> POST to http://localhost:8080/removeImage
 		-> with JSON body with key(s): "productName" and "imageNumber".
+		-> will return NOT_FOUND if no such Product in DB, else 
+
+	* adds a thumbnail to a Product
+		-> POST to http://localhost:8080/addThumbnail
+		-> with param productName
+		-> with param file a multipart file with the image
+		-> will return NOT_FOUND if no such Product in DB, else OK
+
+	* obtain the Thumbnail for Product
+		-> POST to http://localhost:8080/getThumbnail
+		-> with JSON body with key(s): "productName".
 		-> will return NOT_FOUND if no such Product in DB, else OK
 
 ----------------------------------------------- Payment -----------------------------------------------
