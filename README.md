@@ -5,7 +5,7 @@
 # Zendaya
 Online Fashion Store webapp for AF Module SLIIT 2020 
 
-## Instructions
+## Requirements
   * Develop a Web application for Online Shopping Cart System for a Fashion Store. System functionality will be as follows:
       1. There are three roles as admin, store manager, and user.
       2. Anyone can view products as a guest (without login).

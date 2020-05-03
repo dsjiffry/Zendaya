@@ -25,20 +25,20 @@ public class ImageController {
 
     @Autowired
     private ProductRepo productRepo;
+    private File fileToSend;
 
     /**
-     * obtain adds an image to a Product
+     * adds an image to a Product
      * POST to http://localhost:8080/addImage
      *
      * @param productName
-     * @param file a multipart file with the image
+     * @param file        a multipart file with the image
      * @return NOT_FOUND if no such Product in DB, else OK
      */
     @RequestMapping(value = "/addImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity addImage(@RequestParam String productName, @RequestParam MultipartFile file) {
 
-        if(productRepo.findByNameIgnoreCase(productName) == null)
-        {
+        if (productRepo.findByNameIgnoreCase(productName) == null) {
             return new ResponseEntity<>("No such product in DB", HttpStatus.NOT_FOUND);
         }
 
@@ -118,4 +118,70 @@ public class ImageController {
 
         return new ResponseEntity<>("Image removed", HttpStatus.OK);
     }
+
+    /**
+     * adds a thumbnail to a Product
+     * POST to http://localhost:8080/addThumbnail
+     *
+     * @param productName
+     * @param file        a multipart file with the image
+     * @return NOT_FOUND if no such Product in DB, else OK
+     */
+    @RequestMapping(value = "/addThumbnail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity addThumbnail(@RequestParam String productName, @RequestParam MultipartFile file) {
+
+        if (productRepo.findByNameIgnoreCase(productName) == null) {
+            return new ResponseEntity<>("No such product in DB", HttpStatus.NOT_FOUND);
+        }
+
+        Image image = imageRepo.findByProductName(productName);
+        if (image == null) {
+            image = new Image(productName);
+        }
+
+        try {
+            image.setThumbnail(file.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        imageRepo.save(image);
+
+        return new ResponseEntity<>("Thumbnail added", HttpStatus.OK);
+    }
+
+    /**
+     * obtain the Thumbnail for Product
+     * POST to http://localhost:8080/getThumbnail
+     *
+     * @param payload should contain JSON key-value pairs with key(s): "productName".
+     * @return NOT_FOUND if no such Product in DB, else OK
+     */
+    @RequestMapping(value = "/getThumbnail", method = RequestMethod.POST, consumes = "application/json", produces = "multipart/form-data")
+    public ResponseEntity getThumbnail(@RequestBody Map<String, String> payload) {
+
+        if (!payload.containsKey("productName")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String productName = payload.get("productName");
+
+        Image images = imageRepo.findByProductName(productName);
+        if (images == null) {
+            return new ResponseEntity<>("Product Not Found in database", HttpStatus.NOT_FOUND);
+        }
+
+        LinkedMultiValueMap<String, Object> response = new LinkedMultiValueMap<>();
+        Path tempFile = null;
+        try {
+            tempFile = Files.createTempFile(null, ".jpeg");
+            Files.write(tempFile, images.getThumbnail());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        File fileToSend = tempFile.toFile();
+        response.add("thumbnail", new FileSystemResource(fileToSend));
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 }
