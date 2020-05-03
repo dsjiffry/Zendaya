@@ -38,10 +38,7 @@ public class User {
     }
 
     public boolean isThisThePassword(String password) {
-        if (this.password.equals(String.valueOf(password.hashCode()))) {
-            return true;
-        }
-        return false;
+        return this.password.equals(String.valueOf(password.hashCode()));
     }
 
     public void setAdmin() {
