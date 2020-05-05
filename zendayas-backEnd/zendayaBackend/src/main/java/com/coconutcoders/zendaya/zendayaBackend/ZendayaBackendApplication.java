@@ -12,13 +12,6 @@ public class ZendayaBackendApplication {
 
 	public static void main(String[] args) {
 
-		//Getting the IP address
-		try {
-			URL url = new URL("http://checkip.amazonaws.com/");
-			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-			System.out.println("------------------------> " + br.readLine());
-		} catch (Exception ignored) {}
-
 
 		SpringApplication.run(ZendayaBackendApplication.class, args);
 	}
