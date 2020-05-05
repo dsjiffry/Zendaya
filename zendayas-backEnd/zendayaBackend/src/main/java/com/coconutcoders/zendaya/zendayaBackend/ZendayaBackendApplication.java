@@ -16,7 +16,7 @@ public class ZendayaBackendApplication {
 		try {
 			URL url = new URL("http://checkip.amazonaws.com/");
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-			System.out.println("------------------------> " + br.readLine() +" : "+ System.getenv("$PORT"));
+			System.out.println("------------------------> " + br.readLine());
 		} catch (Exception ignored) {}
 
 

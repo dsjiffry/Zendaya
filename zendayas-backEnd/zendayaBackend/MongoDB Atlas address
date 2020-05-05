@@ -1,5 +1,2 @@
 
 mongodb+srv://admin:root@cluster0-mprui.mongodb.net/test
-
-
-Deploying jar command: heroku deploy:jar zendayaBackend-0.0.1-SNAPSHOT.jar --server.port=$PORT --app zendaya-backend
