@@ -14,10 +14,10 @@ export default class LoginRouter extends Component {
         }
     }
 
-    render() {  //To be removed after testing
+    render() {  //Used to get jwt and store in cookie
         return (
             <div>
-                {console.log(this.loginUser())}
+                {console.log(this.changePassword())}
             </div>
         );
     }
@@ -70,13 +70,10 @@ export default class LoginRouter extends Component {
         })
             .then((response) => {
                 if (response.ok) {
-                    return response.json();
+                    alert('Successful');
                 } else {
                     alert('Username is taken');
                 }
-            })
-            .then((responseJson) => {
-                alert('Successful');
             })
             .catch((error) => {
                 console.log(error)
@@ -100,13 +97,10 @@ export default class LoginRouter extends Component {
         })
             .then((response) => {
                 if (response.ok) {
-                    return response.json();
+                    alert('Successful');
                 } else {
                     alert('Username is taken');
                 }
-            })
-            .then((responseJson) => {
-                alert('Successful');
             })
             .catch((error) => {
                 console.log(error)
@@ -116,29 +110,55 @@ export default class LoginRouter extends Component {
     /**
     * Creating a Store Manager
     */
-   createStoreManager() {
-    fetch(BACKEND_BASE_URL + '/createStoreManager', {
+    createStoreManager() {
+        fetch(BACKEND_BASE_URL + '/createStoreManager', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                adminUsername: this.state.adminUsername,
+                adminPassword: this.state.adminPassword,
+                StoreManagerUsername: this.state.username,
+                StoreManagerPassword: this.state.password
+            }),
+        })
+            .then((response) => {
+                if (response.ok) {
+                    alert('Successful');
+                } else {
+                    alert('Username is taken');
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            });
+    }
+
+    /**
+    * Changes password in Database
+    */
+   changePassword() {
+    fetch(BACKEND_BASE_URL + '/changePassword', {
         method: 'POST',
         headers: {
             Accept: 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+cookies.get('jwt')
         },
         body: JSON.stringify({
-            adminUsername: this.state.adminUsername,
-            adminPassword: this.state.adminPassword,
-            StoreManagerUsername: this.state.username,
-            StoreManagerPassword: this.state.password
+            username: this.state.username,
+            oldPassword: this.state.oldPassword,
+            newPassword: this.state.newPassword
         }),
     })
         .then((response) => {
             if (response.ok) {
-                return response.json();
+                alert('Successful');
             } else {
-                alert('Username is taken');
+                alert('Incorrect old Password');
             }
-        })
-        .then((responseJson) => {
-            alert('Successful');
         })
         .catch((error) => {
             console.log(error)

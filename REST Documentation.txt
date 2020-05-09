@@ -1,5 +1,5 @@
 
-# last update -> 03/05/2020
+# last update -> 09/05/2020
 
 We can make POST requests to these urls to obtain specific functionalities. They will return HTTP status codes based on the result.
 The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error code will be returned
@@ -7,102 +7,108 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 ----------------------------------------------- User -----------------------------------------------
 
 	* Creating a normal user
-		-> POST to http://localhost:8080/createUser
+		-> POST to http://35.208.41.87:8080/createUser
 		-> with JSON body with key(s): "username", "password"
 		-> will return ACCEPTED if successful
 
 	* Creating an admin
-		-> POST to http://localhost:8080/createAdmin
+		-> POST to http://35.208.41.87:8080/createAdmin
 		-> with JSON body with key(s): "username", "password"
 		-> will return ACCEPTED if successful
 
 	* Creating a Store Manager. If admin details are valid only will the new store manager be added.
-		-> POST to http://localhost:8080/createStoreManager
+		-> POST to http://35.208.41.87:8080/createStoreManager
 		-> with JSON body with key(s): "adminUsername", "adminPassword", "StoreManagerUsername", "StoreManagerPassword"
 		-> will return UNAUTHORIZED if admin details are invalid, else ACCEPTED
+		
+
+	* Changes password in Database
+		-> POST to http://35.208.41.87:8080/changePassword
+		-> with JSON body with key(s):"username", "oldPassword", "newPassword".
+		-> will return CONFLICT if old password is incorrect, else OK
 
 ----------------------------------------------- Products -----------------------------------------------
 	
 	* Adding Product to Database
-		-> POST to http://localhost:8080/addProduct
+		-> POST to http://35.208.41.87:8080/addProduct
 		-> with JSON body with key(s): "productName", "price" and "description". Optional key "discount" can be included
 		-> will return CONFLICT if a product with same name is already in DB, else OK
 		
 	* Adds a Review for a product, if a review is already present it will be updated
-		-> POST to http://localhost:8080/addReview
+		-> POST to http://35.208.41.87:8080/addReview
 		-> with JSON body with key(s): "productName", "username", "description" and "rating"
 		-> will return NOT FOUND if product is not in database, else OK
 
 	* Update existing Product in Database
-		-> POST to http://localhost:8080/updateProduct
+		-> POST to http://35.208.41.87:8080/updateProduct
 		-> with JSON body with key(s): "productName", "description", "price"
 		-> will return NOT_FOUND if no such Product in DB, else OK	
 				
 	* Set a discount for a product
-		-> POST to http://localhost:8080/setProductDiscount
+		-> POST to http://35.208.41.87:8080/setProductDiscount
 		-> with JSON body with key(s): "productName" and "discount".
 		-. will return NOT_FOUND if no such Product in DB, else OK	
 			
 	* find all product that contains given string in name
-		-> POST to http://localhost:8080/searchProductsByName
+		-> POST to http://35.208.41.87:8080/searchProductsByName
 		-> with JSON body with key(s): "productName".
 		-> will return a JSON array of the matching products.
 	
 	* find all products that have a discount
-		-> POST to http://localhost:8080/searchProductWithDiscount
+		-> POST to http://35.208.41.87:8080/searchProductWithDiscount
 		-> will return A JSON array of the matching products.
 		
 	* find all products that gave a rating greater than or equal to a value
-		-> POST to http://localhost:8080/findProductsWithRatingGreaterThanAndEqual
+		-> POST to http://35.208.41.87:8080/findProductsWithRatingGreaterThanAndEqual
 		-> with JSON body with key(s): "rating".
 		-> will return A JSON array of the matching products.
 
 	* Get a perticular products original price, discount and final price
-		-> POST to http://localhost:8080/getProductPricingDetails
+		-> POST to http://35.208.41.87:8080/getProductPricingDetails
 		-> with JSON body with key(s): "productName".
 		-> will return A JSON array with key(s): "originalPrice", "discountPercentage", "finalPrice"
 		
 	* Removes Product from Database
-		-> POST to http://localhost:8080/removeProduct
+		-> POST to http://35.208.41.87:8080/removeProduct
 		-> with JSON body with key(s): "productName"
 		-> will return NOT_FOUND if the product is not found in DB, else OK
 	
 ----------------------------------------------- Shopping Cart -----------------------------------------------	
 
 	* Checks for product in database and then adds it to the user's Shopping Cart
-		-> POST to http://localhost:8080/addToShoppingCart
+		-> POST to http://35.208.41.87:8080/addToShoppingCart
 		-> with JSON body with key(s): "username" and "productName" and optional key "quantity"
 		-> will return NOT FOUND if product is not in database, else OK
 		
 	* get the total price and number of items (This will apply discounts to the products, if they have it.)
-		-> POST to http://localhost:8080/getTotalPriceAndNumberOfItems
+		-> POST to http://35.208.41.87:8080/getTotalPriceAndNumberOfItems
 		-> with JSON body with key(s): "username"
 		-> will return a response with JSON keys: "numberOfItems" and "totalPrice"
 
 	* get the items, their individual price and quantity
-		-> POST to http://localhost:8080/getProductsAndDetails
+		-> POST to http://35.208.41.87:8080/getProductsAndDetails
 		-> with JSON body with key(s): "username"
 		-> will return a JSON array.
 		
 	* Checks for product in database and then removes it from the user's Shopping Cart
-		-> POST to http://localhost:8080/removeFromShoppingCart
+		-> POST to http://35.208.41.87:8080/removeFromShoppingCart
 		-> with JSON body with key(s): "username" and "productName"
 		-> will return NOT FOUND if product is not in database or if user doesn't have a Shopping Cart, else OK
 
 ----------------------------------------------- Wish List -----------------------------------------------	
 
 	* Checks for product in database and then adds it to the user's wish list
-		-> POST to http://localhost:8080/addToWishList
+		-> POST to http://35.208.41.87:8080/addToWishList
 		-> with JSON body with key(s): "username" and "productName"
 		-> will return NOT FOUND if product is not in database, else OK
 
 	* Transfers a product from the wish list to the Shopping Cart
-		-> POST to http://localhost:8080/moveToShoppingCart
+		-> POST to http://35.208.41.87:8080/moveToShoppingCart
 		-> with JSON body with key(s): "username" and "productName"
 		-> will return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
 		
 	* Checks for product in database and then removes it from the user's wish list
-		-> POST to http://localhost:8080/removeFromWishList
+		-> POST to http://35.208.41.87:8080/removeFromWishList
 		-> with JSON body with key(s): "username" and "productName"
 		-> will return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
 
@@ -110,77 +116,77 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 ----------------------------------------------- Image -----------------------------------------------
 
 	* adds an image to a Product
-		* POST multipart Form to http://localhost:8080/addImage
+		* POST multipart Form to http://35.208.41.87:8080/addImage
 		*  with param productName
 		*  and param file a multipart file with the image
 		*  will return NOT_FOUND if no such Product in DB, else OK
 
 	* obtain all images for Product
-		-> POST to http://localhost:8080/getImages
+		-> POST to http://35.208.41.87:8080/getImages
 		-> with JSON body with key(s): "productName".
 		-> will return NOT_FOUND if no such Product in DB, else OK
 
 	* Remove an image from a product
-		-> POST to http://localhost:8080/removeImage
+		-> POST to http://35.208.41.87:8080/removeImage
 		-> with JSON body with key(s): "productName" and "imageNumber".
 		-> will return NOT_FOUND if no such Product in DB, else 
 
 	* adds a thumbnail to a Product
-		-> POST to http://localhost:8080/addThumbnail
+		-> POST to http://35.208.41.87:8080/addThumbnail
 		-> with param productName
 		-> with param file a multipart file with the image
 		-> will return NOT_FOUND if no such Product in DB, else OK
 
 	* obtain the Thumbnail for Product
-		-> POST to http://localhost:8080/getThumbnail
+		-> POST to http://35.208.41.87:8080/getThumbnail
 		-> with JSON body with key(s): "productName".
 		-> will return NOT_FOUND if no such Product in DB, else OK
 
 ----------------------------------------------- Payment -----------------------------------------------
 
 	* Obtain a users Payment History
-		-> POST to http://localhost:8080/getPaymentHistory
+		-> POST to http://35.208.41.87:8080/getPaymentHistory
 		-> with JSON body with key(s): "username"
 		-> will return NOT FOUND if no payment history, else JSON array
 
 	* Obtain a particular payment histories details
-		-> POST to http://localhost:8080/getPaymentDetails
+		-> POST to http://35.208.41.87:8080/getPaymentDetails
 		-> with JSON body with key(s): "username","dateTime"
 		-> will return NOT FOUND if no payment history, else JSON array
 
 	* Set the order status as either "payment invalid", "delivered" or "in transit"
-		-> POST to http://localhost:8080/setOrderStatus
+		-> POST to http://35.208.41.87:8080/setOrderStatus
 		-> with JSON body with key(s): "username", "dateTime", "status"
 		-> will return NOT FOUND if no payment history, else OK
 
 	* get the current Order Status
-		-> POST to http://localhost:8080/getOrderStatus
+		-> POST to http://35.208.41.87:8080/getOrderStatus
 		-> with JSON body with key(s): "username", "dateTime"
 		-> will return NOT FOUND if no payment history, else OK with Order status
 
 ----------------------------------------------- Product Category -----------------------------------------------
 
 	* Create a new Product Category in Database
-		-> POST to http://localhost:8080/createCategory
+		-> POST to http://35.208.41.87:8080/createCategory
 		-> with JSON body with key(s): "categoryName"
 		-> will return CONFLICT if a Category with same name is already in DB, else OK
 
 	* add a product to a Category
-		-> POST to http://localhost:8080/addToCategory
+		-> POST to http://35.208.41.87:8080/addToCategory
 		-> with JSON body with key(s): "categoryName", "productName"
 		-> will return NOT_FOUND if the category not found, else OK
 
 	* get All categories
-		-> POST to http://localhost:8080/getAllCategories
+		-> POST to http://35.208.41.87:8080/getAllCategories
 		-> will return NOT_FOUND if the category is not found, else OK
 		
 	* remove a product to a Category
-		-> POST to http://localhost:8080/removeFromCategory
+		-> POST to http://35.208.41.87:8080/removeFromCategory
 		-> with JSON body with key(s): "categoryName", "productName"
 		-> will return NOT_FOUND if the category is not found, else OK
 	
 	* delete a Category
-		-> POST to http://localhost:8080/deleteCategory
+		-> POST to http://35.208.41.87:8080/deleteCategory
 		-> with JSON body with key(s): "categoryName"
 		-> will return NOT_FOUND if the category is not found, else OK
 
