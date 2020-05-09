@@ -30,6 +30,7 @@ public class AuthenticationController {
     @Autowired
     UserRepo userRepo;
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception
     {
