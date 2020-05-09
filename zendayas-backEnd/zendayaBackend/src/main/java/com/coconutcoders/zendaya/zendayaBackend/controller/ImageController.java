@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class ImageController {
     @Autowired
     private ImageRepo imageRepo;
