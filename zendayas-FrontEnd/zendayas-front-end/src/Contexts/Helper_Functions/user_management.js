@@ -89,10 +89,10 @@ export default function user_management (action)
                 payload  : {}
             }
 
-        case "SEARCH_STORE_MANAGER":
+        case "GET_ALL_STORE_MANAGER":
 
               //Extract The parameters from the payload object
-                const { SSM_search_keyword } = action.payload; 
+                const { GASM_search_keyword } = action.payload; 
                 
                 //GET list of matching Store_managers (LIKE %search_keyword%)
 
