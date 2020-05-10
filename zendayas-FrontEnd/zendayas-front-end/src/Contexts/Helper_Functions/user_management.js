@@ -1,3 +1,7 @@
+import Cookies from 'universal-cookie';
+
+
+
 export default function user_management (action)
 {
     //Command and Payload pattern
@@ -18,6 +22,17 @@ export default function user_management (action)
     let return_object = {
         status : 0,
         payload : { sample_field : "sample field value"}
+    }
+
+    //Use this variable to get JWT token 
+    let jwt_token = ""
+    
+    const cookies = new Cookies();
+    let user_info_cookie = cookies.get("USER");
+
+    if( user_info_cookie.jwt_token != null || user_info_cookie.jwt_token != "" || user_info_cookie.jwt_token != undefined )
+    {
+        jwt_token  = user_info_cookie.jwt_token;
     }
 
     switch (action.type) {
