@@ -5,13 +5,12 @@ import com.coconutcoders.zendaya.zendayaBackend.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
@@ -103,5 +102,43 @@ public class UserController {
         userRepo.save(user);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
+
+    /**
+     * Changes password in Database
+     * POST to http://localhost:8080/changePassword
+     * @param payload should contain JSON key-value pairs with key(s):"username", "oldPassword", "newPassword".
+     * @return CONFLICT if old password is incorrect, else OK
+     */
+    @RequestMapping(value = "/changePassword", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity changeStoreManagerPassword(@RequestBody Map<String, String> payload)
+    {
+        if(!payload.containsKey("username") ||!payload.containsKey("oldPassword") || !payload.containsKey("newPassword"))
+        {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+        final String oldPassword = payload.get("oldPassword");
+        final String newPassword = payload.get("newPassword");
+
+        User user = userRepo.findUserByUsername(username);
+        if(user == null)
+        {
+            return new ResponseEntity<>("User not found in database", HttpStatus.NOT_FOUND);
+        }
+        if(!user.getPassword().equals(String.valueOf(oldPassword.hashCode())))
+        {
+            return new ResponseEntity<>("Old Password is incorrect", HttpStatus.UNAUTHORIZED);
+        }
+        user.setPassword(newPassword);
+
+        userRepo.save(user);
+        return new ResponseEntity<>(user.getUsername()+"'s password Changed", HttpStatus.OK);
+    }
+
+
+
+
+
+
 }
 

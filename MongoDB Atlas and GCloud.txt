@@ -1,0 +1,4 @@
+
+mongodb+srv://admin:root@cluster0-mprui.mongodb.net/test
+
+http://35.208.41.87:8080/authenticate
