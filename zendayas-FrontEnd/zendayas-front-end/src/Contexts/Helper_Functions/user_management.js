@@ -30,7 +30,7 @@ export default function user_management (action)
     const cookies = new Cookies();
     let user_info_cookie = cookies.get("USER");
 
-    if( user_info_cookie.jwt_token != null || user_info_cookie.jwt_token != "" || user_info_cookie.jwt_token != undefined )
+    if( user_info_cookie  !== null && user_info_cookie !== {} && user_info_cookie !== undefined )
     {
         jwt_token  = user_info_cookie.jwt_token;
     }
@@ -38,7 +38,7 @@ export default function user_management (action)
     switch (action.type) {
 
         case "AUTHENTICATE":
-            const { username , password } = action.payload;
+            const { AUTH_username , AUTH_password } = action.payload;
 
              //GET JWT token from server as well as  http status
 
@@ -51,7 +51,7 @@ export default function user_management (action)
 
         case "GET_USER_INFO":
             //Extract The parameters from the payload object
-            const { username } = action.payload;
+            const { GUI_username } = action.payload;
             
             //GET user Information email , username , password  from server as well as http status
             
@@ -67,7 +67,7 @@ export default function user_management (action)
             }
         case "CREATE_USER":
             //Extract The parameters from the payload object
-            const { username , password , email  } = action.payload;
+            const { CU_username , CU_password , CU_email  } = action.payload;
             
             //GET user Information email , username , password  from server as well as http status
             
@@ -79,7 +79,7 @@ export default function user_management (action)
 
         case "CREATE_STORE_MANAGER":
             //Extract The parameters from the payload object
-            const { username , password , email  } = action.payload;
+            const { CSM_username , CSM_password , CSM_email  } = action.payload;
             
             //GET user Information email , username , password  from server as well as http status
             
@@ -92,7 +92,7 @@ export default function user_management (action)
         case "SEARCH_STORE_MANAGER":
 
               //Extract The parameters from the payload object
-                const { search_keyword } = action.payload; 
+                const { SSM_search_keyword } = action.payload; 
                 
                 //GET list of matching Store_managers (LIKE %search_keyword%)
 
@@ -116,7 +116,7 @@ export default function user_management (action)
 
         case "EDIT_STORE_MANAGER":
             //Extract The parameters from the payload object
-            const { username , password , email  } = action.payload;
+            const { ESM_username , ESM_password , ESM_email  } = action.payload;
             
             //UPDATE Store manager Information email , username , password  from server as well as http status
             
@@ -128,7 +128,7 @@ export default function user_management (action)
 
         case "DELETE_STORE_MANAGER" :
             //Extract The parameters from the payload object
-            const { username} = action.payload;
+            const { DSM_username} = action.payload;
             
             //DELETE store manager Information email , username , password  from server as well as http status
             
