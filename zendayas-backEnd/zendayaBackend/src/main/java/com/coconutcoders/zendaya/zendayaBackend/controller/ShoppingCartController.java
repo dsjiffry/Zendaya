@@ -1,5 +1,6 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
+import com.coconutcoders.zendaya.zendayaBackend.enums.PaymentMethod;
 import com.coconutcoders.zendaya.zendayaBackend.model.Payment;
 import com.coconutcoders.zendaya.zendayaBackend.model.Product;
 import com.coconutcoders.zendaya.zendayaBackend.model.ShoppingCart;
@@ -192,26 +193,47 @@ public class ShoppingCartController {
      * Make the Payment for the items in the shopping cart
      * POST to http://localhost:8080/purchaseItemsInCart
      *
-     * @param payload Should contain JSON key-value pairs with key(s): "username"
+     * @param payload Should contain JSON key-value pairs with key(s): "username", "paymentMode", "address"
+     *                if "paymentMode" is "card" then: "creditCardNumber","creditCardCVC", "creditCardExpiryDate"
      * @return NOT FOUND if no cart for user, else OK
      */
     @RequestMapping(value = "/purchaseItemsInCart", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity purchaseItemsInCart(@RequestBody Map<String, String> payload)
-    {
-        if (!payload.containsKey("username")) {
+    public ResponseEntity purchaseItemsInCart(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username") || !payload.containsKey("paymentMode") || !payload.containsKey("address")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String username = payload.get("username");
+        final String address = payload.get("address");
+
         ShoppingCart shoppingCart = shoppingCartRepo.findByUsername(username);
-        if(shoppingCart == null)
-        {
+        if (shoppingCart == null) {
             return new ResponseEntity<>("No shopping cart found for this user", HttpStatus.NOT_FOUND);
         }
 
+        Payment payment = new Payment(username);
+        PaymentMethod paymentMode;
+
+        if (payload.get("paymentMode").equalsIgnoreCase("cash")) {
+            payment.setPaymentCash(address);
+
+        } else if (payload.get("paymentMode").equalsIgnoreCase("credit card")) {
+            if (!payload.containsKey("creditCardNumber") || !payload.containsKey("creditCardCVC") || !payload.containsKey("creditCardExpiryDate")) {
+                return new ResponseEntity<>("Credit card details not found", HttpStatus.NOT_FOUND);
+            }
+            final String creditCardNumber = payload.get("creditCardNumber");
+            final int creditCardCVC = Integer.valueOf(payload.get("creditCardCVC"));
+            final String creditCardExpiryDate = payload.get("creditCardExpiryDate");
+            payment.setPaymentCard(creditCardNumber, creditCardCVC, creditCardExpiryDate, address);
+
+        } else {
+            return new ResponseEntity<>("Invalid Payment method", HttpStatus.NOT_FOUND);
+        }
+
+
         //Implement Payment Gateway here
 
-        Payment payment = new Payment(username);
-        payment.setItems(shoppingCart,productRepo);
+
+        payment.setItems(shoppingCart, productRepo);
         paymentRepo.save(payment);
 
         shoppingCartRepo.delete(shoppingCart);

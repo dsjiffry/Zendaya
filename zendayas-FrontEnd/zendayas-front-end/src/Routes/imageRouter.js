@@ -14,14 +14,28 @@ export default class ImageRouter extends Component {
             url: '',
         }
     }
+
     componentDidMount() {
         this.getThumbnail();
+    }
+
+    handleClick(event) {
+        console.log(event.target.files[0]);
+        // this.setState({
+        //     selectedFile: event.target.files[0]
+        // }, () => this.fileUploadHandler());
     }
 
     render() {
         return (
             <div>
                 <img alt="" src={this.state.url} />
+                <br />
+                <input
+                    id="myInput"
+                    type={"file"}
+                    onChange={this.handleClick}
+                />
             </div>
         );
     }

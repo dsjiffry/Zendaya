@@ -1,6 +1,7 @@
 package com.coconutcoders.zendaya.zendayaBackend.model;
 
 import com.coconutcoders.zendaya.zendayaBackend.enums.OrderStatus;
+import com.coconutcoders.zendaya.zendayaBackend.enums.PaymentMethod;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ProductRepo;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -18,6 +19,11 @@ public class Payment {
     private HashMap<String, HashMap<String, Number>> itemsPurchased;// Name of item, price per item and quantity per
     private double totalPrice;
     private OrderStatus orderStatus;
+    private String address;
+    private PaymentMethod paymentMethod;
+    private String creditCardNumber;
+    private int creditCardCVC;
+    private String creditCardExpiryDate;
 
     public Payment(String username) {
         this.username = username;
@@ -34,7 +40,7 @@ public class Payment {
             Product product = productRepo.findByNameIgnoreCase(productName);
 
             HashMap<String, Number> temp = new HashMap<>();
-            temp.put("quantity",item.getValue());
+            temp.put("quantity", item.getValue());
             temp.put("pricePerItem", product.getPriceWithDiscount());
 
             itemsPurchased.put(productName, temp);
@@ -72,5 +78,30 @@ public class Payment {
 
     public String getUsername() {
         return username;
+    }
+
+    public void setPaymentCash(String address) {
+        this.paymentMethod = PaymentMethod.CASH_ON_DELIVERY;
+        this.address = address;
+    }
+
+    public void setPaymentCard(String creditCardNumber, int creditCardCVC, String creditCardExpiryDate, String address) {
+        this.creditCardNumber = creditCardNumber;
+        this.creditCardCVC = creditCardCVC;
+        this.creditCardExpiryDate = creditCardExpiryDate;
+        this.paymentMethod = PaymentMethod.CREDIT_CARD;
+        this.address = address;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public String getCreditCardNumber() {
+        return creditCardNumber;
     }
 }

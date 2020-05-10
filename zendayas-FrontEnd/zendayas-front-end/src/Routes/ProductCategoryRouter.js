@@ -145,7 +145,35 @@ export default class ProductCategoryRouter extends Component {
     }
 
 
-
+    /**
+    * get All the products in a category
+    */
+    getAllProductsInCategory() {
+        fetch(BACKEND_BASE_URL + '/getAllProductsInCategory', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + jwt
+            },
+            body: JSON.stringify({
+                categoryName: this.state.categoryName
+            }),
+        })
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    alert('Unable to get products');
+                }
+            })
+            .then((responseJson) => {
+                console.log(responseJson);
+            })
+            .catch((error) => {
+                console.log(error)
+            });
+    }
 
 
 
