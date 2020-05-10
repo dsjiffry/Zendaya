@@ -9,17 +9,30 @@ import {
 } from "react-router-dom";
 import TestPage from './Pages/TestPage';
 
+import {initialState as userInitialState, UserContext , reducer as userReducer} from "./Contexts/UserStore"
+
 function App() {
+
+  const [state, dispatch] = React.useReducer(userReducer, userInitialState);
+  
+
   return (
     <Router>
-      <div className="App">
-        <Switch>
-          <Route path="/test">
+      <UserContext.Provider
+        value={{
+          state,
+          dispatch
+        }}
+      >
+        <div className="App">
+          <Switch>
+            <Route path="/test">
               {/* This page is for Testing Purposes Only */}
-              <TestPage/>
-          </Route>
-        </Switch>
-      </div>
+              <TestPage />
+            </Route>
+          </Switch>
+        </div>
+      </UserContext.Provider>
     </Router>
   );
 }
