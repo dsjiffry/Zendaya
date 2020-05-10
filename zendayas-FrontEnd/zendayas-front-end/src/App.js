@@ -1,25 +1,39 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+import TestPage from './Pages/TestPage';
+
+import {initialState as userInitialState, UserContext , reducer as userReducer} from "./Contexts/UserStore"
+
 function App() {
+
+  const [state, dispatch] = React.useReducer(userReducer, userInitialState);
+  
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <UserContext.Provider
+        value={{
+          state,
+          dispatch
+        }}
+      >
+        <div className="App">
+          <Switch>
+            <Route path="/test">
+              {/* This page is for Testing Purposes Only */}
+              <TestPage />
+            </Route>
+          </Switch>
+        </div>
+      </UserContext.Provider>
+    </Router>
   );
 }
 
