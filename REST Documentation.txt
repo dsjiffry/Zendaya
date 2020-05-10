@@ -8,17 +8,17 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 
 	* Creating a normal user
 		-> POST to http://35.208.41.87:8080/createUser
-		-> with JSON body with key(s): "username", "password"
+		-> with JSON body with key(s): "username", "password", "email"
 		-> will return ACCEPTED if successful
 
 	* Creating an admin
 		-> POST to http://35.208.41.87:8080/createAdmin
-		-> with JSON body with key(s): "username", "password"
+		-> with JSON body with key(s): "username", "password", "email"
 		-> will return ACCEPTED if successful
 
 	* Creating a Store Manager. If admin details are valid only will the new store manager be added.
 		-> POST to http://35.208.41.87:8080/createStoreManager
-		-> with JSON body with key(s): "adminUsername", "adminPassword", "StoreManagerUsername", "StoreManagerPassword"
+		-> with JSON body with key(s): "adminUsername", "adminPassword", "StoreManagerUsername", "StoreManagerPassword", "StoreManagerEmail"
 		-> will return UNAUTHORIZED if admin details are invalid, else ACCEPTED
 		
 
@@ -94,6 +94,12 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 		-> POST to http://35.208.41.87:8080/removeFromShoppingCart
 		-> with JSON body with key(s): "username" and "productName"
 		-> will return NOT FOUND if product is not in database or if user doesn't have a Shopping Cart, else OK
+		
+	* Make the Payment for the items in the shopping cart
+		* POST to http://35.208.41.87:8080/purchaseItemsInCart
+		* with JSON body with key(s): "username", "paymentMode", "address"
+						if "paymentMode" is "card" then: "creditCardNumber","creditCardCVC", "creditCardExpiryDate"
+		* will return NOT FOUND if no cart for user, else OK
 
 ----------------------------------------------- Wish List -----------------------------------------------	
 
@@ -190,6 +196,10 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 		-> with JSON body with key(s): "categoryName"
 		-> will return NOT_FOUND if the category is not found, else OK
 
+	* get All the products in a category
+		* POST to http://localhost:8080/getAllProductsInCategory
+		* with JSON body with key(s): "categoryName"
+		* will return NOT_FOUND if the category is not found, else product list
 
 
 

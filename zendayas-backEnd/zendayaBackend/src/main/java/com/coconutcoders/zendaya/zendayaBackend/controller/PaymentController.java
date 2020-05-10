@@ -1,5 +1,6 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
+import com.coconutcoders.zendaya.zendayaBackend.enums.PaymentMethod;
 import com.coconutcoders.zendaya.zendayaBackend.model.Payment;
 import com.coconutcoders.zendaya.zendayaBackend.repo.PaymentRepo;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ProductRepo;
@@ -129,7 +130,7 @@ public class PaymentController {
      */
     @RequestMapping(value = "/getOrderStatus", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity getOrderStatus(@RequestBody Map<String, String> payload) {
-        if (!payload.containsKey("username") || !payload.containsKey("dateTime") ) {
+        if (!payload.containsKey("username") || !payload.containsKey("dateTime")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String username = payload.get("username");
@@ -143,7 +144,16 @@ public class PaymentController {
 
         for (Payment payment : payments) {
             if (payment.getDateTime().equals(dateTime)) {
-                return new ResponseEntity<>(payment.getOrderStatus(), HttpStatus.OK);
+                Map<String, String> temp = new HashMap<>();
+                temp.put("Address", payment.getAddress());
+                temp.put("Order Status", String.valueOf(payment.getOrderStatus()));
+                temp.put("Total Price Paid", String.valueOf(payment.getTotalPrice()));
+                temp.put("Payment Method", String.valueOf(payment.getPaymentMethod()));
+                if (payment.getPaymentMethod() == PaymentMethod.CREDIT_CARD) {
+                    temp.put("Credit card Number", payment.getCreditCardNumber());
+                }
+
+                return new ResponseEntity<>(temp, HttpStatus.OK);
             }
         }
 

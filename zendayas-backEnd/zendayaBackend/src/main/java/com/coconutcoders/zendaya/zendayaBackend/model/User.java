@@ -11,13 +11,15 @@ public class User {
     private String username;  //Should be unique
     private String password;
     private UserRoles role; //USER, ADMIN or STORE_MANAGER
+    private String email;
 
     private User() {
     }
 
-    public User(String username, String password) {
+    public User(String username, String password, String email) {
         this.username = username;
         this.password = String.valueOf(password.hashCode()); //Avoid storing plaintext passwords
+        this.email = email;
     }
 
 
@@ -51,5 +53,17 @@ public class User {
 
     public void setStoreManager() {
         this.role = UserRoles.STORE_MANAGER;
+    }
+
+    public UserRoles getRole() {
+        return role;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -24,6 +24,7 @@ public class ZendayaBackendApplicationTests {
     public final String baseURL = "http://localhost:8080";
     private final String username = "testAdmin";
     private final String password = "testAdmin";
+    private final String email = "testAdmin@gmail.com";
     public String AUTHENTICATION_TOKEN;
 
     /**
@@ -37,6 +38,7 @@ public class ZendayaBackendApplicationTests {
         body.put("userName", username);
         body.put("username", username);
         body.put("password", password);
+        body.put("email", email);
 
         createRequest(body, baseURL + "/createAdmin", false); //Creating the admin account to obtain jwt
 
@@ -128,6 +130,8 @@ public class ZendayaBackendApplicationTests {
         body.put("productName", "testProduct");
         body.put("username", username);
         body.put("quantity", "2");
+        body.put("paymentMode","cash");
+        body.put("address","No 15 ");
 
         //Adding to Shopping cart
         String url = baseURL + "/addToShoppingCart";
