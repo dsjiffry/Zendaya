@@ -17,7 +17,7 @@ export default class LoginRouter extends Component {
     render() {  //Used to get jwt and store in cookie
         return (
             <div>
-                {console.log(this.changePassword())}
+                {console.log(this.loginUser())}
             </div>
         );
     }

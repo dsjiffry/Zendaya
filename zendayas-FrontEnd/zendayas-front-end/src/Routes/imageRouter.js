@@ -7,6 +7,26 @@ const jwt = cookies.get('jwt');
 
 export default class ImageRouter extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            productName: 'Shirt',
+            url: '',
+        }
+    }
+    componentDidMount() {
+        this.getThumbnail();
+    }
+
+    render() {
+        return (
+            <div>
+                <img alt="" src={this.state.url} />
+            </div>
+        );
+    }
+
+
     /** IMAGES SHOULD NOT EXCEED 1MB */
 
     /**
@@ -130,32 +150,34 @@ export default class ImageRouter extends Component {
     /**
     * obtain the Thumbnail for Product
     */
-   getThumbnail() {
-    fetch(BACKEND_BASE_URL + '/getThumbnail', {
-        method: 'POST',
-        headers: {
-            Accept: 'multipart/form-data',
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + jwt
-        },
-        body: JSON.stringify({
-            productName: this.state.productName
-        }),
-    })
-        .then((response) => {
-            if (response.ok) {
-                return response.blob();
-            } else {
-                alert('Unable to get Thumbnail');
-            }
+    getThumbnail() {
+        fetch(BACKEND_BASE_URL + '/getThumbnail', {
+            method: 'POST',
+            headers: {
+                Accept: 'image/jpeg',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + jwt
+            },
+            body: JSON.stringify({
+                productName: this.state.productName
+            }),
         })
-        .then((responseBody) => {
-            alert(URL.createObjectURL(responseBody));
-        })
-        .catch((error) => {
-            console.log(error)
-        });
-}
+            .then((response) => {
+                if (response.ok) {
+                    return response.blob();
+                } else {
+                    alert('Unable to get Thumbnail');
+                }
+            })
+            .then((responseBody) => {
+                this.setState({
+                    url: URL.createObjectURL(responseBody)
+                });
+            })
+            .catch((error) => {
+                console.log(error)
+            });
+    }
 
 
 

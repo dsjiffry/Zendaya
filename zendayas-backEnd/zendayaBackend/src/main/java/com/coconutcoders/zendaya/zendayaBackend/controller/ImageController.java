@@ -157,7 +157,7 @@ public class ImageController {
      * @param payload should contain JSON key-value pairs with key(s): "productName".
      * @return NOT_FOUND if no such Product in DB, else OK
      */
-    @RequestMapping(value = "/getThumbnail", method = RequestMethod.POST, consumes = "application/json", produces = "multipart/form-data")
+    @RequestMapping(value = "/getThumbnail", method = RequestMethod.POST, consumes = "application/json", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity getThumbnail(@RequestBody Map<String, String> payload) {
 
         if (!payload.containsKey("productName")) {
@@ -170,7 +170,6 @@ public class ImageController {
             return new ResponseEntity<>("Product Not Found in database", HttpStatus.NOT_FOUND);
         }
 
-        LinkedMultiValueMap<String, Object> response = new LinkedMultiValueMap<>();
         Path tempFile = null;
         try {
             tempFile = Files.createTempFile(null, ".jpeg");
@@ -179,9 +178,8 @@ public class ImageController {
             e.printStackTrace();
         }
         File fileToSend = tempFile.toFile();
-        response.add("thumbnail", new FileSystemResource(fileToSend));
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new FileSystemResource(fileToSend), HttpStatus.OK);
     }
 
 
