@@ -30,7 +30,7 @@ export default function product_management (action)
     const cookies = new Cookies();
     let user_info_cookie = cookies.get("USER");
 
-    if( user_info_cookie.jwt_token != null || user_info_cookie.jwt_token != "" || user_info_cookie.jwt_token != undefined )
+    if( user_info_cookie  !== null && user_info_cookie !== {} && user_info_cookie !== undefined )
     {
         jwt_token  = user_info_cookie.jwt_token;
     }
@@ -72,7 +72,7 @@ export default function product_management (action)
     switch (action.type) {
 
         case "GET_PRODUCT_BY_CATEGORY" :
-            const { category } = action.payload;
+            const { GPBC_category } = action.payload;
 
              //GET ALL products Which Needed from Category
 
@@ -95,7 +95,7 @@ export default function product_management (action)
 
         case "SEARCH_PRODUCT" :
             
-            const { keyword } = action.payload;
+            const { SP_keyword } = action.payload;
 
             //Return Matching Keyword
             return {
@@ -125,6 +125,7 @@ export default function product_management (action)
 
         case "CREATE_CATEGORY" :
             //Create Category in server
+            const { CC_category } = action.payload;
             return {
                 status : STATUS_OK,
                 payload : {
@@ -133,6 +134,7 @@ export default function product_management (action)
             }
         case "DELETE_CATEGORY" :
             //Delete Category 
+            const { DC_category } = action.payload;
             return {
                 status : STATUS_OK,
                 payload : {
@@ -141,7 +143,7 @@ export default function product_management (action)
             }
         case "ADD_PRODUCT_TO_CATEGORY" :
 
-            const { productName , category } = action.payload;
+            const { APTC_productName , APTC_category } = action.payload;
             return {
                 status : STATUS_OK,
                 payload : {
@@ -151,7 +153,7 @@ export default function product_management (action)
         
         case "REMOVE_PRODUCT_FROM_CATEGORY" :
 
-            const { productName , category } = action.payload;
+            const { RRFC_productName , category } = action.payload;
             return {
                 status : STATUS_OK,
                 payload : {
@@ -161,9 +163,9 @@ export default function product_management (action)
         
         case "ADD_PRODUCT" :   
         
-            const { productName , description , price , discount } = action.payload;
+            const { AP_productName , AP_description , AP_price , AP_discount } = action.payload;
 
-            const { main_image , second_image , third_Image, thumbnail } = action.payload  //In FILE format
+            const { AP_main_image , AP_second_image , AP_third_Image, AP_thumbnail } = action.payload  //In FILE format
 
             return {
                 status : STATUS_OK,
@@ -174,7 +176,7 @@ export default function product_management (action)
         
         case "UPDATE_PRODUCT_DATA" : 
             
-            const { productName , description , price , discount } = action.payload;
+            const { UPD_productName , UPD_description , UPD_price , UPD_discount } = action.payload;
 
             return {
                 status : STATUS_OK,
@@ -185,7 +187,7 @@ export default function product_management (action)
 
         case "UPDATE_IMAGE" : 
 
-            const {type} = action.payload; // MAIN_IMAGE, SECOND_IMAGE, THIRD_IMAGE, THUMBNAIL_IMAGE
+            const {UI_type} = action.payload; // MAIN_IMAGE, SECOND_IMAGE, THIRD_IMAGE, THUMBNAIL_IMAGE
 
             return {
                 status : STATUS_OK,
