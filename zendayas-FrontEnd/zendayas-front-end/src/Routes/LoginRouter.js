@@ -10,7 +10,8 @@ export default class LoginRouter extends Component {
         super(props);
         this.state = {
             username: 'admin',
-            password: 'admin'
+            password: 'admin',
+            email:'admin@gmail.com'
         }
     }
 
@@ -65,7 +66,8 @@ export default class LoginRouter extends Component {
             },
             body: JSON.stringify({
                 username: this.state.username,
-                password: this.state.password
+                password: this.state.password,
+                email: this.state.email
             }),
         })
             .then((response) => {
@@ -92,7 +94,8 @@ export default class LoginRouter extends Component {
             },
             body: JSON.stringify({
                 username: this.state.username,
-                password: this.state.password
+                password: this.state.password,
+                email: this.state.email
             }),
         })
             .then((response) => {
@@ -121,7 +124,8 @@ export default class LoginRouter extends Component {
                 adminUsername: this.state.adminUsername,
                 adminPassword: this.state.adminPassword,
                 StoreManagerUsername: this.state.username,
-                StoreManagerPassword: this.state.password
+                StoreManagerPassword: this.state.password,
+                StoreManagerEmail: this.state.StoreManagerEmail
             }),
         })
             .then((response) => {
