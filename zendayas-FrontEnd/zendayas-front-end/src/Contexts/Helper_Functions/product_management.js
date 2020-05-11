@@ -15,6 +15,8 @@ export default function product_management (action)
 
     const STATUS_OK = 200;
     const STATUS_NOT_FOUND = 404;
+    const STATUS_SERVER_ERROR = 500;
+    const STATUS_CONFLICT = 409;
 
     //Every Switch case must return an object with this fields
     //status -> the returned HTTP status of request

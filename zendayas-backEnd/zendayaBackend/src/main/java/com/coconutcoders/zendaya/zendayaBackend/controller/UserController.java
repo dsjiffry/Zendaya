@@ -120,31 +120,32 @@ public class UserController {
 
     /**
      * Changes password in Database
-     * POST to http://localhost:8080/changePassword
+     * POST to http://localhost:8080/updateUser
      *
-     * @param payload should contain JSON key-value pairs with key(s):"username", "oldPassword", "newPassword".
-     * @return CONFLICT if old password is incorrect, else OK
+     * @param payload should contain JSON key-value pairs with key(s):"username", "newUsername", "newPassword", "newEmail"
+     * @return NOT_FOUND if store manager not found, else OK
      */
-    @RequestMapping(value = "/changePassword", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity changeStoreManagerPassword(@RequestBody Map<String, String> payload) {
-        if (!payload.containsKey("username") || !payload.containsKey("oldPassword") || !payload.containsKey("newPassword")) {
+    @RequestMapping(value = "/updateUser", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity updateUser(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username") || !payload.containsKey("newUsername")
+                || !payload.containsKey("newPassword") || !payload.containsKey("newEmail")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String username = payload.get("username");
-        final String oldPassword = payload.get("oldPassword");
+        final String newUsername = payload.get("newUsername");
         final String newPassword = payload.get("newPassword");
+        final String newEmail = payload.get("newEmail");
 
         User user = userRepo.findUserByUsername(username);
         if (user == null) {
             return new ResponseEntity<>("User not found in database", HttpStatus.NOT_FOUND);
         }
-        if (!user.getPassword().equals(String.valueOf(oldPassword.hashCode()))) {
-            return new ResponseEntity<>("Old Password is incorrect", HttpStatus.UNAUTHORIZED);
-        }
         user.setPassword(newPassword);
+        user.setEmail(newEmail);
+        user.setUsername(newUsername);
 
         userRepo.save(user);
-        return new ResponseEntity<>(user.getUsername() + "'s password Changed", HttpStatus.OK);
+        return new ResponseEntity<>(user.getUsername() + "'s details Changed", HttpStatus.OK);
     }
 
     /**
@@ -162,15 +163,100 @@ public class UserController {
         final String StoreManagerName = payload.get("StoreManagerName");
 
         List<User> managers = userRepo.findByUsernameIgnoreCaseContaining(StoreManagerName);
-        Map<String, String> response = new HashMap<>();
+        Map<String, HashMap<String,String>> response = new HashMap<>();
 
         for (User sm : managers) {
             if(sm.getRole() == UserRoles.STORE_MANAGER) {
-                response.put(sm.getUsername(), sm.getEmail());
+                HashMap<String,String> temp = new HashMap<>();
+                temp.put("username",sm.getUsername());
+                temp.put("password",sm.getPassword());
+                temp.put("email",sm.getEmail());
+                response.put(sm.getUsername(),temp);
             }
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * find all Users that contains a given string in name
+     * POST to http://localhost:8080/searchUsersByName
+     *
+     * @param payload should contain JSON key-value pairs with key(s): "username".
+     * @return A JSON array of the matching Users
+     */
+    @RequestMapping(value = "/searchUsersByName", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity searchUsersByName(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+
+        List<User> users = userRepo.findByUsernameIgnoreCaseContaining(username);
+        Map<String, HashMap<String,String>> response = new HashMap<>();
+
+        for (User user : users) {
+            if(user.getRole() == UserRoles.USER) {
+                HashMap<String,String> temp = new HashMap<>();
+                temp.put("username",user.getUsername());
+                temp.put("password",user.getPassword());
+                temp.put("email",user.getEmail());
+                response.put(user.getUsername(),temp);
+            }
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Get user information
+     * POST to http://localhost:8080/getUserInfo
+     *
+     * @param payload should contain JSON key-value pairs with key(s): "username".
+     * @return A JSON array of the matching Store Managers.
+     */
+    @RequestMapping(value = "/getUserInfo", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity getUserInfo(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+
+        User user = userRepo.findUserByUsername(username);
+        if(user == null)
+        {
+            return new ResponseEntity<>("No such user", HttpStatus.NOT_FOUND);
+        }
+        Map<String, String> response = new HashMap<>();
+
+        response.put("username", user.getUsername());
+        response.put("email",user.getEmail());
+        response.put("password",user.getPassword());
+        response.put("type", String.valueOf(user.getRole()));
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Deleting a User
+     * POST to http://localhost:8080/deleteUser
+     *
+     * @param payload should contain JSON key-value pairs with key(s): "username"
+     * @return UNAUTHORIZED if admin details are invalid, else ACCEPTED
+     */
+    @PostMapping(value = "/deleteUser")
+    public ResponseEntity<?> deleteUser(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+
+        User user = userRepo.findUserByUsername(username);
+        if (user == null) {
+            return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
+        }
+        userRepo.delete(user);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 }
 
