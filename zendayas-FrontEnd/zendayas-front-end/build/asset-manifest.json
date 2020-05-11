@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/Zendaya/static/css/main.8ab6f918.chunk.css",
+    "main.js": "/Zendaya/static/js/main.b252e505.chunk.js",
+    "main.js.map": "/Zendaya/static/js/main.b252e505.chunk.js.map",
+    "runtime-main.js": "/Zendaya/static/js/runtime-main.effa7622.js",
+    "runtime-main.js.map": "/Zendaya/static/js/runtime-main.effa7622.js.map",
+    "static/js/2.154e30f6.chunk.js": "/Zendaya/static/js/2.154e30f6.chunk.js",
+    "static/js/2.154e30f6.chunk.js.map": "/Zendaya/static/js/2.154e30f6.chunk.js.map",
+    "index.html": "/Zendaya/index.html",
+    "precache-manifest.d7117128aa659940c6db135b1e48a96a.js": "/Zendaya/precache-manifest.d7117128aa659940c6db135b1e48a96a.js",
+    "service-worker.js": "/Zendaya/service-worker.js",
+    "static/css/main.8ab6f918.chunk.css.map": "/Zendaya/static/css/main.8ab6f918.chunk.css.map",
+    "static/js/2.154e30f6.chunk.js.LICENSE.txt": "/Zendaya/static/js/2.154e30f6.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.effa7622.js",
+    "static/js/2.154e30f6.chunk.js",
+    "static/css/main.8ab6f918.chunk.css",
+    "static/js/main.b252e505.chunk.js"
+  ]
+}
