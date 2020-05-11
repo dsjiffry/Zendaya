@@ -182,5 +182,34 @@ public class ImageController {
         return new ResponseEntity<>(new FileSystemResource(fileToSend), HttpStatus.OK);
     }
 
+    /**
+     * updates image in a Product
+     * POST to http://localhost:8080/updateImage
+     *
+     * @param imageNumber
+     * @param productName
+     * @param file a multipart file with the image
+     * @return NOT_FOUND if no such Product in DB, else OK
+     */
+    @RequestMapping(value = "/updateImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity updateImage(@RequestParam String productName,@RequestParam int imageNumber, @RequestParam MultipartFile file) {
 
+        if (productRepo.findByNameIgnoreCase(productName) == null) {
+            return new ResponseEntity<>("No such product in DB", HttpStatus.NOT_FOUND);
+        }
+
+        Image image = imageRepo.findByProductName(productName);
+        if (image == null) {
+            return new ResponseEntity<>("No image found", HttpStatus.NOT_FOUND);
+        }
+
+        try {
+            image.updateImage(imageNumber, file.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        imageRepo.save(image);
+
+        return new ResponseEntity<>("Image updated", HttpStatus.OK);
+    }
 }

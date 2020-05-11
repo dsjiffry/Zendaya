@@ -33,6 +33,11 @@ public class Image implements MultipartFile {
         allImages.put(productName+"_"+numberOfImages,image);
     }
 
+    public void updateImage(int imageNumber,byte[] image)
+    {
+        allImages.put(productName+"_"+imageNumber,image);
+    }
+
     public void setThumbnail(byte[] image)
     {
         this.thumbnail = image;

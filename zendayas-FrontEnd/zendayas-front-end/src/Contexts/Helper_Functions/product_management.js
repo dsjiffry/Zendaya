@@ -2,8 +2,7 @@ import Cookies from 'universal-cookie';
 
 
 
-export default function product_management (action)
-{
+export default function product_management(action) {
     //Command and Payload pattern
     //An object is sent to this method with 2 parameters
     //type -> the command o execute (Which sub function to run)
@@ -22,19 +21,18 @@ export default function product_management (action)
     //status -> the returned HTTP status of request
     //payload -> data fetched from the server (send empty object if no data is fetched)
     let return_object = {
-        status : 0,
-        payload : { sample_field : "sample field value"}
+        status: 0,
+        payload: { sample_field: "sample field value" }
     }
 
     //Use this variable to get JWT token 
     let jwt_token = ""
-    
+
     const cookies = new Cookies();
     let user_info_cookie = cookies.get("USER");
 
-    if( user_info_cookie  !== null && user_info_cookie !== {} && user_info_cookie !== undefined )
-    {
-        jwt_token  = user_info_cookie.jwt_token;
+    if (user_info_cookie !== null && user_info_cookie !== {} && user_info_cookie !== undefined) {
+        jwt_token = user_info_cookie.jwt_token;
     }
 
     //sample Product Object Structure
@@ -73,131 +71,477 @@ export default function product_management (action)
 
     switch (action.type) {
 
-        case "GET_PRODUCT_BY_CATEGORY" :
+        case "GET_PRODUCT_BY_CATEGORY":
             const { GPBC_category } = action.payload;
 
-             //GET ALL products Which Needed from Category
-
-             return {
-                status : STATUS_OK,
-                payload  : {
-                    productList : [
-                        SampleProduct,
-                        {
-                            ...SampleProduct,
-                            name : "test-product-2"
-                        },
-                        {
-                            ...SampleProduct,
-                            name : "test-product-3"
+            //GET ALL products Which Needed from Category
+            fetch(BACKEND_BASE_URL + '/getAllProductsInCategory', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwt_token
+                },
+                body: JSON.stringify({
+                    categoryName: GPBC_category,
+                }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return {
+                            status: STATUS_OK,
+                            payload: {
+                                productList: response.json(),
+                            }
                         }
-                    ],
-                }
-            }
 
-        case "SEARCH_PRODUCT" :
-            
+                    } else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {
+                                productList: [],
+                            }
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return {
+                        status: STATUS_SERVER_ERROR,
+                        payload: {
+                            productList: [],
+                        }
+                    }
+                });
+
+        case "SEARCH_PRODUCT":
+
             const { SP_keyword } = action.payload;
 
-            //Return Matching Keyword
-            return {
-                status : STATUS_OK,
-                payload  : {
-                    productList : [
-                        SampleProduct,
-                        {
-                            ...SampleProduct,
-                            name : "test-product-2"
-                        },
-                        {
-                            ...SampleProduct,
-                            name : "test-product-3"
+            fetch(BACKEND_BASE_URL + '/searchProductsByName', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwt_token
+                },
+                body: JSON.stringify({
+                    productName: SP_keyword,
+                }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return {
+                            status: STATUS_OK,
+                            payload: {
+                                productList: response.json(),
+                            }
                         }
-                    ],
-                }
-            }
-        
-        case "GET_ALL_CATEGORIES" :
-            return {
-                status : STATUS_OK,
-                payload : {
-                    categoryList : ["Shoes","watches"]
-                }
-            }
 
-        case "CREATE_CATEGORY" :
+                    } else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {
+                                productList: [],
+                            }
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return {
+                        status: STATUS_SERVER_ERROR,
+                        payload: {
+                            productList: [],
+                        }
+                    }
+                });
+
+        case "GET_ALL_CATEGORIES":
+            fetch(BACKEND_BASE_URL + '/getAllCategories', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwt_token
+                },
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return {
+                            status: STATUS_OK,
+                            payload: {
+                                categoryList: response.json()
+                            }
+                        }
+
+                    } else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {
+                                categoryList: []
+                            }
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return {
+                        status: STATUS_SERVER_ERROR,
+                        payload: {
+                            categoryList: []
+                        }
+                    }
+                });
+
+        case "CREATE_CATEGORY":
             //Create Category in server
             const { CC_category } = action.payload;
-            return {
-                status : STATUS_OK,
-                payload : {
-                  
-                }
-            }
-        case "DELETE_CATEGORY" :
+
+            fetch(BACKEND_BASE_URL + '/createCategory', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwt_token
+                },
+                body: JSON.stringify({
+                    categoryName: CC_category,
+                }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return {
+                            status: STATUS_OK,
+                            payload: {}
+                        }
+
+                    } else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {}
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return {
+                        status: STATUS_SERVER_ERROR,
+                        payload: {
+
+                        }
+                    }
+                });
+        case "DELETE_CATEGORY":
             //Delete Category 
             const { DC_category } = action.payload;
-            return {
-                status : STATUS_OK,
-                payload : {
-                  
-                }
+
+            fetch(BACKEND_BASE_URL + '/deleteCategory', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwt_token
+                },
+                body: JSON.stringify({
+                    categoryName: DC_category,
+                }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return {
+                            status: STATUS_OK,
+                            payload: {}
+                        }
+
+                    } else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {}
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return {
+                        status: STATUS_SERVER_ERROR,
+                        payload: {
+
+                        }
+                    }
+                });
+
+        case "ADD_PRODUCT_TO_CATEGORY":
+
+            const { APTC_productName, APTC_category } = action.payload;
+
+            fetch(BACKEND_BASE_URL + '/addToCategory', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwt_token
+                },
+                body: JSON.stringify({
+                    categoryName: APTC_category,
+                    productName: APTC_productName
+                }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return {
+                            status: STATUS_OK,
+                            payload: {}
+                        }
+
+                    } else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {}
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return {
+                        status: STATUS_SERVER_ERROR,
+                        payload: {
+
+                        }
+                    }
+                });
+
+        case "REMOVE_PRODUCT_FROM_CATEGORY":
+
+            const { RRFC_productName, category } = action.payload;
+            fetch(BACKEND_BASE_URL + '/removeFromCategory', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwt_token
+                },
+                body: JSON.stringify({
+                    categoryName: category,
+                    productName: RRFC_productName
+                }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return {
+                            status: STATUS_OK,
+                            payload: {}
+                        }
+
+                    } else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {}
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return {
+                        status: STATUS_SERVER_ERROR,
+                        payload: {
+
+                        }
+                    }
+                });
+
+        case "ADD_PRODUCT":
+
+            const { AP_productName, AP_description, AP_price, AP_discount } = action.payload;
+
+            const { AP_main_image, AP_second_image, AP_third_Image, AP_thumbnail } = action.payload  //In FILE format
+
+            fetch(BACKEND_BASE_URL + '/removeFromCategory', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwt_token
+                },
+                body: JSON.stringify({
+                    productName: AP_productName,
+                    price: AP_price,
+                    description: AP_description,
+                    discount: AP_discount,
+                }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+
+                        //Adding Thumbnail
+                        let formData = new FormData();
+                        formData.append('image', AP_thumbnail);
+                        formData.append('productName', AP_productName);
+
+                        fetch(BACKEND_BASE_URL + '/addThumbnail', {
+                            method: 'POST',
+                            headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'multipart/form-data',
+                                'Authorization': 'Bearer ' + jwt
+                            },
+                            body: formData,
+                        })
+                            .then((response) => {
+                                if (response.ok) {
+                                    console.log('added Thumbnail');
+                                } else {
+                                    console.log('Unable to Add Thumbnail');
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error)
+                            });
+
+                        //Adding Images
+                        let images = [AP_main_image, AP_second_image, AP_third_Image];
+                        images.map((image) => {
+                            formData.append('image', image);
+                            formData.append('productName', AP_productName);
+
+                            fetch(BACKEND_BASE_URL + '/addImage', {
+                                method: 'POST',
+                                headers: {
+                                    Accept: 'application/json',
+                                    'Content-Type': 'multipart/form-data',
+                                    'Authorization': 'Bearer ' + jwt
+                                },
+                                body: formData,
+                            })
+                                .then((response) => {
+                                    if (response.ok) {
+                                        console.log('added Image');
+                                    } else {
+                                        console.log('Unable to Add Image');
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error)
+                                });
+                        }
+                        );
+                        return {
+                            status: STATUS_OK,
+                            payload: {}
+                        }
+
+                    } else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {}
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return {
+                        status: STATUS_SERVER_ERROR,
+                        payload: {
+
+                        }
+                    }
+                });
+
+        case "UPDATE_PRODUCT_DATA":
+
+            const { productName, UPD_productName, UPD_description, UPD_price, UPD_discount } = action.payload;
+
+            fetch(BACKEND_BASE_URL + '/updateProduct', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwt_token
+                },
+                body: JSON.stringify({
+                    productName: productName, //Current product Name
+                    newProductName: UPD_productName,
+                    description: UPD_description,
+                    price: UPD_price,
+                    discount: UPD_discount
+                }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return {
+                            status: STATUS_OK,
+                            payload: {}
+                        }
+
+                    } else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {}
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    return {
+                        status: STATUS_SERVER_ERROR,
+                        payload: {
+
+                        }
+                    }
+                });
+
+        case "UPDATE_IMAGE":
+
+            const { UI_type, productName } = action.payload; // MAIN_IMAGE, SECOND_IMAGE, THIRD_IMAGE, THUMBNAIL_IMAGE
+
+            let imageNumber = -1;
+            switch (UI_type) {
+                case MAIN_IMAGE:
+                    imageNumber = 1;
+                case SECOND_IMAGE:
+                    imageNumber = 2;
+                case THIRD_IMAGE:
+                    imageNumber = 3;
+                case THUMBNAIL_IMAGE:
+                    imageNumber = 0;
             }
-        case "ADD_PRODUCT_TO_CATEGORY" :
 
-            const { APTC_productName , APTC_category } = action.payload;
-            return {
-                status : STATUS_OK,
-                payload : {
-                  
-                }
-            }
-        
-        case "REMOVE_PRODUCT_FROM_CATEGORY" :
+            let formData = new FormData();
+            formData.append('image', UI_type);
+            formData.append('productName', productName);
+            formData.append('imageNumber', imageNumber);
 
-            const { RRFC_productName , category } = action.payload;
-            return {
-                status : STATUS_OK,
-                payload : {
-                  
-                }
-            }
-        
-        case "ADD_PRODUCT" :   
-        
-            const { AP_productName , AP_description , AP_price , AP_discount } = action.payload;
+            fetch(BACKEND_BASE_URL + '/updateImage', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': 'Bearer ' + jwt
+                },
+                body: formData,
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return {
+                            status: STATUS_OK,
+                            payload: {}
+                        }
+                    } else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {}
+                        }
+                    }
+                })
+                .catch((error) => {
+                    return {
+                        status: STATUS_SERVER_ERROR,
+                        payload: {}
+                    }
+                });
 
-            const { AP_main_image , AP_second_image , AP_third_Image, AP_thumbnail } = action.payload  //In FILE format
 
-            return {
-                status : STATUS_OK,
-                payload : {
-                  
-                }
-            }
-        
-        case "UPDATE_PRODUCT_DATA" : 
-            
-            const { UPD_productName , UPD_description , UPD_price , UPD_discount } = action.payload;
 
-            return {
-                status : STATUS_OK,
-                payload : {
-                  
-                }
-            }
-
-        case "UPDATE_IMAGE" : 
-
-            const {UI_type} = action.payload; // MAIN_IMAGE, SECOND_IMAGE, THIRD_IMAGE, THUMBNAIL_IMAGE
-
-            return {
-                status : STATUS_OK,
-                payload : {     
-                }
-            }
-
-        
         default:
             break;
     }

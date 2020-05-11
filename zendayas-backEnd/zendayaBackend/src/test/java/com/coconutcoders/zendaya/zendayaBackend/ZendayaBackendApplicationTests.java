@@ -81,6 +81,7 @@ public class ZendayaBackendApplicationTests {
         //Updating a Product
         url = baseURL + "/updateProduct";
         body.put("discount", "10");
+        body.put("newProductName", "testProduct");
         response = createRequest(body, url, true);
 
         assertNotNull(response);

@@ -128,17 +128,20 @@ public class ProductController {
      * Update existing Product in Database
      * POST to http://localhost:8080/updateProduct
      *
-     * @param payload should contain JSON key-value pairs with key(s): "productName" "description", "price".
+     * @param payload should contain JSON key-value pairs with key(s): "productName", "newProductName", "description", "price", "discount"
      * @return NOT_FOUND if no such Product in DB, else OK
      */
     @RequestMapping(value = "/updateProduct", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity updateProduct(@RequestBody Map<String, String> payload) {
-        if (!payload.containsKey("productName") || !payload.containsKey("description") || !payload.containsKey("price")) {
+        if (!payload.containsKey("productName") || !payload.containsKey("newProductName") || !payload.containsKey("description")
+                || !payload.containsKey("price") || !payload.containsKey("discount")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
+        final String newProductName = payload.get("newProductName");
         final String description = payload.get("description");
         final double price = Double.parseDouble(payload.get("price"));
+        final int discount = Integer.parseInt(payload.get("discount"));
 
         Product product = productRepo.findByNameIgnoreCase(productName);
         if (product == null) {
@@ -147,6 +150,8 @@ public class ProductController {
 
         product.setDescription(description);
         product.setPrice(price);
+        product.setDiscountPercentage(discount);
+        product.setName(newProductName);
 
         productRepo.save(product);
         return new ResponseEntity<>(product.getName() + " updated in Database", HttpStatus.OK);
@@ -200,10 +205,35 @@ public class ProductController {
         final String productName = payload.get("productName");
 
         List<Product> products = productRepo.findByNameIgnoreCaseContaining(productName);
-        Map<String, Product> response = new HashMap<>();
+        Map<String, Map<String, Object>> response = new HashMap<>();
 
         for (Product product : products) {
-            response.put(product.getName(), product);
+            Map<String, Object> productDetails = new HashMap<>();
+
+            productDetails.put("name", product.getName());
+
+            HashMap<String, Number> priceDetails = new HashMap<>();
+            priceDetails.put("originalPrice", product.getPrice());
+            priceDetails.put("discountPercentage", product.getDiscountPercentage());
+            priceDetails.put("finalPrice", product.getPriceWithDiscount());
+            productDetails.put("price", priceDetails);
+
+            productDetails.put("description", product.getDescription());
+            productDetails.put("average_rating", product.getAvgRating());
+
+            HashMap<String, HashMap<String, Object>> reviews = new HashMap<>();
+            for (Map.Entry<String, HashMap<String, String>> reviewDetails : product.getReviews().entrySet())
+            {
+                HashMap<String, Object> temp = new HashMap<>();
+                temp.put("time_stamp",reviewDetails.getValue().get("timeStamp"));
+                temp.put("username", reviewDetails.getKey());
+                temp.put("review",reviewDetails.getValue().get("review"));
+                temp.put("rating",reviewDetails.getValue().get("rating"));
+                reviews.put(reviewDetails.getKey(),temp);
+            }
+            productDetails.put("reviews",reviews);
+
+            response.put(product.getName(),productDetails);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);

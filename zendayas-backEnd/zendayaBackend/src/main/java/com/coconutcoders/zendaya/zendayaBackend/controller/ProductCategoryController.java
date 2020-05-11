@@ -1,5 +1,6 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
+import com.coconutcoders.zendaya.zendayaBackend.model.Product;
 import com.coconutcoders.zendaya.zendayaBackend.model.ProductCategory;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ProductCategoryRepo;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ProductRepo;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -168,9 +170,35 @@ public class ProductCategoryController {
             return new ResponseEntity<>("no such category found", HttpStatus.NOT_FOUND);
         }
 
-        ArrayList<String> response = new ArrayList<>();
-        for (String product : productCategory.getProducts()) {
-            response.add(product);
+        Map<String, Map<String, Object>> response = new HashMap<>();
+        for (String productName : productCategory.getProducts()) {
+            Product product = productRepo.findByNameIgnoreCase(productName);
+            Map<String, Object> productDetails = new HashMap<>();
+
+            productDetails.put("name", product.getName());
+
+            HashMap<String, Number> priceDetails = new HashMap<>();
+            priceDetails.put("originalPrice", product.getPrice());
+            priceDetails.put("discountPercentage", product.getDiscountPercentage());
+            priceDetails.put("finalPrice", product.getPriceWithDiscount());
+            productDetails.put("price", priceDetails);
+
+            productDetails.put("description", product.getDescription());
+            productDetails.put("average_rating", product.getAvgRating());
+
+            HashMap<String, HashMap<String, Object>> reviews = new HashMap<>();
+            for (Map.Entry<String, HashMap<String, String>> reviewDetails : product.getReviews().entrySet())
+            {
+                HashMap<String, Object> temp = new HashMap<>();
+                temp.put("time_stamp",reviewDetails.getValue().get("timeStamp"));
+                temp.put("username", reviewDetails.getKey());
+                temp.put("review",reviewDetails.getValue().get("review"));
+                temp.put("rating",reviewDetails.getValue().get("rating"));
+                reviews.put(reviewDetails.getKey(),temp);
+            }
+            productDetails.put("reviews",reviews);
+
+            response.put(product.getName(),productDetails);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);

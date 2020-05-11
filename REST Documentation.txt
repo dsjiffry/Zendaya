@@ -21,7 +21,6 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 		-> with JSON body with key(s): "adminUsername", "adminPassword", "StoreManagerUsername", "StoreManagerPassword", "StoreManagerEmail"
 		-> will return UNAUTHORIZED if admin details are invalid, else ACCEPTED
 		
-
 	* Changes password in Database
 		-> POST to http://35.208.41.87:8080/changePassword
 		-> with JSON body with key(s):"username", "oldPassword", "newPassword".
@@ -41,7 +40,7 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 
 	* Update existing Product in Database
 		-> POST to http://35.208.41.87:8080/updateProduct
-		-> with JSON body with key(s): "productName", "description", "price"
+		-> with JSON body with key(s): "productName", "newProductName", "description", "price", "discount"
 		-> will return NOT_FOUND if no such Product in DB, else OK	
 				
 	* Set a discount for a product
@@ -147,6 +146,13 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 		-> POST to http://35.208.41.87:8080/getThumbnail
 		-> with JSON body with key(s): "productName".
 		-> will return NOT_FOUND if no such Product in DB, else OK
+		
+	 * updates image in a Product
+		-> POST to http://localhost:8080/updateImage
+		-> @param imageNumber
+		-> @param productName
+		-> @param file a multipart file with the image
+		-> @return NOT_FOUND if no such Product in DB, else OK
 
 ----------------------------------------------- Payment -----------------------------------------------
 

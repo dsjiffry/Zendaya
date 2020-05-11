@@ -7,8 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Product
-{
+public class Product {
     @Id
     private ObjectId id;
 
@@ -21,7 +20,9 @@ public class Product
     private HashMap<String, Date> reviewTimeStamp;    //Username and the date of the Review
     private HashMap<String, String> reviews;    //Username and the review given
 
-    private Product(){}
+    private Product() {
+    }
+
     public Product(String name, String description, double price) {
         this.name = name;
         this.description = description;
@@ -31,14 +32,12 @@ public class Product
         reviews = new HashMap<>();
     }
 
-    public void addOrUpdateReview(String username, String review, Double rating)
-    {
-        if(ratings.containsKey(username))
-        {
+    public void addOrUpdateReview(String username, String review, Double rating) {
+        if (ratings.containsKey(username)) {
             reviews.remove(username);
             ratings.remove(username);
         }
-        reviewTimeStamp.put(username,new Date());
+        reviewTimeStamp.put(username, new Date());
         reviews.put(username, review);
         ratings.put(username, rating);
         avgRating = calculateAvgRating();
@@ -52,28 +51,23 @@ public class Product
         return description;
     }
 
-    public double getAvgRating()
-    {
+    public double getAvgRating() {
         return avgRating;
     }
 
-    public double calculateAvgRating()
-    {
+    public double calculateAvgRating() {
         double sumRating = 0;
-        if(ratings.size() == 0)
-        {
+        if (ratings.size() == 0) {
             return sumRating;
         }
 
-        for(Map.Entry<String, Double> rating : ratings.entrySet())
-        {
+        for (Map.Entry<String, Double> rating : ratings.entrySet()) {
             sumRating += rating.getValue();
         }
-        return sumRating/ratings.size();
+        return sumRating / ratings.size();
     }
 
-    public void setDescription(String description)
-    {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -89,12 +83,27 @@ public class Product
         return price;
     }
 
-    public void setPrice(double price)
-    {
+    public void setPrice(double price) {
         this.price = price;
     }
 
     public double getPriceWithDiscount() {
-        return price - (price * (discountPercentage/100));
+        return price - (price * (discountPercentage / 100));
+    }
+
+    public HashMap<String, HashMap<String,String>> getReviews() {
+        HashMap<String, HashMap<String, String>> reviewDetails = new HashMap<>();
+        for (Map.Entry<String, String> entry : reviews.entrySet()) {
+            HashMap<String, String> temp = new HashMap<>();
+            temp.put("timeStamp", String.valueOf(reviewTimeStamp.get(entry.getKey())));
+            temp.put("review", entry.getValue());
+            temp.put("rating", String.valueOf(ratings.get(entry.getValue())));
+            reviewDetails.put(entry.getKey(), temp);
+        }
+        return reviewDetails;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
