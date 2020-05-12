@@ -88,6 +88,88 @@ export default function product_management(action) {
             })
                 .then((response) => {
                     if (response.ok) {
+
+                        //Getting the images
+                        var productNames = [];
+                        let imageNumbers = [1, 2, 3];
+                        Object.keys(response.ok.json()).forEach(function (key) {
+                            productNames.push(key);
+                        });
+
+                        productNames.forEach(function (product) {
+                            imageNumbers.forEach(function (imageNumber) {
+                                fetch(BACKEND_BASE_URL + '/getImageByNumber', {
+                                    method: 'POST',
+                                    headers: {
+                                        Accept: 'image/jpeg',
+                                        'Content-Type': 'application/json',
+                                        'Authorization': 'Bearer ' + jwt
+                                    },
+                                    body: JSON.stringify({
+                                        productName: product,
+                                        imageNumber: imageNumber
+                                    }),
+                                })
+                                    .then((response) => {
+                                        if (response.ok) {
+                                            return response.blob();
+                                        } else {
+
+                                        }
+                                    })
+                                    .then((responseBody) => {
+                                        if (responseBody) {
+                                            switch (imageNumber) {
+                                                case 1:
+                                                    json[product] = { ...json[product], main_image_url: URL.createObjectURL(responseBody) }
+                                                    break;
+                                                case 2:
+                                                    json[product] = { ...json[product], second_image_url: URL.createObjectURL(responseBody) }
+                                                    break;
+                                                case 3:
+                                                    json[product] = { ...json[product], third_image_url: URL.createObjectURL(responseBody) }
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        console.log(error)
+                                    });
+
+                            });
+                            
+                            //Getting the Thumbnails
+                            fetch(BACKEND_BASE_URL + '/getThumbnail', {
+                                method: 'POST',
+                                headers: {
+                                    Accept: 'image/jpeg',
+                                    'Content-Type': 'application/json',
+                                    'Authorization': 'Bearer ' + jwt
+                                },
+                                body: JSON.stringify({
+                                    productName: product
+                                }),
+                            })
+                                .then((response) => {
+                                    if (response.ok) {
+                                        return response.blob();
+                                    } else {
+
+                                    }
+                                })
+                                .then((responseBody) => {
+                                    if (responseBody) {
+                                        json[product] = { ...json[product], thumbnail_url: URL.createObjectURL(responseBody) }
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error)
+                                });
+                        });
+
+
                         return {
                             status: STATUS_OK,
                             payload: {

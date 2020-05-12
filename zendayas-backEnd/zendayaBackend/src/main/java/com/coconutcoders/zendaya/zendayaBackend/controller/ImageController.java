@@ -183,6 +183,40 @@ public class ImageController {
     }
 
     /**
+     * get a image by it's number
+     * POST to http://localhost:8080/getImageByNumber
+     *
+     * @param payload should contain JSON key-value pairs with key(s): "productName", "imageNumber"
+     * @return NOT_FOUND if no such Product in DB, else OK
+     */
+    @RequestMapping(value = "/getImageByNumber", method = RequestMethod.POST, consumes = "application/json", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity getImageByNumber(@RequestBody Map<String, String> payload) {
+
+        if (!payload.containsKey("productName") || !payload.containsKey("imageNumber")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String productName = payload.get("productName");
+        final int imageNumber = Integer.parseInt(payload.get("imageNumber"));
+
+        Image images = imageRepo.findByProductName(productName);
+        if (images == null) {
+            return new ResponseEntity<>("Product Not Found in database", HttpStatus.NOT_FOUND);
+        }
+
+        Path tempFile = null;
+        try {
+            tempFile = Files.createTempFile(null, ".jpeg");
+            Files.write(tempFile, images.getImage(imageNumber));
+        } catch (NullPointerException | IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("No image Found", HttpStatus.NOT_FOUND);
+        }
+        File fileToSend = tempFile.toFile();
+
+        return new ResponseEntity<>(new FileSystemResource(fileToSend), HttpStatus.OK);
+    }
+
+    /**
      * updates image in a Product
      * POST to http://localhost:8080/updateImage
      *

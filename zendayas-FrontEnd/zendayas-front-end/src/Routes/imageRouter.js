@@ -15,29 +15,54 @@ export default class ImageRouter extends Component {
         }
     }
 
-    componentDidMount() {
-        this.getThumbnail();
-    }
-
-    handleClick(event) {
-        console.log(event.target.files[0]);
-        // this.setState({
-        //     selectedFile: event.target.files[0]
-        // }, () => this.fileUploadHandler());
-    }
-
     render() {
         return (
             <div>
-                <img alt="" src={this.state.url} />
-                <br />
-                <input
-                    id="myInput"
-                    type={"file"}
-                    onChange={this.handleClick}
-                />
+                {this.test()}
             </div>
         );
+    }
+
+    test() {
+        var json = { "Shirt": { "reviews": {}, "price": { "discountPercentage": 8.0, "originalPrice": 150.0, "finalPrice": 138.0 }, "name": "Shirt", "description": "Cotton Shirt", "average_rating": 0.0 }, "Slippers": { "reviews": { "admin": { "time_stamp": "Mon May 11 02:29:12 UTC 2020", "review": "awesome slippers", "rating": "null", "username": "admin" }, "sm222": { "time_stamp": "Mon May 11 02:29:29 UTC 2020", "review": "bad slippers", "rating": "null", "username": "sm222" } }, "price": { "discountPercentage": 2.0, "originalPrice": 100.0, "finalPrice": 98.0 }, "name": "Slippers", "description": "rubber slippers", "average_rating": 3.0 }, "Shoes": { "reviews": {}, "price": { "discountPercentage": 0.0, "originalPrice": 999.0, "finalPrice": 999.0 }, "name": "Shoes", "description": "nice Shoes", "average_rating": 0.0 } };
+        let productNames = [];
+        Object.keys(json).forEach(function (key) {
+            productNames.push(key);
+        });
+
+        productNames.forEach(function (product) {
+            fetch(BACKEND_BASE_URL + '/getThumbnail', {
+                method: 'POST',
+                headers: {
+                    Accept: 'image/jpeg',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwt
+                },
+                body: JSON.stringify({
+                    productName: product
+                }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.blob();
+                    } else {
+
+                    }
+                })
+                .then((responseBody) => {
+                    if (responseBody) {
+                        json[product] = { ...json[product], thumbnail_url: URL.createObjectURL(responseBody) }
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                });
+
+        });
+
+
+
+        console.log(json);
     }
 
 
