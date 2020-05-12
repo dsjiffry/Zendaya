@@ -54,7 +54,7 @@ export default function user_management(action) {
             })
                 .then((response) => {
                     if (response.ok) {
-                        user_info_cookie.set("USER", response.json().jwt, { path: '/' }); //Storing the jwt in cookie for future requests
+                        //user_info_cookie.set("USER", response.json().jwt, { path: '/' }); //Storing the jwt in cookie for future requests
                         return {
                             status: STATUS_OK,
                             payload: {
