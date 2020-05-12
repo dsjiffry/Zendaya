@@ -23,7 +23,7 @@ const reducer = (state, action) => {
         const user_object = {
             ...state,
             isAuthenticated: true,
-            username: action.payload.user,
+            username: action.payload.username,
             password : action.payload.password,
             type : action.payload.type,
             jwt_token: action.payload.jwt
@@ -31,9 +31,9 @@ const reducer = (state, action) => {
 
         //Storing the jwt for future requests  
         cookies.set("USER", user_object , { path: '/' }); 
-      
+        console.log("LOGIN user store reducer " , user_object)
         return user_object;
-     
+        
     case "LOGOUT":
       cookies.remove("USER")
       return initialState

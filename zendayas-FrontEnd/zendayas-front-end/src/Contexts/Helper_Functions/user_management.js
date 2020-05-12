@@ -2,7 +2,7 @@ import Cookies from 'universal-cookie';
 const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
 
-export default function user_management(action) {
+export default async function user_management(action) {
     //Command and Payload pattern
     //An object is sent to this method with 2 parameters
     //type -> the command o execute (Which sub function to run)
