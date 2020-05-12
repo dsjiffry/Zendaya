@@ -74,6 +74,7 @@ export default function user_management(action) {
                 })
                 .then(
                     (response)  => {
+                        console.log(response)
                         return {
                             status: STATUS_OK,
                             payload: {
