@@ -87,12 +87,28 @@ export default function product_management(action) {
                 }),
             })
                 .then((response) => {
+
                     if (response.ok) {
+                        return response.json()
+                    }
+                    else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {
+                                jwt_token: ""
+                            }
+                        }
+                    }
+                })
+                .then((response) => {
+                    if (response) {
+
+                        let json = response;
 
                         //Getting the images
                         var productNames = [];
                         let imageNumbers = [1, 2, 3];
-                        Object.keys(response.ok.json()).forEach(function (key) {
+                        Object.keys(response).forEach(function (key) {
                             productNames.push(key);
                         });
 
@@ -139,7 +155,7 @@ export default function product_management(action) {
                                     });
 
                             });
-                            
+
                             //Getting the Thumbnails
                             fetch(BACKEND_BASE_URL + '/getThumbnail', {
                                 method: 'POST',
@@ -173,7 +189,7 @@ export default function product_management(action) {
                         return {
                             status: STATUS_OK,
                             payload: {
-                                productList: response.json(),
+                                productList: json,
                             }
                         }
 
@@ -212,11 +228,25 @@ export default function product_management(action) {
                 }),
             })
                 .then((response) => {
+
                     if (response.ok) {
+                        return response.json()
+                    }
+                    else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {
+                                jwt_token: ""
+                            }
+                        }
+                    }
+                })
+                .then((response) => {
+                    if (response) {
                         return {
                             status: STATUS_OK,
                             payload: {
-                                productList: response.json(),
+                                productList: response,
                             }
                         }
 
@@ -249,11 +279,25 @@ export default function product_management(action) {
                 },
             })
                 .then((response) => {
+
                     if (response.ok) {
+                        return response.json()
+                    }
+                    else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {
+                                jwt_token: ""
+                            }
+                        }
+                    }
+                })
+                .then((response) => {
+                    if (response) {
                         return {
                             status: STATUS_OK,
                             payload: {
-                                categoryList: response.json()
+                                categoryList: response
                             }
                         }
 
@@ -314,6 +358,7 @@ export default function product_management(action) {
                         }
                     }
                 });
+
         case "DELETE_CATEGORY":
             //Delete Category 
             const { DC_category } = action.payload;
@@ -452,6 +497,7 @@ export default function product_management(action) {
                     discount: AP_discount,
                 }),
             })
+
                 .then((response) => {
                     if (response.ok) {
 
