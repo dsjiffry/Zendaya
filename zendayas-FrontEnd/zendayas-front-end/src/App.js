@@ -11,9 +11,15 @@ import TestPage from './Pages/TestPage';
 
 import {initialState as userInitialState, UserContext , reducer as userReducer} from "./Contexts/UserStore"
 
+import {initialState as productInitialState , ProductContext , reducer as productReducer} from "./Contexts/ProductStore" 
+import AdminLogin from './Pages/AdminLogin';
+import AdminConsole from './Pages/AdminConsole';
+
 function App() {
 
   const [state, dispatch] = React.useReducer(userReducer, userInitialState);
+
+  const [product_state, product_dispatch] = React.useReducer(productReducer, productInitialState);
   
 
   return (
@@ -24,14 +30,28 @@ function App() {
           dispatch
         }}
       >
-        <div className="App">
-          <Switch>
-            <Route path="/test">
-              {/* This page is for Testing Purposes Only */}
-              <TestPage />
-            </Route>
-          </Switch>
-        </div>
+        <ProductContext.Provider
+          value={{
+            product_state,
+            product_dispatch
+          }}
+        >
+          <div className="App">
+            <Switch>
+              <Route path="/test">
+                {/* This page is for Testing Purposes Only */}
+                <TestPage />
+              </Route>
+              <Route path = "/adminConsole">
+                <AdminConsole/>
+              </Route>
+              <Route path = "/admin">
+                <AdminLogin/>
+              </Route>
+            </Switch>
+          </div>
+
+        </ProductContext.Provider>
       </UserContext.Provider>
     </Router>
   );
