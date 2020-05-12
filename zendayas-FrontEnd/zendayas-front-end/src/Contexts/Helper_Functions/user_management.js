@@ -35,14 +35,14 @@ export default function user_management(action) {
         jwt_token = user_info_cookie.jwt_token;
     }
 
-    
+
 
     switch (action.type) {
 
         case "AUTHENTICATE":
             const { AUTH_username, AUTH_password } = action.payload;
 
-                    
+
             console.log(action.type)
             console.log(action.payload)
 
@@ -62,7 +62,7 @@ export default function user_management(action) {
 
                     if (response.ok) {
                         return response.json()
-                    } 
+                    }
                     else {
                         return {
                             status: STATUS_NOT_FOUND,
@@ -73,7 +73,7 @@ export default function user_management(action) {
                     }
                 })
                 .then(
-                    (response)  => {
+                    (response) => {
                         console.log(response)
                         return {
                             status: STATUS_OK,
@@ -111,14 +111,28 @@ export default function user_management(action) {
                 }),
             })
                 .then((response) => {
+
                     if (response.ok) {
+                        return response.json()
+                    }
+                    else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {
+                                jwt_token: ""
+                            }
+                        }
+                    }
+                })
+                .then((response) => {
+                    if (response) {
                         return {
                             status: STATUS_OK,
                             payload: {
-                                username: response.json().username,
-                                email: response.json().email,
-                                password: response.json().password,
-                                type: response.json().type
+                                username: response.username,
+                                email: response.email,
+                                password: response.password,
+                                type: response.type
                             }
                         }
                     } else {
@@ -245,11 +259,25 @@ export default function user_management(action) {
                 }),
             })
                 .then((response) => {
+
                     if (response.ok) {
+                        return response.json()
+                    }
+                    else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {
+                                jwt_token: ""
+                            }
+                        }
+                    }
+                })
+                .then((response) => {
+                    if (response) {
                         return {
                             status: STATUS_OK,
                             payload: {
-                                Store_managers: response.json()
+                                Store_managers: response
                             }
                         }
 
