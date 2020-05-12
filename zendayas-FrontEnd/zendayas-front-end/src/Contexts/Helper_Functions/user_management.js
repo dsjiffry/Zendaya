@@ -40,30 +40,39 @@ export default async function user_management(action) {
     switch (action.type) {
 
         case "AUTHENTICATE":
+
             const { AUTH_username, AUTH_password } = action.payload;
-
-
             console.log(action.type)
             console.log(action.payload)
 
-            //GET JWT token from server as well as  http status
-            fetch(BACKEND_BASE_URL + '/authenticate', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    userName: AUTH_username,
-                    password: AUTH_password
-                }),
-            })
-                .then((response) => {
+            try {
 
-                    if (response.ok) {
-                        return response.json()
+                    let response = await
+                    fetch(BACKEND_BASE_URL + '/authenticate', {
+                        method: 'POST',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userName: AUTH_username,
+                            password: AUTH_password
+                        }),
+                    });
+
+                    if(response.ok)
+                    {
+                        let data = await response.json();
+                        
+                        return {
+                            status: STATUS_OK,
+                            payload: {
+                                jwt_token: data.jwt
+                            }
+                        }
                     }
-                    else {
+                    else
+                    {
                         return {
                             status: STATUS_NOT_FOUND,
                             payload: {
@@ -71,28 +80,18 @@ export default async function user_management(action) {
                             }
                         }
                     }
-                })
-                .then(
-                    (response) => {
-                        console.log(response)
-                        return {
-                            status: STATUS_OK,
-                            payload: {
-                                jwt_token: response.jwt
-                            }
-                        }
+                
+            } catch (error) {
+                
+                return {
+                    status: STATUS_NOT_FOUND,
+                    payload: {
+                        jwt_token: ""
                     }
-                )
-                .catch((error) => {
-                    console.log(error)
-                    return {
-                        status: STATUS_SERVER_ERROR,
-                        payload: {
-                            jwt_token: ""
-                        }
-                    }
-                });
+                }
 
+            }
+            
 
         case "GET_USER_INFO":
             //Extract The parameters from the payload object
