@@ -35,10 +35,16 @@ export default function user_management(action) {
         jwt_token = user_info_cookie.jwt_token;
     }
 
+    
+
     switch (action.type) {
 
         case "AUTHENTICATE":
             const { AUTH_username, AUTH_password } = action.payload;
+
+                    
+            console.log(action.type)
+            console.log(action.payload)
 
             //GET JWT token from server as well as  http status
             fetch(BACKEND_BASE_URL + '/authenticate', {
@@ -53,15 +59,11 @@ export default function user_management(action) {
                 }),
             })
                 .then((response) => {
+
                     if (response.ok) {
-                        //user_info_cookie.set("USER", response.json().jwt, { path: '/' }); //Storing the jwt in cookie for future requests
-                        return {
-                            status: STATUS_OK,
-                            payload: {
-                                jwt_token: response.json().jwt
-                            }
-                        }
-                    } else {
+                        return response.json()
+                    } 
+                    else {
                         return {
                             status: STATUS_NOT_FOUND,
                             payload: {
@@ -70,6 +72,16 @@ export default function user_management(action) {
                         }
                     }
                 })
+                .then(
+                    (response)  => {
+                        return {
+                            status: STATUS_OK,
+                            payload: {
+                                jwt_token: response.jwt
+                            }
+                        }
+                    }
+                )
                 .catch((error) => {
                     console.log(error)
                     return {
