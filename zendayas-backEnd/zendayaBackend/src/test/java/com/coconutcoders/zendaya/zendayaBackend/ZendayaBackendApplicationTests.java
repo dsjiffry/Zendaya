@@ -34,7 +34,7 @@ public class ZendayaBackendApplicationTests {
     public void preRequisites() {
         ZendayaBackendApplication.main(new String[]{});
         String url = baseURL + "/authenticate";
-        Map<String, String> body = new HashMap<>();
+        Map<String, String> body = new HashMap<>(); // The JSON Body
         body.put("userName", username);
         body.put("username", username);
         body.put("password", password);
@@ -54,15 +54,13 @@ public class ZendayaBackendApplicationTests {
 
     @Test
     public void testProductCRUD() {
-        Map<String, String> body = new HashMap<>();
-        body.put("productName", "testProduct");
-        body.put("price", "999");
-        body.put("description", "product for test. Should be deleted at end of test");
-        body.put("discount", "4");
-        body.put("username", username);
+        Map<String, String> body = new HashMap<>(); // The JSON Body
 
         //Creating a Product
         String url = baseURL + "/addProduct";
+        body.put("productName", "testProduct");
+        body.put("price", "999");
+        body.put("description", "product for test. Should be deleted at end of test");
         HttpResponse response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -70,6 +68,7 @@ public class ZendayaBackendApplicationTests {
 
         //Adding a Review
         url = baseURL + "/addReview";
+        body.put("productName", "testProduct");
         body.put("username", username);
         body.put("description", "I love this test product");
         body.put("rating", "4.2");
@@ -80,8 +79,43 @@ public class ZendayaBackendApplicationTests {
 
         //Updating a Product
         url = baseURL + "/updateProduct";
+        body.put("productName", "testProduct");
+        body.put("price", "899");
+        body.put("description", "product for test. Should be deleted at end of test");
         body.put("discount", "10");
         body.put("newProductName", "testProduct");
+        response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
+        //Updating a Product's discount
+        url = baseURL + "/setProductDiscount";
+        body.put("discount", "12");
+        body.put("productName", "testProduct");
+        response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
+        //Searching for products
+        url = baseURL + "/searchProductsByName";
+        body.put("productName", "");
+        response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
+        //Searching for products that have a discount
+        url = baseURL + "/searchProductWithDiscount";
+        response = createRequest(body, url, true);
+
+        assertNotNull(response);
+        assertTrue(response.getStatusLine().getStatusCode() <= 399);
+
+        //Get a products Pricing details
+        url = baseURL + "/getProductPricingDetails";
+        body.put("productName", "testProduct");
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -92,12 +126,12 @@ public class ZendayaBackendApplicationTests {
 
     @Test(dependsOnMethods = {"testProductCRUD"})
     public void testWishListCRUD() {
-        Map<String, String> body = new HashMap<>();
-        body.put("productName", "testProduct");
-        body.put("username", username);
+        Map<String, String> body = new HashMap<>(); // The JSON Body
 
         //Adding to wish list
         String url = baseURL + "/addToWishList";
+        body.put("productName", "testProduct");
+        body.put("username", username);
         HttpResponse response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -105,6 +139,8 @@ public class ZendayaBackendApplicationTests {
 
         //Moving to Shopping cart
         url = baseURL + "/moveToShoppingCart";
+        body.put("productName", "testProduct");
+        body.put("username", username);
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -112,6 +148,8 @@ public class ZendayaBackendApplicationTests {
 
         //removing from Shopping cart
         url = baseURL + "/removeFromShoppingCart";
+        body.put("productName", "testProduct");
+        body.put("username", username);
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -119,6 +157,8 @@ public class ZendayaBackendApplicationTests {
 
         //removing from wish list
         url = baseURL + "/removeFromWishList";
+        body.put("productName", "testProduct");
+        body.put("username", username);
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -127,15 +167,13 @@ public class ZendayaBackendApplicationTests {
 
     @Test(dependsOnMethods = {"testWishListCRUD"})
     public void testShoppingCartCRUD() {
-        Map<String, String> body = new HashMap<>();
-        body.put("productName", "testProduct");
-        body.put("username", username);
-        body.put("quantity", "2");
-        body.put("paymentMode","cash");
-        body.put("address","No 15 ");
+        Map<String, String> body = new HashMap<>(); // The JSON Body
 
         //Adding to Shopping cart
         String url = baseURL + "/addToShoppingCart";
+        body.put("username", username);
+        body.put("productName", "testProduct");
+        body.put("quantity", "2");
         HttpResponse response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -143,6 +181,7 @@ public class ZendayaBackendApplicationTests {
 
         // Getting the combined details of the items
         url = baseURL + "/getTotalPriceAndNumberOfItems";
+        body.put("username", username);
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -150,6 +189,7 @@ public class ZendayaBackendApplicationTests {
 
         // Getting the individual details of the items
         url = baseURL + "/getProductsAndDetails";
+        body.put("username", username);
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -157,6 +197,8 @@ public class ZendayaBackendApplicationTests {
 
         //removing from Shopping cart
         url = baseURL + "/removeFromShoppingCart";
+        body.put("username", username);
+        body.put("productName", "testProduct");
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -164,6 +206,9 @@ public class ZendayaBackendApplicationTests {
 
         //purchase items in Shopping cart
         url = baseURL + "/purchaseItemsInCart";
+        body.put("username", username);
+        body.put("paymentMode","cash");
+        body.put("address","No 15 ");
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -172,17 +217,16 @@ public class ZendayaBackendApplicationTests {
 
     @Test(dependsOnMethods = {"testShoppingCartCRUD"})
     public void testPayment() {
-        Map<String, String> body = new HashMap<>();
-        body.put("username", username);
-        body.put("status", "delivered");
+        Map<String, String> body = new HashMap<>(); // The JSON Body
+        String dateTime = "";
 
         // Getting Payment History
         String url = baseURL + "/getPaymentHistory";
+        body.put("username", username);
         HttpResponse response = createRequest(body, url, true);
         try {
-            String dateTime = EntityUtils.toString(response.getEntity(), "UTF-8");
+            dateTime = EntityUtils.toString(response.getEntity(), "UTF-8");
             dateTime = dateTime.split(",")[0].split("\"")[1];
-            body.put("dateTime", dateTime);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -192,6 +236,8 @@ public class ZendayaBackendApplicationTests {
 
         // Getting the details of particular purchase
         url = baseURL + "/getPaymentDetails";
+        body.put("username", username);
+        body.put("dateTime", dateTime);
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -199,6 +245,9 @@ public class ZendayaBackendApplicationTests {
 
         // set the order status
         url = baseURL + "/setOrderStatus";
+        body.put("username", username);
+        body.put("dateTime", dateTime);
+        body.put("status", "delivered");
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -206,6 +255,8 @@ public class ZendayaBackendApplicationTests {
 
         // get the order status
         url = baseURL + "/getOrderStatus";
+        body.put("username", username);
+        body.put("dateTime", dateTime);
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -215,12 +266,11 @@ public class ZendayaBackendApplicationTests {
 
     @Test(dependsOnMethods = {"testProductCRUD"})
     public void testProductCategories() {
-        Map<String, String> body = new HashMap<>();
-        body.put("categoryName", "testCategory");
-        body.put("productName", "testProduct");
+        Map<String, String> body = new HashMap<>(); // The JSON Body
 
         // Creating a Category
         String url = baseURL + "/createCategory";
+        body.put("categoryName", "testCategory");
         HttpResponse response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -228,6 +278,8 @@ public class ZendayaBackendApplicationTests {
 
         // add Product to Category
         url = baseURL + "/addToCategory";
+        body.put("categoryName", "testCategory");
+        body.put("productName", "testProduct");
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -235,6 +287,8 @@ public class ZendayaBackendApplicationTests {
 
         // remove Product from Category
         url = baseURL + "/removeFromCategory";
+        body.put("categoryName", "testCategory");
+        body.put("productName", "testProduct");
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -249,6 +303,7 @@ public class ZendayaBackendApplicationTests {
 
         // deleting the category
         url = baseURL + "/deleteCategory";
+        body.put("categoryName", "testCategory");
         response = createRequest(body, url, true);
 
         assertNotNull(response);
@@ -257,7 +312,7 @@ public class ZendayaBackendApplicationTests {
 
     @AfterSuite
     public void DeleteAll() {
-        Map<String, String> body = new HashMap<>();
+        Map<String, String> body = new HashMap<>(); // The JSON Body
         body.put("productName", "testProduct");
         body.put("price", "999");
         body.put("description", "product for test. Should be deleted at end of test");
