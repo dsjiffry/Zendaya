@@ -48,17 +48,17 @@ export default async function user_management(action) {
             try {
 
                     let response = await
-                    fetch(BACKEND_BASE_URL + '/authenticate', {
-                        method: 'POST',
-                        headers: {
-                            Accept: 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            userName: AUTH_username,
-                            password: AUTH_password
-                        }),
-                    });
+                        fetch(BACKEND_BASE_URL + '/authenticate', {
+                            method: 'POST',
+                            headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                userName: AUTH_username,
+                                password: AUTH_password
+                            }),
+                        });
 
                     if(response.ok)
                     {
@@ -97,8 +97,9 @@ export default async function user_management(action) {
             //Extract The parameters from the payload object
             const { GUI_username } = action.payload;
 
-            //GET user Information email , username , password  from server as well as http status
-            fetch(BACKEND_BASE_URL + '/getUserInfo', {
+            try {
+                  //GET user Information email , username , password  from server as well as http status
+            let response = await fetch(BACKEND_BASE_URL + '/getUserInfo', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -108,46 +109,35 @@ export default async function user_management(action) {
                 body: JSON.stringify({
                     username: GUI_username,
                 }),
-            })
-                .then((response) => {
+            });
 
-                    if (response.ok) {
-                        return response.json()
+            if(response.ok)
+            {
+                let data = await response.json();
+
+                return {
+                    status: STATUS_OK,
+                    payload: {
+                        username: data.username,
+                        email: data.email,
+                        password: data.password,
+                        type: data.type
                     }
-                    else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {
-                                jwt_token: ""
-                            }
-                        }
+                }
+            }
+            else
+            {
+                return {
+                    status: STATUS_NOT_FOUND,
+                    payload: {
+                        jwt_token: ""
                     }
-                })
-                .then((response) => {
-                    if (response) {
-                        return {
-                            status: STATUS_OK,
-                            payload: {
-                                username: response.username,
-                                email: response.email,
-                                password: response.password,
-                                type: response.type
-                            }
-                        }
-                    } else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {
-                                username: "",
-                                email: "",
-                                password: "",
-                                type: ""
-                            }
-                        }
-                    }
-                })
-                .catch((error) => {
+                }
+            } 
+            } catch (error) {
+                
                     console.log(error)
+                
                     return {
                         status: STATUS_SERVER_ERROR,
                         payload: {
@@ -157,195 +147,189 @@ export default async function user_management(action) {
                             type: ""
                         }
                     }
-                });
-
-
+                
+            }
+                
+              
         case "CREATE_USER":
             //Extract The parameters from the payload object
             const { CU_username, CU_password, CU_email } = action.payload;
 
-            //GET user Information email , username , password  from server as well as http 
-            fetch(BACKEND_BASE_URL + '/createUser', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: CU_username,
-                    password: CU_password,
-                    email: CU_email
-                }),
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return {
-                            status: STATUS_OK,
-                            payload: {}
-                        }
-                    } else {
-                        return {
-                            status: STATUS_CONFLICT,
-                            payload: {}
-                        }
+            try {
+                //GET user Information email , username , password  from server as well as http 
+                let response = await fetch(BACKEND_BASE_URL + '/createUser', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: CU_username,
+                        password: CU_password,
+                        email: CU_email
+                    }),
+                });
+
+                if(response.ok)
+                {
+                    return {
+                        status: STATUS_OK,
+                        payload: {}
                     }
-                })
-                .catch((error) => {
+                }
+                else
+                {
+                    return {
+                        status: STATUS_CONFLICT,
+                        payload: {}
+                    }
+                }
+            } catch (error) {
                     console.log(error)
                     return {
                         status: STATUS_SERVER_ERROR,
                         payload: {}
                     }
-                });
-
+            }
 
 
         case "CREATE_STORE_MANAGER":
             //Extract The parameters from the payload object
             const { CSM_username, CSM_password, CSM_email, ADMIN_username, ADMIN_password } = action.payload;
 
-            //GET user Information email , username , password  from server as well as http status
-            fetch(BACKEND_BASE_URL + '/createStoreManager', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    adminUsername: ADMIN_username,
-                    adminPassword: ADMIN_password,
-                    StoreManagerUsername: CSM_username,
-                    StoreManagerPassword: CSM_password,
-                    StoreManagerEmail: CSM_email
-                }),
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return {
-                            status: STATUS_OK,
-                            payload: {}
-                        }
-                    } else {
-                        return {
-                            status: STATUS_CONFLICT,
-                            payload: {}
-                        }
-                    }
+            try {
+
+                let response = await fetch(BACKEND_BASE_URL + '/createStoreManager', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        adminUsername: ADMIN_username,
+                        adminPassword: ADMIN_password,
+                        StoreManagerUsername: CSM_username,
+                        StoreManagerPassword: CSM_password,
+                        StoreManagerEmail: CSM_email
+                    }),
                 })
-                .catch((error) => {
+            
+                if (response.ok) {
+                    return {
+                        status: STATUS_OK,
+                        payload: {}
+                    }
+                } else {
+                    return {
+                        status: STATUS_CONFLICT,
+                        payload: {}
+                    }
+                }
+                
+            } catch (error) {
                     console.log(error)
                     return {
                         status: STATUS_SERVER_ERROR,
                         payload: {}
                     }
-                });
+            }   
 
+        
+        //GET list of matching Store_managers (LIKE %search_keyword%)
+            
         case "GET_ALL_STORE_MANAGER":
 
             //Extract The parameters from the payload object
             const { GASM_search_keyword } = action.payload;
 
-            //GET list of matching Store_managers (LIKE %search_keyword%)
-            fetch(BACKEND_BASE_URL + '/searchStoreManagersByName', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + jwt_token
-                },
-                body: JSON.stringify({
-                    StoreManagerName: GASM_search_keyword //If empty string, will return all store managers
-                }),
-            })
-                .then((response) => {
-
-                    if (response.ok) {
-                        return response.json()
-                    }
-                    else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {
-                                jwt_token: ""
-                            }
-                        }
-                    }
+            try {
+                let response = await fetch(BACKEND_BASE_URL + '/searchStoreManagersByName', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        StoreManagerName: GASM_search_keyword //If empty string, will return all store managers
+                    }),
                 })
-                .then((response) => {
-                    if (response) {
-                        return {
-                            status: STATUS_OK,
-                            payload: {
-                                Store_managers: response
-                            }
-                        }
 
-                    } else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {
-                                Store_managers: []
-                            }
+                if (response.ok) {
+                    return response.json()
+                }
+                else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {
+                            jwt_token: ""
                         }
                     }
-                })
-                .catch((error) => {
-                    console.log(error)
+                }
+                
+            } catch (error) {
+                console.log(error)
                     return {
                         status: STATUS_SERVER_ERROR,
                         payload: {
                             Store_managers: []
                         }
                     }
-                });
+            }
+
+               
 
         case "EDIT_STORE_MANAGER":
             //Extract The parameters from the payload object
             const { SM_username, ESM_username, ESM_password, ESM_email } = action.payload;
 
-            //UPDATE Store manager Information email , username , password  from server as well as http status
-            fetch(BACKEND_BASE_URL + '/updateUser', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + jwt_token
-                },
-                body: JSON.stringify({
-                    username: SM_username, //The current username
-                    newUsername: ESM_username,
-                    newPassword: ESM_password,
-                    newEmail: ESM_email
-                }),
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return {
-                            status: STATUS_OK,
-                            payload: {}
-                        }
+            try {
 
-                    } else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {}
-                        }
-                    }
+                //UPDATE Store manager Information email , username , password  from server as well as http status
+                let response = await fetch(BACKEND_BASE_URL + '/updateUser', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        username: SM_username, //The current username
+                        newUsername: ESM_username,
+                        newPassword: ESM_password,
+                        newEmail: ESM_email
+                    }),
                 })
-                .catch((error) => {
+
+                if (response.ok) {
+                    return {
+                        status: STATUS_OK,
+                        payload: {}
+                    }
+
+                } 
+                else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+                    
+                } 
+                catch (error) {
                     console.log(error)
                     return {
                         status: STATUS_SERVER_ERROR,
                         payload: {}
                     }
-                });
+                }
 
         case "DELETE_STORE_MANAGER":
             //Extract The parameters from the payload object
             const { DSM_username } = action.payload;
 
             //DELETE store manager Information email , username , password  from server as well as http status
-            fetch(BACKEND_BASE_URL + '/deleteUser', {
+            let response = await fetch(BACKEND_BASE_URL + '/deleteUser', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
