@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -164,5 +166,81 @@ public class WishListController {
 
         return new ResponseEntity<>(productName+" moved to Shopping Cart", HttpStatus.OK);
     }
+
+    /**
+     * returns the items, their individual price and quantity in Wishlist
+     * POST to http://localhost:8080/getWishListProductsAndDetails
+     *
+     * @param payload Should contain JSON key-value pairs with key(s): "username"
+     * @return response a JSON array.
+     */
+    @RequestMapping(value = "/getWishListProductsAndDetails", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity getWishListProductsAndDetails(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+
+        WishList wishList = wishListRepo.findByUsername(username);
+
+        if (wishList == null) {
+            return new ResponseEntity<>("No Wish List found for user " + username, HttpStatus.NOT_FOUND);
+        } else {
+            Map<String, HashMap<String, Object>> response = new HashMap<>();
+
+            ArrayList<String> wishListProducts = wishList.getWishlist();
+            for (String product : wishListProducts) {
+
+                Product tempProduct = productRepo.findByNameIgnoreCase(product);
+                HashMap<String, Object> temp = new HashMap<>();
+
+                temp.put("productName", tempProduct.getName());
+
+                HashMap<String, Number> priceDetails = new HashMap<>();
+
+                priceDetails.put("originalPrice", tempProduct.getPrice());
+                priceDetails.put("discountPercentage", tempProduct.getDiscountPercentage());
+                priceDetails.put("finalPrice", tempProduct.getPriceWithDiscount());
+
+                temp.put("price", priceDetails);
+
+
+                response.put(product, temp);
+            }
+
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+    }
+
+    /**
+     * returns the total price and number of items in WishList
+     * This will apply discounts to the products, if they have it.
+     * POST to http://localhost:8080/getWishListTotalPriceAndNumberOfItems
+     *
+     * @param payload Should contain JSON key-value pairs with key(s): "username"
+     * @return response with JSON keys: "numberOfItems" and "totalPrice"
+     */
+    @RequestMapping(value = "/getWishListTotalPriceAndNumberOfItems", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity getWishListTotalPriceAndNumberOfItems(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+
+        WishList wishList = wishListRepo.findByUsername(username);
+
+        if (wishList == null) {
+            return new ResponseEntity<>("No Wish List found for user " + username, HttpStatus.NOT_FOUND);
+        } else {
+
+            Map<String, Number> response = new HashMap<>();
+            response.put("numberOfItems", wishList.getNumberOfItems());
+            response.put("totalPrice", wishList.getTotalPrice(productRepo));
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+    }
+
 }
 

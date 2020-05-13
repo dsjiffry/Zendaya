@@ -166,7 +166,7 @@ public class ShoppingCartController {
         if (sCart == null) {
             return new ResponseEntity<>("No shopping cart found for user " + username, HttpStatus.NOT_FOUND);
         } else {
-            Map<String, HashMap<String, Number>> response = new HashMap<>();
+            Map<String, HashMap<String, Object>> response = new HashMap<>();
 
             HashMap<String, Integer> productList = sCart.getProductAndQuantity();
             for (Map.Entry<String, Integer> product : productList.entrySet()) {
@@ -174,12 +174,19 @@ public class ShoppingCartController {
                 int quantity = product.getValue();
 
                 Product tempProduct = productRepo.findByNameIgnoreCase(productName);
-                HashMap<String, Number> temp = new HashMap<>();
+                HashMap<String, Object> temp = new HashMap<>();
 
+                temp.put("productName", tempProduct.getName());
                 temp.put("quantity", quantity);
-                temp.put("originalPrice", tempProduct.getPrice());
-                temp.put("discountPercentage", tempProduct.getDiscountPercentage());
-                temp.put("finalPrice", tempProduct.getPriceWithDiscount());
+
+                HashMap<String, Number> priceDetails = new HashMap<>();
+
+                priceDetails.put("originalPrice", tempProduct.getPrice());
+                priceDetails.put("discountPercentage", tempProduct.getDiscountPercentage());
+                priceDetails.put("finalPrice", tempProduct.getPriceWithDiscount());
+
+                temp.put("price", priceDetails);
+                temp.put("average_rating",tempProduct.getAvgRating());
 
                 response.put(productName, temp);
             }

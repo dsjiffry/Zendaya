@@ -36,9 +36,9 @@ export default async function cart_management(action) {
     }
 
     let sample_cart_item = {
-        productName : "sample_product",
+        productName: "sample_product",
 
-        quantity : 1,
+        quantity: 1,
 
         price: {
             originalPrice: 100,
@@ -53,52 +53,250 @@ export default async function cart_management(action) {
     }
 
     switch (action.type) {
-            
+
         case "GET_CART_ITEMS":
             //Get All Products from the cart     
 
             const { GCI_username } = action.payload;
 
-            return {
-                status : STATUS_OK ,
-                payload: {
-                    cartItems : [
-                        sample_cart_item,
-                        {...sample_cart_item , productName : "cart Item 1" },
-                        {...sample_cart_item , productName : "cart Item 2" },
-                        {...sample_cart_item , productName : "cart Item 3" },
-                    ],
-                    cartTotal : 1200
+            try {
+
+                //GET ALL products in cart
+                let response = await fetch(BACKEND_BASE_URL + '/getProductsAndDetails', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        username: GCI_username,
+                    }),
+                });
+
+                if (response.ok) {
+
+                    let data = await response.json();
+
+                    //Getting the images
+                    var productNames = [];
+
+                    Object.keys(data).forEach(function (key) {
+                        productNames.push(key);
+                    });
+
+                    productNames.forEach(function (product) {
+
+                        //Fetching Thumbnails from the server
+                        let response3 = await fetch(BACKEND_BASE_URL + '/getThumbnail', {
+                            method: 'POST',
+                            headers: {
+                                Accept: 'image/jpeg',
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + jwt
+                            },
+                            body: JSON.stringify({
+                                productName: product
+                            }),
+                        })
+
+                        if (response3.ok) {
+                            let thumbnailBlob = await response3.blob();
+
+                            if (thumbnailBlob) {
+                                data[product] = { ...data[product], thumbnail_url: URL.createObjectURL(thumbnailBlob) }
+                            }
+                        }
+                        else {
+                            return {
+                                status: STATUS_NOT_FOUND,
+                                payload: {}
+                            }
+                        }
+                        //-----End Of ProductNames for each loop-------
+                    });
                 }
+                else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+                //Getting cart Total
+                let TotalPrice = 0;
+
+                let response = await fetch(BACKEND_BASE_URL + '/getTotalPriceAndNumberOfItems', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        username: GCI_username,
+                    }),
+                });
+
+                if (response.ok) {
+
+                    let data = await response.json();
+                    TotalPrice = data.totalPrice;
+
+                }
+                else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+                //If All Loops Ran Successfully
+                return {
+                    status: STATUS_OK,
+                    payload: {
+                        cartItems: data,
+                        cartTotal: TotalPrice
+                    }
+                }
+
             }
-        
+
+            catch (error) {
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {}
+                }
+
+            }
+
         case "ADD_ITEM_TO_CART":
 
-            const { AITC_username, AITC_productName} = action.payload;
+            const { AITC_username, AITC_productName } = action.payload;
 
-            //assume quantity is 1
-            return {
-                status: STATUS_OK,
-                payload: {}
+            try {
+
+                let response = await fetch(BACKEND_BASE_URL + '/addToShoppingCart', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        username: AITC_username,
+                        productName: AITC_productName
+                    }),
+                })
+
+                if (response.ok) {
+                    return {
+                        status: STATUS_OK,
+                        payload: {}
+                    }
+
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+            } catch (error) {
+
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {}
+                }
+
             }
 
         case "UPDATE_ITEM_QUANTITY":
 
-            const { UIQ_username, UIQ_productName , UIQ_newQuantity} = action.payload;
-            
-            return {
-                status: STATUS_OK,
-                payload: {}
+            const { UIQ_username, UIQ_productName, UIQ_newQuantity } = action.payload;
+
+            try {
+
+                let response = await fetch(BACKEND_BASE_URL + '/addToShoppingCart', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        username: UIQ_username,
+                        productName: UIQ_productName,
+                        quantity: UIQ_newQuantity
+                    }),
+                })
+
+                if (response.ok) {
+                    return {
+                        status: STATUS_OK,
+                        payload: {}
+                    }
+
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+            } catch (error) {
+
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {}
+                }
+
             }
-        
+
 
         case "DELETE_ITEM_FROM_CART":
 
             const { DIFC_username, DIFC_productName } = action.payload;
 
-            return {
-                status: STATUS_OK,
-                payload: {}
+            try {
+
+                let response = await fetch(BACKEND_BASE_URL + '/removeFromShoppingCart', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        username: DIFC_username,
+                        productName: DIFC_productName
+                    }),
+                })
+
+                if (response.ok) {
+                    return {
+                        status: STATUS_OK,
+                        payload: {}
+                    }
+
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+            } catch (error) {
+
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {}
+                }
+
             }
 
 

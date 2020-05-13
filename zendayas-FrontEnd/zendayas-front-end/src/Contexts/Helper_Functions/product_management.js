@@ -119,19 +119,19 @@ export default async function product_management(action) {
                             });
 
                             if (response2.ok) {
-                                let dataBlob = await response.blob();
+                                let dataBlob = await response2.blob();
 
                                 if (dataBlob) {
 
                                     switch (imageNumber) {
                                         case 1:
-                                            json[product] = { ...json[product], main_image_url: URL.createObjectURL(dataBlob) }
+                                            data[product] = { ...data[product], main_image_url: URL.createObjectURL(dataBlob) }
                                             break;
                                         case 2:
-                                            json[product] = { ...json[product], second_image_url: URL.createObjectURL(dataBlob) }
+                                            data[product] = { ...data[product], second_image_url: URL.createObjectURL(dataBlob) }
                                             break;
                                         case 3:
-                                            json[product] = { ...json[product], third_image_url: URL.createObjectURL(dataBlob) }
+                                            data[product] = { ...data[product], third_image_url: URL.createObjectURL(dataBlob) }
                                             break;
                                         default:
                                             break;
@@ -151,10 +151,10 @@ export default async function product_management(action) {
                                     })
 
                                     if (response3.ok) {
-                                        let thumbnailBlob = await response.blob();
+                                        let thumbnailBlob = await response3.blob();
 
                                         if (thumbnailBlob) {
-                                            json[product] = { ...json[product], thumbnail_url: URL.createObjectURL(thumbnailBlob) }
+                                            data[product] = { ...data[product], thumbnail_url: URL.createObjectURL(thumbnailBlob) }
                                         }
                                     }
                                     else {
@@ -187,7 +187,7 @@ export default async function product_management(action) {
                     return {
                         status: STATUS_OK,
                         payload: {
-                            productList: json,
+                            productList: data,
                         }
                     }
 
