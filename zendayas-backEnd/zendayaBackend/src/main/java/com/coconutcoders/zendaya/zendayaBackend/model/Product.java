@@ -91,7 +91,7 @@ public class Product {
         return price - (price * (discountPercentage / 100));
     }
 
-    public HashMap<String, HashMap<String,String>> getReviews() {
+    public HashMap<String, HashMap<String, String>> getReviews() {
         HashMap<String, HashMap<String, String>> reviewDetails = new HashMap<>();
         for (Map.Entry<String, String> entry : reviews.entrySet()) {
             HashMap<String, String> temp = new HashMap<>();
@@ -105,5 +105,20 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUserReview(String username)
+    {
+        return reviews.get(username);
+    }
+
+    public Double getUserRating(String username)
+    {
+        return ratings.get(username);
+    }
+
+    public Date getUserTimeStamp(String username)
+    {
+        return reviewTimeStamp.get(username);
     }
 }
