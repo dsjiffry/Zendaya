@@ -16,7 +16,7 @@ public class Payment {
 
     private String username;
     private String dateTime;
-    private HashMap<String, HashMap<String, Number>> itemsPurchased;// Name of item, price per item and quantity per
+    private HashMap<String, HashMap<String, Number>> itemsPurchased;// Name of item, price per item and quantity per item
     private double totalPrice;
     private OrderStatus orderStatus;
     private String address;

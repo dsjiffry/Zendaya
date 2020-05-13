@@ -88,6 +88,41 @@ public class ProductController {
     }
 
     /**
+     * gets reviews made by user
+     * POST to http://localhost:8080/getReviews
+     *
+     * @param payload should contain JSON key-value pairs with key(s): "username"
+     * @return NOT FOUND if product is not in database, else OK
+     */
+    @RequestMapping(value = "/getReviews", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity getReviews(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+
+        List<Product> productList = productRepo.findAll();
+        if (productList == null || productList.isEmpty()) {
+            return new ResponseEntity<>("Product Not Found in database", HttpStatus.NOT_FOUND);
+        }
+
+        HashMap<String, Object> response = new HashMap<>();
+        for (Product product : productList)
+        {
+            if(product.getUserReview(username) != null) {
+                HashMap<String, Object> temp = new HashMap<>();
+                temp.put("productName", product.getName());
+                temp.put("review", product.getUserReview(username));
+                temp.put("rating", product.getUserRating(username));
+                temp.put("timeStamp", product.getUserTimeStamp(username));
+                response.put(product.getName(),temp);
+            }
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    /**
      * Removes Product from Database
      * POST to http://localhost:8080/removeProduct
      *

@@ -48,33 +48,33 @@ export default async function order_management(action) {
     // private String creditCardExpiryDate;
 
     let sample_Order = {
-        
-        ordered_items : [
+
+        ordered_items: [
             {
-                productName : "sample product 1",
-                quanity : 1,
-                thumbnail_image : "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSDKAmpALJJ_qFnUIVmshb6icVTHlMLMwqapQZTj38pvCQslqtI&usqp=CAU"
+                productName: "sample product 1",
+                quanity: 1,
+                thumbnail_image: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSDKAmpALJJ_qFnUIVmshb6icVTHlMLMwqapQZTj38pvCQslqtI&usqp=CAU"
             },
             {
-                productName : "sample product 2",
-                quanity : 1,
-                thumbnail_image : "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSDKAmpALJJ_qFnUIVmshb6icVTHlMLMwqapQZTj38pvCQslqtI&usqp=CAU"
+                productName: "sample product 2",
+                quanity: 1,
+                thumbnail_image: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSDKAmpALJJ_qFnUIVmshb6icVTHlMLMwqapQZTj38pvCQslqtI&usqp=CAU"
             }
         ],
         //quantity : 1,
         //Convert date String from server to JS date format
-        order_date : new Date(),
-        order_total : 1000,
-        order_status : "PAYMENT_MADE",
-        order_payment_method : "CREDIT_CARD",
-        order_address : "Customer home",
-        order_credit_card_number : "0000-0000-0000-0000",
+        order_date: new Date(),
+        order_total: 1000,
+        order_status: "PAYMENT_MADE",
+        order_payment_method: "CREDIT_CARD",
+        order_address: "Customer home",
+        order_credit_card_number: "0000-0000-0000-0000",
     }
 
     let sample_reviewed_item = {
-        productName : "sample product 1",
-        review : "This product Good",
-        rating : 3.5
+        productName: "sample product 1",
+        review: "This product Good",
+        rating: 3.5
     }
 
     switch (action.type) {
@@ -82,95 +82,300 @@ export default async function order_management(action) {
         case "GET_ORDERED_ITEMS":
             //Get All Products from the cart     
 
-            const { GOI_username } = action.payload;
+            const { GOI_username, GOI_dateTime } = action.payload;
 
-            return {
-                status : STATUS_OK,
-                order_list : [
-                    sample_Order
-                ]
+
+            try {
+
+                //GET ALL products from 
+                let response = await fetch(BACKEND_BASE_URL + '/getPaymentDetails', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        username: GOI_username,
+                        dateTime: GOI_dateTime
+                    }),
+                });
+
+                if (response.ok) {
+
+                    let data = await response.json();
+
+                    var productNames = [];
+
+                    Object.keys(data).forEach(function (key) {
+                        productNames.push(key);
+                    });
+                    productNames.forEach(function (product) {
+                        //Fetching Thumbnails from the server
+                        let response3 = await fetch(BACKEND_BASE_URL + '/getThumbnail', {
+                            method: 'POST',
+                            headers: {
+                                Accept: 'image/jpeg',
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + jwt
+                            },
+                            body: JSON.stringify({
+                                productName: product
+                            }),
+                        })
+
+                        if (response3.ok) {
+                            let thumbnailBlob = await response3.blob();
+
+                            if (thumbnailBlob) {
+                                data[product] = { ...data[product], thumbnail_url: URL.createObjectURL(thumbnailBlob) }
+                            }
+                        }
+                        else {
+                            return {
+                                status: STATUS_NOT_FOUND,
+                                payload: {}
+                            }
+                        }
+                    });
+
+                    return {
+                        status: STATUS_OK,
+                        order_list: data
+                    }
+
+                }
+                else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+            }
+            catch (error) {
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {}
+                }
+
             }
 
-        case "ORDER_ITEMS": 
+        case "ORDER_ITEMS":
             //Order Items
 
-            const { OI_username , OI_payment_mode , OI_address  } = action.payload;
-            const { OI_CC_number , OI_CC_expiry_month , OI_CC_expiry_day } = action.payload;
+            const { OI_username, OI_payment_mode, OI_address } = action.payload;
+            const { OI_CC_number, OI_CC_expiry_month, OI_CC_expiry_year, OI_CC_cvc } = action.payload;
 
-            return {
-                status : STATUS_OK,
-                payload : {}
+            try {
+
+                let response = await fetch(BACKEND_BASE_URL + '/purchaseItemsInCart', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        username: OI_username,
+                        paymentMode: OI_payment_mode,
+                        address: OI_address,
+                        creditCardNumber: OI_CC_number,
+                        creditCardCVC: OI_CC_cvc,
+                        creditCardExpiryDate: OI_CC_expiry_month + "/" + OI_CC_expiry_year,
+                    }),
+                })
+
+                if (response.ok) {
+                    return {
+                        status: STATUS_OK,
+                        payload: {}
+                    }
+
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+            } catch (error) {
+
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {}
+                }
+
             }
 
-        case "GET_USER_REVIEWS" : 
-            
+        case "GET_USER_REVIEWS":
+
             const { GUR_username } = action.payload;
 
-            return {
-                status : STATUS_OK,
-                payload : {
-                    review_list : [
-                        sample_reviewed_item,
-                        {...sample_reviewed_item , productName : "sample product 2"}
-                    ]
+            try {
+
+                let response = await fetch(BACKEND_BASE_URL + '/getReviews', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        username: GUR_username
+                    }),
+                })
+
+                if (response.ok) {
+                    let data = await response.json();
+                    return {
+                        status: STATUS_OK,
+                        payload: {
+                            review_list: data
+                        }
+                    }
+
+
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+            } catch (error) {
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {}
                 }
             }
 
-        case "ADD_USER_REVIEW" : 
+        case "ADD_USER_REVIEW":
 
-        const { AUR_username , AUR_product_name , AUR_review , AUR_rating } = action.payload;
+            const { AUR_username, AUR_product_name, AUR_review, AUR_rating } = action.payload;
 
-            return {
-                status : STATUS_OK,
-                payload : {}
+            try {
+
+                let response = await fetch(BACKEND_BASE_URL + '/addReview', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        username: AUR_username,
+                        productName: AUR_product_name,
+                        description: AUR_review,
+                        rating: AUR_rating
+                    }),
+                })
+
+                if (response.ok) {
+                    return {
+                        status: STATUS_OK,
+                        payload: {}
+                    }
+
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+            } catch (error) {
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {}
+                }
             }
 
-        case "UPDATE_ORDER_STATUS" :
+        case "UPDATE_ORDER_STATUS":
 
-            const { UOS_username , UOS_dateTime , UOS_status } = action.payload;
+            const { UOS_username, UOS_dateTime, UOS_status } = action.payload;
 
-            return {
-                status : STATUS_OK,
-                payload : {}
+            try {
+
+                let response = await fetch(BACKEND_BASE_URL + '/setOrderStatus', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        username: UOS_username,
+                        dateTime: UOS_dateTime,
+                        status: UOS_status // either "payment invalid", "delivered", "in transit", "user cancelled or "store cancelled"
+                    }),
+                })
+
+                if (response.ok) {
+                    return {
+                        status: STATUS_OK,
+                        payload: {}
+                    }
+
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+            } catch (error) {
+
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {}
+                }
+
             }
 
-        case "GET_ALL_ORDERS" : 
+        case "GET_ALL_ORDERS":
 
             //To be Used By Store Manager
-            return {
-                status : STATUS_OK,
-                payload : {
-                    order_list : [
-                        {
-                            username : "user A",
-                            email : "a@gmail.com",
-                            order_status : "PAYMENT_MADE",
-                            order_date : new Date(),
-                            total : 1200,
-                            items : [
-                                {
-                                    product_name : "product Name",
-                                    quanity : 1
-                                }
-                            ]
-                        },
-                        {
-                            username : "user B",
-                            email : "b@gmail.com",
-                            order_status : "PAYMENT_MADE",
-                            order_date : new Date(),
-                            total : 1200,
-                            items : [
-                                {
-                                    product_name : "product Name",
-                                    quanity : 1
-                                }
-                            ]
-                        }
-                    ]
-                }
-            }
 
+            try {
+
+                let response = await fetch(BACKEND_BASE_URL + '/getAllOrders', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                })
+
+                if (response.ok) {
+                    let data = await response.json();
+
+                    return {
+                        status: STATUS_OK,
+                        payload: data
+                    }
+
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+            } catch (error) {
+
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {}
+                }
+
+            }
 
         default:
             break;

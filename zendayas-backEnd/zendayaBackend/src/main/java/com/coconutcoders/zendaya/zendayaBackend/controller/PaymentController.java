@@ -4,6 +4,7 @@ import com.coconutcoders.zendaya.zendayaBackend.enums.PaymentMethod;
 import com.coconutcoders.zendaya.zendayaBackend.model.Payment;
 import com.coconutcoders.zendaya.zendayaBackend.repo.PaymentRepo;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ProductRepo;
+import com.coconutcoders.zendaya.zendayaBackend.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,9 @@ public class PaymentController {
 
     @Autowired
     private ProductRepo productRepo;
+
+    @Autowired
+    private UserRepo userRepo;
 
     /**
      * Obtain a users Payment History
@@ -70,9 +74,19 @@ public class PaymentController {
             return new ResponseEntity<>("No payment History found", HttpStatus.NOT_FOUND);
         }
 
+        HashMap<String, Object> response = new HashMap<>();
         for (Payment payment : payments) {
             if (payment.getDateTime().equals(dateTime)) {
-                return new ResponseEntity<>(payment.getItemsPurchased(), HttpStatus.OK);
+
+                for (Map.Entry<String, HashMap<String, Number>> product : payment.getItemsPurchased().entrySet())
+                {
+                    HashMap<String, Object> temp = new HashMap<>();
+                    temp.put("productName",product.getKey());
+                    temp.put("quanity", product.getValue().get("quantity"));
+                    temp.put("pricePerItem", product.getValue().get("pricePerItem"));
+                    response.put(product.getKey(),temp);
+                }
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
         }
 
@@ -164,5 +178,40 @@ public class PaymentController {
         return new ResponseEntity<>("Unable to get status", HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * get all orders made
+     * POST to http://localhost:8080/getAllOrders
+     *
+     * @return NOT FOUND if no orders, else OK with Order status
+     */
+    @RequestMapping(value = "/getAllOrders", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity getAllOrders() {
 
+        HashMap<String, Object> response = new HashMap<>();
+        int i = 0;
+
+        List<Payment> payments = paymentRepo.findAll();
+        for(Payment payment : payments)
+        {
+            HashMap<String, Object> temp = new HashMap<>();
+            temp.put("username",payment.getUsername());
+            temp.put("email", userRepo.findUserByUsername(payment.getUsername()).getEmail());
+            temp.put("order_status",payment.getOrderStatus());
+            temp.put("order_date",payment.getDateTime());
+            temp.put("total",payment.getTotalPrice());
+
+            HashMap<String, Object> productDetails = new HashMap<>();
+            for (Map.Entry<String, HashMap<String, Number>> product : payment.getItemsPurchased().entrySet()) {
+                HashMap<String, Object> tempProduct = new HashMap<>();
+                tempProduct.put("product_name",product.getKey());
+                tempProduct.put("quanity",product.getValue().get("quantity"));
+                productDetails.put(product.getKey(),tempProduct);
+            }
+            temp.put("items",productDetails);
+            response.put("order_"+i, temp);
+            i++;
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
