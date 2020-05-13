@@ -14,6 +14,7 @@ import {initialState as userInitialState, UserContext , reducer as userReducer} 
 import {initialState as productInitialState , ProductContext , reducer as productReducer} from "./Contexts/ProductStore" 
 import AdminLogin from './Pages/AdminLogin';
 import AdminConsole from './Pages/AdminConsole';
+import StoreManagerConsole from './Pages/StoreManagerConsole';
 
 function App() {
 
@@ -48,6 +49,10 @@ function App() {
               <Route path = "/admin">
                 <AdminLogin/>
               </Route>
+              <Route path = "/store_managerConsole">
+                  <StoreManagerConsole/>
+              </Route>
+              
             </Switch>
           </div>
 
