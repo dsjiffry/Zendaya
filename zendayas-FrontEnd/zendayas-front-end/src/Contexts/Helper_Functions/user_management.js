@@ -35,15 +35,16 @@ export default async function user_management(action) {
         jwt_token = user_info_cookie.jwt_token;
     }
 
-
+    console.log(action.type)
+    console.log(action.payload)
 
     switch (action.type) {
 
         case "AUTHENTICATE":
 
             const { AUTH_username, AUTH_password } = action.payload;
-            console.log(action.type)
-            console.log(action.payload)
+            // console.log(action.type)
+            // console.log(action.payload)
 
             try {
 
@@ -256,7 +257,16 @@ export default async function user_management(action) {
                 })
 
                 if (response.ok) {
-                    return response.json()
+                    
+                    let data =  await response.json()
+                    
+                    return {
+                        status: STATUS_OK,
+                        payload: {
+                            data
+                        }
+                    }
+
                 }
                 else {
                     return {

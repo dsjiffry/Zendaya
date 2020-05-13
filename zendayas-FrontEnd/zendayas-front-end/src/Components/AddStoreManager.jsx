@@ -24,12 +24,13 @@ export default function AddStoreManager() {
         "password": "",
         "password2": "",
         "warning": "",
+        "admin_password":"",
         "formComplete": true,
     })
 
     const handleFormSubmit = async () => {
         
-        console.log(formData, state)
+        //console.log(formData, state)
 
         //Resetting Warnings
         setFormData({ ...state, warning: "" })
@@ -41,7 +42,7 @@ export default function AddStoreManager() {
             return 0;
         }
 
-        if (formData.email === "" || formData.username === "" || formData.password === "") {
+        if (formData.email === "" || formData.username === "" || formData.password === "" || formData.password === "" ) {
             setFormData({ ...state, warning:"", formComplete: false })
             setFormData({ ...state, warning: warning[0], formComplete: false })
             return 0;
@@ -54,16 +55,18 @@ export default function AddStoreManager() {
                 type : "CREATE_STORE_MANAGER",
                 payload : {
                     CSM_username : formData.username,
-                    CSM_passeord : formData.password,
+                    CSM_password : formData.password,
                     CSM_email : formData.email,
                     ADMIN_username : state.username,
-                    ADMIN_password : state.password
+                    ADMIN_password : formData.admin_password
                 }
             }
 
             console.log(command_CREATE_USER)
 
             let result_CREATE_USER = await user_manager(command_CREATE_USER)
+
+            console.log(result_CREATE_USER)
 
             if(result_CREATE_USER.status === 200)
             {
@@ -72,7 +75,7 @@ export default function AddStoreManager() {
             }
             else if (result_CREATE_USER.status === 409)
             {
-                alert(`Store Manager ${formData.username} Already Exist !`)
+                alert(`Store Manager ${formData.username} Already Exist Or Admin Password is Wrong !`)
                 setFormData({ ...state, warning:"", formComplete: false })
                 setFormData({ ...state, warning: warning[2], formComplete: false })
                 return 0;
@@ -84,9 +87,6 @@ export default function AddStoreManager() {
             
         }
 
-
-
-        
     }
 
     const handleFormChange = (e) => {
@@ -125,6 +125,10 @@ export default function AddStoreManager() {
                 <br />
                 <Header as="h3" textAlign="left">Re-enter Store Manager Password</Header>
                 <Input placeholder='store manager name' fluid type="password" name="password2" onChange={(e) => { handleFormChange(e) }} />
+                <br />
+                <br />
+                <Header as="h3" textAlign="left">Admin Password</Header>
+                <Input placeholder='admin Password' fluid type="password" name="admin_password" onChange={(e) => { handleFormChange(e) }} />
                 <br />
                 <br />
                 <Button primary fluid onClick={() => { handleFormSubmit() }}>Create Store Manager</Button>
