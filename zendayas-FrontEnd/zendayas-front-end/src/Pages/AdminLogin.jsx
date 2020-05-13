@@ -25,9 +25,9 @@ export default function AdminLogin() {
         () => {console.log(state,dispatch, "submit form() Admin Login use Effect")}, [state]
     )
 
-    const submitForm = () => {
-        console.log(data , "submit form() Admin Login")
-        let result_AUTH_helper = user_helper_function(
+    const submitForm = async () => {
+      
+        let result_AUTH_helper = await user_helper_function(
             {
                 type:"AUTHENTICATE" , 
                 payload : {
@@ -35,12 +35,25 @@ export default function AdminLogin() {
                     AUTH_password : data.password
                 }
             });
-        console.log(result_AUTH_helper , "submit form() Admin Login" )
+
+            
+
+
+           
         if(result_AUTH_helper.status === 200)
         {
             
+            dispatch({
+                type : "LOGIN",
+                    payload : {
+                        username : "",
+                        password : "",
+                        type : "",
+                        jwt : result_AUTH_helper.payload.jwt_token
+                    }
+            })
 
-            let result_GET_USER_INFO = user_helper_function({type:"GET_USER_INFO", payload : {GUI_username : data.username}})
+            let result_GET_USER_INFO = await user_helper_function({type:"GET_USER_INFO", payload : {GUI_username : data.username}})
 
             if(result_GET_USER_INFO.status === 200)
             {
@@ -56,6 +69,7 @@ export default function AdminLogin() {
                 })
                 
                 setData({...data , success : true})
+                
             }
 
         } 
@@ -102,7 +116,7 @@ export default function AdminLogin() {
                     </GridRow>
                 </Grid>
             </Section>
-            {data.success ? <Redirect to = "adminConsole"/> : null}
+            {data.success ? <Redirect to = {`/${String(state.type).toLowerCase()}Console`}/> : null}
         </Container>
     )
 }
