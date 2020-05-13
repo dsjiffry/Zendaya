@@ -2,7 +2,7 @@ import Cookies from 'universal-cookie';
 
 
 
-export default function product_management(action) {
+export default async function product_management(action) {
     //Command and Payload pattern
     //An object is sent to this method with 2 parameters
     //type -> the command o execute (Which sub function to run)
@@ -72,92 +72,40 @@ export default function product_management(action) {
     switch (action.type) {
 
         case "GET_PRODUCT_BY_CATEGORY":
+
             const { GPBC_category } = action.payload;
 
-            //GET ALL products Which Needed from Category
-            fetch(BACKEND_BASE_URL + '/getAllProductsInCategory', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + jwt_token
-                },
-                body: JSON.stringify({
-                    categoryName: GPBC_category,
-                }),
-            })
-                .then((response) => {
+            try {
 
-                    if (response.ok) {
-                        return response.json()
-                    }
-                    else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {
-                                jwt_token: ""
-                            }
-                        }
-                    }
-                })
-                .then((response) => {
-                    if (response) {
+                //GET ALL products Which Needed from Category
+                let response = await fetch(BACKEND_BASE_URL + '/getAllProductsInCategory', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        categoryName: GPBC_category,
+                    }),
+                });
 
-                        let json = response;
+                if (response.ok) {
 
-                        //Getting the images
-                        var productNames = [];
-                        let imageNumbers = [1, 2, 3];
-                        Object.keys(response).forEach(function (key) {
-                            productNames.push(key);
-                        });
+                    let data = await response.json();
 
-                        productNames.forEach(function (product) {
-                            imageNumbers.forEach(function (imageNumber) {
-                                fetch(BACKEND_BASE_URL + '/getImageByNumber', {
-                                    method: 'POST',
-                                    headers: {
-                                        Accept: 'image/jpeg',
-                                        'Content-Type': 'application/json',
-                                        'Authorization': 'Bearer ' + jwt
-                                    },
-                                    body: JSON.stringify({
-                                        productName: product,
-                                        imageNumber: imageNumber
-                                    }),
-                                })
-                                    .then((response) => {
-                                        if (response.ok) {
-                                            return response.blob();
-                                        } else {
+                    //Getting the images
+                    var productNames = [];
+                    let imageNumbers = [1, 2, 3];
 
-                                        }
-                                    })
-                                    .then((responseBody) => {
-                                        if (responseBody) {
-                                            switch (imageNumber) {
-                                                case 1:
-                                                    json[product] = { ...json[product], main_image_url: URL.createObjectURL(responseBody) }
-                                                    break;
-                                                case 2:
-                                                    json[product] = { ...json[product], second_image_url: URL.createObjectURL(responseBody) }
-                                                    break;
-                                                case 3:
-                                                    json[product] = { ...json[product], third_image_url: URL.createObjectURL(responseBody) }
-                                                    break;
-                                                default:
-                                                    break;
-                                            }
-                                        }
-                                    })
-                                    .catch((error) => {
-                                        console.log(error)
-                                    });
+                    Object.keys(data).forEach(function (key) {
+                        productNames.push(key);
+                    });
 
-                            });
+                    productNames.forEach(function (product) {
+                        imageNumbers.forEach(imageNumber => {
 
-                            //Getting the Thumbnails
-                            fetch(BACKEND_BASE_URL + '/getThumbnail', {
+                            let response2 = await fetch(BACKEND_BASE_URL + '/getImageByNumber', {
                                 method: 'POST',
                                 headers: {
                                     Accept: 'image/jpeg',
@@ -165,142 +113,181 @@ export default function product_management(action) {
                                     'Authorization': 'Bearer ' + jwt
                                 },
                                 body: JSON.stringify({
-                                    productName: product
+                                    productName: product,
+                                    imageNumber: imageNumber
                                 }),
-                            })
-                                .then((response) => {
-                                    if (response.ok) {
-                                        return response.blob();
-                                    } else {
+                            });
 
+                            if (response2.ok) {
+                                let dataBlob = await response.blob();
+
+                                if (dataBlob) {
+
+                                    switch (imageNumber) {
+                                        case 1:
+                                            json[product] = { ...json[product], main_image_url: URL.createObjectURL(dataBlob) }
+                                            break;
+                                        case 2:
+                                            json[product] = { ...json[product], second_image_url: URL.createObjectURL(dataBlob) }
+                                            break;
+                                        case 3:
+                                            json[product] = { ...json[product], third_image_url: URL.createObjectURL(dataBlob) }
+                                            break;
+                                        default:
+                                            break;
                                     }
-                                })
-                                .then((responseBody) => {
-                                    if (responseBody) {
-                                        json[product] = { ...json[product], thumbnail_url: URL.createObjectURL(responseBody) }
+
+                                    //Fetching Thumbnails from the server
+                                    let response3 = await fetch(BACKEND_BASE_URL + '/getThumbnail', {
+                                        method: 'POST',
+                                        headers: {
+                                            Accept: 'image/jpeg',
+                                            'Content-Type': 'application/json',
+                                            'Authorization': 'Bearer ' + jwt
+                                        },
+                                        body: JSON.stringify({
+                                            productName: product
+                                        }),
+                                    })
+
+                                    if (response3.ok) {
+                                        let thumbnailBlob = await response.blob();
+
+                                        if (thumbnailBlob) {
+                                            json[product] = { ...json[product], thumbnail_url: URL.createObjectURL(thumbnailBlob) }
+                                        }
                                     }
-                                })
-                                .catch((error) => {
-                                    console.log(error)
-                                });
+                                    else {
+                                        return {
+                                            status: STATUS_NOT_FOUND,
+                                            payload: {
+                                                jwt_token: ""
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
+                            else {
+                                return {
+                                    status: STATUS_NOT_FOUND,
+                                    payload: {
+                                        jwt_token: ""
+                                    }
+                                }
+                            }
+
+                            //-----End Of imageNumbers for each loop-------
                         });
 
+                        //-----End Of ProductNames for each loop-------
+                    })
 
-                        return {
-                            status: STATUS_OK,
-                            payload: {
-                                productList: json,
-                            }
-                        }
-
-                    } else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {
-                                productList: [],
-                            }
-                        }
-                    }
-                })
-                .catch((error) => {
-                    console.log(error)
+                    //If All Loops Ran Successfully
                     return {
-                        status: STATUS_SERVER_ERROR,
+                        status: STATUS_OK,
                         payload: {
-                            productList: [],
+                            productList: json,
                         }
                     }
-                });
+
+                    // End of If for first response.ok
+
+                }
+                else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {
+                        }
+                    }
+                }
+
+            } 
+            catch (error) {
+
+                console.log(error)
+
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {}
+                }
+
+            }
+
 
         case "SEARCH_PRODUCT":
 
             const { SP_keyword } = action.payload;
+            
+            try {
 
-            fetch(BACKEND_BASE_URL + '/searchProductsByName', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + jwt_token
-                },
-                body: JSON.stringify({
-                    productName: SP_keyword,
-                }),
-            })
-                .then((response) => {
-
-                    if (response.ok) {
-                        return response.json()
-                    }
-                    else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {
-                                jwt_token: ""
-                            }
-                        }
-                    }
-                })
-                .then((response) => {
-                    if (response) {
-                        return {
-                            status: STATUS_OK,
-                            payload: {
-                                productList: response,
-                            }
-                        }
-
-                    } else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {
-                                productList: [],
-                            }
-                        }
-                    }
-                })
-                .catch((error) => {
-                    console.log(error)
-                    return {
-                        status: STATUS_SERVER_ERROR,
-                        payload: {
-                            productList: [],
-                        }
-                    }
+                let response = await fetch(BACKEND_BASE_URL + '/searchProductsByName', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        productName: SP_keyword,
+                    }),
                 });
 
-        case "GET_ALL_CATEGORIES":
-            fetch(BACKEND_BASE_URL + '/getAllCategories', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + jwt_token
-                },
-            })
-                .then((response) => {
-
-                    if (response.ok) {
-                        return response.json()
-                    }
-                    else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {
-                                jwt_token: ""
-                            }
+                if (response.ok) {
+                
+                    let data = await response.json();
+    
+                    return {
+                        status: STATUS_OK,
+                        payload: {
+                            productList: data,
                         }
                     }
+                }
+                else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {
+                        }
+                    }
+                }
+                
+                
+            } catch (error) {
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {
+                       
+                    }
+                }
+            }
+
+
+        case "GET_ALL_CATEGORIES":
+            
+            try {
+
+                let response = await fetch(BACKEND_BASE_URL + '/getAllCategories', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
                 })
-                .then((response) => {
-                    if (response) {
+    
+                if (response.ok) {
+                    let data = await response.json()
+                    
+                    if (data) {
                         return {
                             status: STATUS_OK,
                             payload: {
-                                categoryList: response
+                                categoryList: data
                             }
                         }
-
+    
                     } else {
                         return {
                             status: STATUS_NOT_FOUND,
@@ -309,173 +296,202 @@ export default function product_management(action) {
                             }
                         }
                     }
-                })
-                .catch((error) => {
-                    console.log(error)
+                }
+                else {
                     return {
-                        status: STATUS_SERVER_ERROR,
+                        status: STATUS_NOT_FOUND,
                         payload: {
-                            categoryList: []
+                            jwt_token: ""
                         }
                     }
-                });
+                }
+                
+            } catch (error) {
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {
+                       
+                    }
+                }
+            }
 
+            
+               
         case "CREATE_CATEGORY":
+            
             //Create Category in server
             const { CC_category } = action.payload;
 
-            fetch(BACKEND_BASE_URL + '/createCategory', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + jwt_token
-                },
-                body: JSON.stringify({
-                    categoryName: CC_category,
-                }),
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return {
-                            status: STATUS_OK,
-                            payload: {}
-                        }
+            try {
 
-                    } else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {}
-                        }
-                    }
+                let response = await fetch(BACKEND_BASE_URL + '/createCategory', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        categoryName: CC_category,
+                    }),
                 })
-                .catch((error) => {
-                    console.log(error)
+    
+                if (response.ok) {
                     return {
-                        status: STATUS_SERVER_ERROR,
-                        payload: {
-
-                        }
+                        status: STATUS_OK,
+                        payload: {}
                     }
-                });
+    
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+                
+            } catch (error) {
+
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {
+
+                    }
+                }
+                
+            }
+
 
         case "DELETE_CATEGORY":
             //Delete Category 
             const { DC_category } = action.payload;
 
-            fetch(BACKEND_BASE_URL + '/deleteCategory', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + jwt_token
-                },
-                body: JSON.stringify({
-                    categoryName: DC_category,
-                }),
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return {
-                            status: STATUS_OK,
-                            payload: {}
-                        }
+            try {
 
-                    } else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {}
-                        }
-                    }
+                const response = await fetch(BACKEND_BASE_URL + '/deleteCategory', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        categoryName: DC_category,
+                    }),
                 })
-                .catch((error) => {
-                    console.log(error)
+    
+                if (response.ok) {
                     return {
-                        status: STATUS_SERVER_ERROR,
-                        payload: {
-
-                        }
+                        status: STATUS_OK,
+                        payload: {}
                     }
-                });
+    
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+                
+            } catch (error) {
 
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {
+
+                    }
+                }
+                
+            }
+            
+                
         case "ADD_PRODUCT_TO_CATEGORY":
 
             const { APTC_productName, APTC_category } = action.payload;
 
-            fetch(BACKEND_BASE_URL + '/addToCategory', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + jwt_token
-                },
-                body: JSON.stringify({
-                    categoryName: APTC_category,
-                    productName: APTC_productName
-                }),
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return {
-                            status: STATUS_OK,
-                            payload: {}
-                        }
+            try {
 
-                    } else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {}
-                        }
-                    }
+                let response = fetch(BACKEND_BASE_URL + '/addToCategory', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        categoryName: APTC_category,
+                        productName: APTC_productName
+                    }),
                 })
-                .catch((error) => {
-                    console.log(error)
-                    return {
-                        status: STATUS_SERVER_ERROR,
-                        payload: {
 
-                        }
+                if (response.ok) {
+                    return {
+                        status: STATUS_OK,
+                        payload: {}
                     }
-                });
+
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+                
+            } catch (error) {
+
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {
+
+                    }
+                }
+                
+            }
 
         case "REMOVE_PRODUCT_FROM_CATEGORY":
 
             const { RRFC_productName, category } = action.payload;
-            fetch(BACKEND_BASE_URL + '/removeFromCategory', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + jwt_token
-                },
-                body: JSON.stringify({
-                    categoryName: category,
-                    productName: RRFC_productName
-                }),
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return {
-                            status: STATUS_OK,
-                            payload: {}
-                        }
 
-                    } else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {}
-                        }
-                    }
+            try {
+
+                let response = await fetch(BACKEND_BASE_URL + '/removeFromCategory', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        categoryName: category,
+                        productName: RRFC_productName
+                    }),
                 })
-                .catch((error) => {
-                    console.log(error)
+    
+                if (response.ok) {
                     return {
-                        status: STATUS_SERVER_ERROR,
-                        payload: {
-
-                        }
+                        status: STATUS_OK,
+                        payload: {}
                     }
-                });
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+                
+            } catch (error) {
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {
+                    }
+                }
+            }
+            
 
         case "ADD_PRODUCT":
 
@@ -483,140 +499,151 @@ export default function product_management(action) {
 
             const { AP_main_image, AP_second_image, AP_third_Image, AP_thumbnail } = action.payload  //In FILE format
 
-            fetch(BACKEND_BASE_URL + '/removeFromCategory', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + jwt_token
-                },
-                body: JSON.stringify({
-                    productName: AP_productName,
-                    price: AP_price,
-                    description: AP_description,
-                    discount: AP_discount,
-                }),
-            })
+            try {
 
-                .then((response) => {
-                    if (response.ok) {
+                let response = await fetch(BACKEND_BASE_URL + '/addProduct', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        productName: AP_productName,
+                        price: AP_price,
+                        description: AP_description,
+                        discount: AP_discount,
+                    }),
+                })
 
-                        //Adding Thumbnail
-                        let formData = new FormData();
-                        formData.append('image', AP_thumbnail);
-                        formData.append('productName', AP_productName);
+                if(response.ok)
+                {
+                    //Adding Thumbnail
+                    let formData = new FormData();
+                    formData.append('image', AP_thumbnail);
+                    formData.append('productName', AP_productName);
 
-                        fetch(BACKEND_BASE_URL + '/addThumbnail', {
-                            method: 'POST',
-                            headers: {
-                                Accept: 'application/json',
-                                'Content-Type': 'multipart/form-data',
-                                'Authorization': 'Bearer ' + jwt
-                            },
-                            body: formData,
-                        })
-                            .then((response) => {
-                                if (response.ok) {
-                                    console.log('added Thumbnail');
-                                } else {
-                                    console.log('Unable to Add Thumbnail');
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error)
-                            });
+                    let response2 = await fetch(BACKEND_BASE_URL + '/addThumbnail', {
+                        method: 'POST',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': 'Bearer ' + jwt
+                        },
+                        body: formData,
+                    })
+
+                    if (response2.ok) {
 
                         //Adding Images
                         let images = [AP_main_image, AP_second_image, AP_third_Image];
-                        images.map((image) => {
-                            formData.append('image', image);
-                            formData.append('productName', AP_productName);
 
-                            fetch(BACKEND_BASE_URL + '/addImage', {
-                                method: 'POST',
-                                headers: {
-                                    Accept: 'application/json',
-                                    'Content-Type': 'multipart/form-data',
-                                    'Authorization': 'Bearer ' + jwt
-                                },
-                                body: formData,
-                            })
-                                .then((response) => {
-                                    if (response.ok) {
-                                        console.log('added Image');
-                                    } else {
-                                        console.log('Unable to Add Image');
-                                    }
+                        images.map(
+                            (image) => {
+
+                                formData.append('image', image);
+                                formData.append('productName', AP_productName);
+
+                                let response3 = fetch(BACKEND_BASE_URL + '/addImage', {
+                                    method: 'POST',
+                                    headers: {
+                                        Accept: 'application/json',
+                                        'Content-Type': 'multipart/form-data',
+                                        'Authorization': 'Bearer ' + jwt
+                                    },
+                                    body: formData,
                                 })
-                                .catch((error) => {
-                                    console.log(error)
-                                });
-                        }
-                        );
+
+                                if (response3.ok) {
+                                    console.log('added Image');
+                                } else {
+                                    console.log('Unable to Add Image');
+                                }
+
+                            }
+                        )
+
                         return {
                             status: STATUS_OK,
                             payload: {}
                         }
 
+                        
                     } else {
+                        console.log("Thumbnail Adding Failed")
                         return {
                             status: STATUS_NOT_FOUND,
                             payload: {}
                         }
                     }
-                })
-                .catch((error) => {
-                    console.log(error)
+
+
+                }
+                else
+                {
+                    console.log("Product Adding Failed")
                     return {
-                        status: STATUS_SERVER_ERROR,
-                        payload: {
-
-                        }
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
                     }
-                });
 
+                }
+                
+            } catch (error) {
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {
+                    }
+                }
+            }
+
+            
         case "UPDATE_PRODUCT_DATA":
 
             const { productName, UPD_productName, UPD_description, UPD_price, UPD_discount } = action.payload;
 
-            fetch(BACKEND_BASE_URL + '/updateProduct', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + jwt_token
-                },
-                body: JSON.stringify({
-                    productName: productName, //Current product Name
-                    newProductName: UPD_productName,
-                    description: UPD_description,
-                    price: UPD_price,
-                    discount: UPD_discount
-                }),
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return {
-                            status: STATUS_OK,
-                            payload: {}
-                        }
+            try {
 
-                    } else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {}
-                        }
-                    }
+                let response = await fetch(BACKEND_BASE_URL + '/updateProduct', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        productName: productName, //Current product Name
+                        newProductName: UPD_productName,
+                        description: UPD_description,
+                        price: UPD_price,
+                        discount: UPD_discount
+                    }),
                 })
-                .catch((error) => {
-                    console.log(error)
-                    return {
-                        status: STATUS_SERVER_ERROR,
-                        payload: {
 
-                        }
+                if (response.ok) {
+                    return {
+                        status: STATUS_OK,
+                        payload: {}
                     }
-                });
+
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+                
+            } catch (error) {
+                
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {
+                    }
+                }
+            }
+
 
         case "UPDATE_IMAGE":
 
@@ -639,36 +666,42 @@ export default function product_management(action) {
             formData.append('productName', productName);
             formData.append('imageNumber', imageNumber);
 
-            fetch(BACKEND_BASE_URL + '/updateImage', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': 'Bearer ' + jwt
-                },
-                body: formData,
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return {
-                            status: STATUS_OK,
-                            payload: {}
-                        }
-                    } else {
-                        return {
-                            status: STATUS_NOT_FOUND,
-                            payload: {}
-                        }
-                    }
+            try {
+                
+                let response = await fetch(BACKEND_BASE_URL + '/updateImage', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': 'Bearer ' + jwt
+                    },
+                    body: formData,
                 })
-                .catch((error) => {
+    
+                if (response.ok) {
                     return {
-                        status: STATUS_SERVER_ERROR,
+                        status: STATUS_OK,
                         payload: {}
                     }
-                });
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+                
 
+            } catch (error) {
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {
+                    }
+                }
+            }
 
+            
+          
 
         default:
             break;
