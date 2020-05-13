@@ -59,6 +59,14 @@ public class Payment {
         this.orderStatus = OrderStatus.PAYMENT_INVALID;
     }
 
+    public void setStoreCancelled() {
+        this.orderStatus = OrderStatus.STORE_CANCELLED;
+    }
+
+    public void setUserCancelled() {
+        this.orderStatus = OrderStatus.USER_CANCELLED;
+    }
+
 
     public String getDateTime() {
         return dateTime;

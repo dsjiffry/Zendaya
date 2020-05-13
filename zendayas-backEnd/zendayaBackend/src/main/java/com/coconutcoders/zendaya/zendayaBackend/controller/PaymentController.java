@@ -81,7 +81,7 @@ public class PaymentController {
 
 
     /**
-     * Set the order status as either "payment invalid", "delivered" or "in transit"
+     * Set the order status as either "payment invalid", "delivered", "in transit", "user cancelled, "store cancelled"
      * POST to http://localhost:8080/setOrderStatus
      *
      * @param payload Should contain JSON key-value pairs with key(s): "username", "dateTime", "status"
@@ -109,6 +109,10 @@ public class PaymentController {
                     payment.setOrderDelivered();
                 } else if (status.equalsIgnoreCase("in transit")) {
                     payment.setOrderInTransit();
+                } else if (status.equalsIgnoreCase("user cancelled")) {
+                    payment.setUserCancelled();
+                } else if (status.equalsIgnoreCase("store cancelled")) {
+                    payment.setStoreCancelled();
                 } else {
                     return new ResponseEntity<>("Invalid status type", HttpStatus.BAD_REQUEST);
                 }

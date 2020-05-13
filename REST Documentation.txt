@@ -166,7 +166,7 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 		-> with JSON body with key(s): "username","dateTime"
 		-> will return NOT FOUND if no payment history, else JSON array
 
-	* Set the order status as either "payment invalid", "delivered" or "in transit"
+	* Set the order status as either "payment invalid", "delivered", "in transit", "user cancelled, "store cancelled"
 		-> POST to http://35.208.41.87:8080/setOrderStatus
 		-> with JSON body with key(s): "username", "dateTime", "status"
 		-> will return NOT FOUND if no payment history, else OK
