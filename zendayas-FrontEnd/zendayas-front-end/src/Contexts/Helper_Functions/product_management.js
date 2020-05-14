@@ -1,5 +1,7 @@
 import Cookies from 'universal-cookie';
 
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+
 
 
 export default async function product_management(action) {
@@ -69,6 +71,11 @@ export default async function product_management(action) {
 
     }
 
+    console.log(action.type)
+    console.log(action.payload)
+    console.log(jwt_token)
+    
+
     switch (action.type) {
 
         case "GET_PRODUCT_BY_CATEGORY":
@@ -103,14 +110,14 @@ export default async function product_management(action) {
                     });
 
                     productNames.forEach(function (product) {
-                        imageNumbers.forEach(imageNumber => {
+                        imageNumbers.forEach( async (imageNumber) => {
 
                             let response2 = await fetch(BACKEND_BASE_URL + '/getImageByNumber', {
                                 method: 'POST',
                                 headers: {
                                     Accept: 'image/jpeg',
                                     'Content-Type': 'application/json',
-                                    'Authorization': 'Bearer ' + jwt
+                                    'Authorization': 'Bearer ' + jwt_token
                                 },
                                 body: JSON.stringify({
                                     productName: product,
@@ -143,7 +150,7 @@ export default async function product_management(action) {
                                         headers: {
                                             Accept: 'image/jpeg',
                                             'Content-Type': 'application/json',
-                                            'Authorization': 'Bearer ' + jwt
+                                            'Authorization': 'Bearer ' + jwt_token
                                         },
                                         body: JSON.stringify({
                                             productName: product
@@ -528,7 +535,7 @@ export default async function product_management(action) {
                         headers: {
                             Accept: 'application/json',
                             'Content-Type': 'multipart/form-data',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + jwt_token
                         },
                         body: formData,
                     })
@@ -549,7 +556,7 @@ export default async function product_management(action) {
                                     headers: {
                                         Accept: 'application/json',
                                         'Content-Type': 'multipart/form-data',
-                                        'Authorization': 'Bearer ' + jwt
+                                        'Authorization': 'Bearer ' + jwt_token
                                     },
                                     body: formData,
                                 })
@@ -647,23 +654,23 @@ export default async function product_management(action) {
 
         case "UPDATE_IMAGE":
 
-            const { UI_type, productName } = action.payload; // MAIN_IMAGE, SECOND_IMAGE, THIRD_IMAGE, THUMBNAIL_IMAGE
+            const { UI_type, UI_productName } = action.payload; // MAIN_IMAGE, SECOND_IMAGE, THIRD_IMAGE, THUMBNAIL_IMAGE
 
             let imageNumber = -1;
             switch (UI_type) {
-                case MAIN_IMAGE:
+                case "MAIN_IMAGE":
                     imageNumber = 1;
-                case SECOND_IMAGE:
+                case "SECOND_IMAGE":
                     imageNumber = 2;
-                case THIRD_IMAGE:
+                case "THIRD_IMAGE":
                     imageNumber = 3;
-                case THUMBNAIL_IMAGE:
+                case "THUMBNAIL_IMAGE":
                     imageNumber = 0;
             }
 
             let formData = new FormData();
             formData.append('image', UI_type);
-            formData.append('productName', productName);
+            formData.append('productName', UI_productName);
             formData.append('imageNumber', imageNumber);
 
             try {
@@ -673,7 +680,7 @@ export default async function product_management(action) {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'multipart/form-data',
-                        'Authorization': 'Bearer ' + jwt
+                        'Authorization': 'Bearer ' + jwt_token
                     },
                     body: formData,
                 })
