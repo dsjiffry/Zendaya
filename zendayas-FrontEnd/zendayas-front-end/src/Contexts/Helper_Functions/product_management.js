@@ -343,7 +343,9 @@ export default async function product_management(action) {
                         categoryName: CC_category,
                     }),
                 })
-    
+                
+                console.log(response)
+
                 if (response.ok) {
                     return {
                         status: STATUS_OK,
@@ -525,46 +527,60 @@ export default async function product_management(action) {
 
                 if(response.ok)
                 {
+                    console.log(response, "success")
+
                     //Adding Thumbnail
                     let formData = new FormData();
-                    formData.append('image', AP_thumbnail);
+                    formData.append('file', AP_thumbnail);
                     formData.append('productName', AP_productName);
+
+                    console.log(formData, "Form Data")
 
                     let response2 = await fetch(BACKEND_BASE_URL + '/addThumbnail', {
                         method: 'POST',
                         headers: {
                             Accept: 'application/json',
-                            'Content-Type': 'multipart/form-data',
                             'Authorization': 'Bearer ' + jwt_token
                         },
                         body: formData,
                     })
 
+                    console.log(formData, "Form Data" , response )
+
                     if (response2.ok) {
+                        
+                        console.log(response2, "success")
 
                         //Adding Images
                         let images = [AP_main_image, AP_second_image, AP_third_Image];
 
-                        images.map(
-                            (image) => {
+                        
 
-                                formData.append('image', image);
+                        images.map(    
+                            async (image) => {
+
+                                let formData = new FormData();
+                                
+                                formData.append('file', image);
                                 formData.append('productName', AP_productName);
+            
 
-                                let response3 = fetch(BACKEND_BASE_URL + '/addImage', {
+                                let response3 = await fetch(BACKEND_BASE_URL + '/addImage', {
                                     method: 'POST',
                                     headers: {
                                         Accept: 'application/json',
-                                        'Content-Type': 'multipart/form-data',
                                         'Authorization': 'Bearer ' + jwt_token
                                     },
                                     body: formData,
                                 })
 
+    
+
                                 if (response3.ok) {
+                                    console.log(response3, "success")
                                     console.log('added Image');
                                 } else {
-                                    console.log('Unable to Add Image');
+                                    console.log('Unable to Add Image' , response3);
                                 }
 
                             }
@@ -577,7 +593,7 @@ export default async function product_management(action) {
 
                         
                     } else {
-                        console.log("Thumbnail Adding Failed")
+                        console.log("Thumbnail Adding Failed" , response2)
                         return {
                             status: STATUS_NOT_FOUND,
                             payload: {}
@@ -588,7 +604,7 @@ export default async function product_management(action) {
                 }
                 else
                 {
-                    console.log("Product Adding Failed")
+                    console.log("Product Adding Failed" , response)
                     return {
                         status: STATUS_NOT_FOUND,
                         payload: {}

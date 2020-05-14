@@ -1,12 +1,15 @@
 import React from 'react'
 
 import user_helper_function  from "../Contexts/Helper_Functions/user_management"
+import FileUploader from './FileUploader'
+import FileUploader2 from './FileUploader2'
 
 export default function TestingComponent() {
 
    
-    const testFunction =  () => {
-        let result_AUTH_helper =  user_helper_function(
+    const testFunction =  async () => {
+
+        const result_AUTH_helper =  await user_helper_function(
             {
                 type:"AUTHENTICATE" , 
                 payload : {
@@ -14,20 +17,16 @@ export default function TestingComponent() {
                     AUTH_password : "admin"
                 }
             })
-            .then(
-                (res) => {console.log(res)}
-            )
-
-       
-        
-         
             
+        console.log(result_AUTH_helper)
+
     }
 
     return (
         <div>
             This is a testing Component
             <button onClick = { testFunction }>Click Me</button>
+            <FileUploader2/>
         </div>
     )
 }
