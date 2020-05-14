@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Segment, Container, Grid , Menu, Header} from "semantic-ui-react"
+import CategoryManager from '../Components/CategoryManager'
 
 export default function StoreManagerConsole() {
 
@@ -9,6 +10,23 @@ export default function StoreManagerConsole() {
     const handleItemClick = (e,  name ) => setActiveItem( name )
 
     const [activeItem,setActiveItem]  = React.useState('Manage Products')
+
+    const [displayContainer, setDisplayContainer] = React.useState( <h1>Manage Products</h1>)
+
+    let display_container = <></>;
+
+    React.useEffect(() => {
+        console.log(displayContainer,activeItem)
+        setDisplayContainer(<h1>{activeItem}</h1>);
+        switch (activeItem) {
+            case "Manage Categories":
+                setDisplayContainer(<CategoryManager/>);
+                break;
+        
+            default:
+                break;
+        }
+    }, [activeItem])
 
     return (
         <Container>
@@ -39,7 +57,9 @@ export default function StoreManagerConsole() {
                         </Menu>
                     </Grid.Column>
                     <Grid.Column width="12">
-
+                    {
+                        displayContainer
+                    }
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
