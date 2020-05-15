@@ -39,7 +39,10 @@ public class ImageController {
     @RequestMapping(value = "/addImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity addImage(@RequestParam String productName, @RequestParam MultipartFile file) {
 
+        System.out.println("Product name" + productName);
+
         if (productRepo.findByNameIgnoreCase(productName) == null) {
+            System.out.println("Couldnt FIng Product In DB");
             return new ResponseEntity<>("No such product in DB", HttpStatus.NOT_FOUND);
         }
 
