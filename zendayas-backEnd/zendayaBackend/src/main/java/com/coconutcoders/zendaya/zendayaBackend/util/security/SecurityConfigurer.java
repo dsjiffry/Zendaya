@@ -36,6 +36,10 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/authenticate",
                                         "/createUser",
+                                        "/getAllCategories",
+                                        "/getProductPricingDetails",
+                                        "/searchProductWithDiscount",
+                                        "/searchProductsByName",
                                         "/createAdmin",
                                         "/createStoreManager")
 
