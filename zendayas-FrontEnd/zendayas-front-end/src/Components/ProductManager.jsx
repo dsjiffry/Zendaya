@@ -13,14 +13,15 @@ export default function ProductManager() {
 
     const [elements, setElements] = React.useState([])
 
-    React.useEffect(() => {
-        
-        const fetchProducts = async () => 
+    const [searchKeyword, setSearchKeyword] = React.useState("")
+    
+
+    const fetchProducts = async (searchKeyword) => 
         {
             const command_SEARCH_PRODUCT = {
                 type : "SEARCH_PRODUCT",
                 payload : {
-                    SP_keyword : ""
+                    SP_keyword : searchKeyword
                 }
             }
 
@@ -39,7 +40,9 @@ export default function ProductManager() {
 
         }
 
-        fetchProducts();
+    React.useEffect(() => {
+        
+        fetchProducts("");
 
         return () => {
             
@@ -59,6 +62,7 @@ export default function ProductManager() {
                 key = {state.productList[key].name}
                 name = {state.productList[key].name}
                 price = {state.productList[key].price}
+                description = {state.productList[key].description}
 
             />
         )
@@ -78,9 +82,20 @@ export default function ProductManager() {
         <Table inverted>
             <Table.Header fullWidth>
                 <Table.Row>
-                    <Table.HeaderCell colSpan='2'> Store Products </Table.HeaderCell>
+                    <Table.HeaderCell colSpan='1'>
+                        <Button primary onClick={() => { fetchProducts("") }}>Refresh List</Button>
+                    </Table.HeaderCell>
+                    <Table.HeaderCell colSpan='1'> Store Products </Table.HeaderCell>
                     <Table.HeaderCell colSpan='2'>
-                        <Button primary onClick={() => {  }}>Refresh List</Button>
+                        <Input 
+                            fluid
+                            value = {searchKeyword} 
+                            onChange = {(e) => {setSearchKeyword(e.target.value)}}
+                            placeholder = "filter Results"
+                        />
+                    </Table.HeaderCell>
+                    <Table.HeaderCell colSpan='1'>
+                        <Button secondary onClick={() => { fetchProducts(searchKeyword) }}>Search Results</Button>
                     </Table.HeaderCell>
                 </Table.Row>
             </Table.Header>

@@ -24,6 +24,7 @@ export default function AddProductInfo(props) {
                     name = "pro" 
                     placeholder='Versachi Shoes' 
                     name = "productName"
+                    value = {parentState.productName}
                     onChange = {(e) => {handleFormChange(e)}}
                     />
                 <Form.Input 
@@ -31,6 +32,7 @@ export default function AddProductInfo(props) {
                     placeholder='1800' 
                     type = "number"
                     name = "price"
+                    value = {parentState.price}
                     onChange = {(e) => {handleFormChange(e)}}
                 />
                 <Form.Input 
@@ -38,12 +40,14 @@ export default function AddProductInfo(props) {
                     placeholder='22' 
                     type = "number"
                     name = "discount"
+                    value = {parentState.discount}
                     onChange = {(e) => {handleFormChange(e)}}
                     />
                 <Form.TextArea 
                     label='description' 
                     placeholder='Description of product'
                     name = "description"
+                    value = {parentState.description}
                     onChange = {(e) => {handleFormChange(e)}}
                     />
                 <Message

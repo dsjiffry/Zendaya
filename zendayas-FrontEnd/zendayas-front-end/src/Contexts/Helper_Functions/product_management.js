@@ -422,7 +422,7 @@ export default async function product_management(action) {
 
             try {
 
-                let response = fetch(BACKEND_BASE_URL + '/addToCategory', {
+                let response = await fetch(BACKEND_BASE_URL + '/addToCategory', {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
@@ -434,7 +434,7 @@ export default async function product_management(action) {
                         productName: APTC_productName
                     }),
                 })
-
+                console.log(response)
                 if (response.ok) {
                     return {
                         status: STATUS_OK,
@@ -479,7 +479,7 @@ export default async function product_management(action) {
                         productName: RRFC_productName
                     }),
                 })
-
+                console.log(response)
                 if (response.ok) {
                     return {
                         status: STATUS_OK,
