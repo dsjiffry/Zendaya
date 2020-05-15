@@ -107,15 +107,14 @@ public class ProductController {
         }
 
         HashMap<String, Object> response = new HashMap<>();
-        for (Product product : productList)
-        {
-            if(product.getUserReview(username) != null) {
+        for (Product product : productList) {
+            if (product.getUserReview(username) != null) {
                 HashMap<String, Object> temp = new HashMap<>();
                 temp.put("productName", product.getName());
                 temp.put("review", product.getUserReview(username));
                 temp.put("rating", product.getUserRating(username));
                 temp.put("timeStamp", product.getUserTimeStamp(username));
-                response.put(product.getName(),temp);
+                response.put(product.getName(), temp);
             }
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -257,18 +256,17 @@ public class ProductController {
             productDetails.put("average_rating", product.getAvgRating());
 
             HashMap<String, HashMap<String, Object>> reviews = new HashMap<>();
-            for (Map.Entry<String, HashMap<String, String>> reviewDetails : product.getReviews().entrySet())
-            {
+            for (Map.Entry<String, HashMap<String, String>> reviewDetails : product.getReviews().entrySet()) {
                 HashMap<String, Object> temp = new HashMap<>();
-                temp.put("time_stamp",reviewDetails.getValue().get("timeStamp"));
+                temp.put("time_stamp", reviewDetails.getValue().get("timeStamp"));
                 temp.put("username", reviewDetails.getKey());
-                temp.put("review",reviewDetails.getValue().get("review"));
-                temp.put("rating",reviewDetails.getValue().get("rating"));
-                reviews.put(reviewDetails.getKey(),temp);
+                temp.put("review", reviewDetails.getValue().get("review"));
+                temp.put("rating", reviewDetails.getValue().get("rating"));
+                reviews.put(reviewDetails.getKey(), temp);
             }
-            productDetails.put("reviews",reviews);
+            productDetails.put("reviews", reviews);
 
-            response.put(product.getName(),productDetails);
+            response.put(product.getName(), productDetails);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -331,6 +329,10 @@ public class ProductController {
         final String productName = payload.get("productName");
 
         Product product = productRepo.findByNameIgnoreCase(productName);
+
+        if (product == null) {
+            return new ResponseEntity<>("no such product found", HttpStatus.NOT_FOUND);
+        }
 
         Map<String, Number> response = new HashMap<>();
         response.put("originalPrice", product.getPrice());
