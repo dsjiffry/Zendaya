@@ -204,4 +204,39 @@ public class ProductCategoryController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * get All the categories of a product
+     * POST to http://localhost:8080/getCategories
+     *
+     * @param payload should contain JSON key-value pairs with key(s): "productName"
+     * @return NOT_FOUND if the category is not found, else product list
+     */
+    @RequestMapping(value = "/getCategories", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity getCategories(@RequestBody Map<String, String> payload) {
+
+        if (!payload.containsKey("productName")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String productName = payload.get("productName");
+
+        if(productRepo.findByNameIgnoreCase(productName) == null)
+        {
+            return new ResponseEntity<>("no such product in database", HttpStatus.NOT_FOUND);
+        }
+
+        List<ProductCategory> productCategories = productCategoryRepo.findAll();
+        if (productCategories == null || productCategories.isEmpty()) {
+            return new ResponseEntity<>("no categories found", HttpStatus.NOT_FOUND);
+        }
+
+        ArrayList<String> response = new ArrayList<>();
+        for (ProductCategory productCategory : productCategories) {
+            if(productCategory.getProducts().contains(productName))
+            {
+                response.add(productCategory.getName());
+            }
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
