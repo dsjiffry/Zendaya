@@ -206,6 +206,11 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 		* POST to http://localhost:8080/getAllProductsInCategory
 		* with JSON body with key(s): "categoryName"
 		* will return NOT_FOUND if the category is not found, else product list
+		
+	* get All the categories of a product
+		* POST to http://localhost:8080/getCategories
+		* with JSON body with key(s): "productName"
+		* will return NOT_FOUND if the category is not found, else product list
 
 
 
