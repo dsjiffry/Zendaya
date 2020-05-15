@@ -74,7 +74,7 @@ export default async function product_management(action) {
     console.log(action.type)
     console.log(action.payload)
     console.log(jwt_token)
-    
+
 
     switch (action.type) {
 
@@ -110,7 +110,7 @@ export default async function product_management(action) {
                     });
 
                     productNames.forEach(function (product) {
-                        imageNumbers.forEach( async (imageNumber) => {
+                        imageNumbers.forEach(async (imageNumber) => {
 
                             let response2 = await fetch(BACKEND_BASE_URL + '/getImageByNumber', {
                                 method: 'POST',
@@ -209,7 +209,7 @@ export default async function product_management(action) {
                     }
                 }
 
-            } 
+            }
             catch (error) {
 
                 console.log(error)
@@ -225,7 +225,7 @@ export default async function product_management(action) {
         case "SEARCH_PRODUCT":
 
             const { SP_keyword } = action.payload;
-            
+
             try {
 
                 let response = await fetch(BACKEND_BASE_URL + '/searchProductsByName', {
@@ -241,9 +241,9 @@ export default async function product_management(action) {
                 });
 
                 if (response.ok) {
-                
+
                     let data = await response.json();
-    
+
                     return {
                         status: STATUS_OK,
                         payload: {
@@ -258,21 +258,21 @@ export default async function product_management(action) {
                         }
                     }
                 }
-                
-                
+
+
             } catch (error) {
                 console.log(error)
                 return {
                     status: STATUS_SERVER_ERROR,
                     payload: {
-                       
+
                     }
                 }
             }
 
 
         case "GET_ALL_CATEGORIES":
-            
+
             try {
 
                 let response = await fetch(BACKEND_BASE_URL + '/getAllCategories', {
@@ -283,10 +283,10 @@ export default async function product_management(action) {
                         'Authorization': 'Bearer ' + jwt_token
                     },
                 })
-    
+
                 if (response.ok) {
                     let data = await response.json()
-                    
+
                     if (data) {
                         return {
                             status: STATUS_OK,
@@ -294,7 +294,7 @@ export default async function product_management(action) {
                                 categoryList: data
                             }
                         }
-    
+
                     } else {
                         return {
                             status: STATUS_NOT_FOUND,
@@ -312,21 +312,21 @@ export default async function product_management(action) {
                         }
                     }
                 }
-                
+
             } catch (error) {
                 console.log(error)
                 return {
                     status: STATUS_SERVER_ERROR,
                     payload: {
-                       
+
                     }
                 }
             }
 
-            
-               
+
+
         case "CREATE_CATEGORY":
-            
+
             //Create Category in server
             const { CC_category } = action.payload;
 
@@ -343,7 +343,7 @@ export default async function product_management(action) {
                         categoryName: CC_category,
                     }),
                 })
-                
+
                 console.log(response)
 
                 if (response.ok) {
@@ -351,14 +351,14 @@ export default async function product_management(action) {
                         status: STATUS_OK,
                         payload: {}
                     }
-    
+
                 } else {
                     return {
                         status: STATUS_NOT_FOUND,
                         payload: {}
                     }
                 }
-                
+
             } catch (error) {
 
                 console.log(error)
@@ -368,7 +368,7 @@ export default async function product_management(action) {
 
                     }
                 }
-                
+
             }
 
 
@@ -389,20 +389,20 @@ export default async function product_management(action) {
                         categoryName: DC_category,
                     }),
                 })
-    
+
                 if (response.ok) {
                     return {
                         status: STATUS_OK,
                         payload: {}
                     }
-    
+
                 } else {
                     return {
                         status: STATUS_NOT_FOUND,
                         payload: {}
                     }
                 }
-                
+
             } catch (error) {
 
                 console.log(error)
@@ -412,10 +412,10 @@ export default async function product_management(action) {
 
                     }
                 }
-                
+
             }
-            
-                
+
+
         case "ADD_PRODUCT_TO_CATEGORY":
 
             const { APTC_productName, APTC_category } = action.payload;
@@ -448,7 +448,7 @@ export default async function product_management(action) {
                     }
                 }
 
-                
+
             } catch (error) {
 
                 console.log(error)
@@ -458,7 +458,7 @@ export default async function product_management(action) {
 
                     }
                 }
-                
+
             }
 
         case "REMOVE_PRODUCT_FROM_CATEGORY":
@@ -479,7 +479,7 @@ export default async function product_management(action) {
                         productName: RRFC_productName
                     }),
                 })
-    
+
                 if (response.ok) {
                     return {
                         status: STATUS_OK,
@@ -491,7 +491,7 @@ export default async function product_management(action) {
                         payload: {}
                     }
                 }
-                
+
             } catch (error) {
                 console.log(error)
                 return {
@@ -500,7 +500,7 @@ export default async function product_management(action) {
                     }
                 }
             }
-            
+
 
         case "ADD_PRODUCT":
 
@@ -525,8 +525,7 @@ export default async function product_management(action) {
                     }),
                 })
 
-                if(response.ok)
-                {
+                if (response.ok) {
                     console.log(response, "success")
 
                     //Adding Thumbnail
@@ -545,25 +544,25 @@ export default async function product_management(action) {
                         body: formData,
                     })
 
-                    console.log(formData, "Form Data" , response )
+                    console.log(formData, "Form Data", response)
 
                     if (response2.ok) {
-                        
+
                         console.log(response2, "success")
 
                         //Adding Images
                         let images = [AP_main_image, AP_second_image, AP_third_Image];
 
-                        
 
-                        images.map(    
+
+                        images.map(
                             async (image) => {
 
                                 let formData = new FormData();
-                                
+
                                 formData.append('file', image);
                                 formData.append('productName', AP_productName);
-            
+
 
                                 let response3 = await fetch(BACKEND_BASE_URL + '/addImage', {
                                     method: 'POST',
@@ -574,13 +573,13 @@ export default async function product_management(action) {
                                     body: formData,
                                 })
 
-    
+
 
                                 if (response3.ok) {
                                     console.log(response3, "success")
                                     console.log('added Image');
                                 } else {
-                                    console.log('Unable to Add Image' , response3);
+                                    console.log('Unable to Add Image', response3);
                                 }
 
                             }
@@ -591,9 +590,9 @@ export default async function product_management(action) {
                             payload: {}
                         }
 
-                        
+
                     } else {
-                        console.log("Thumbnail Adding Failed" , response2)
+                        console.log("Thumbnail Adding Failed", response2)
                         return {
                             status: STATUS_NOT_FOUND,
                             payload: {}
@@ -602,16 +601,15 @@ export default async function product_management(action) {
 
 
                 }
-                else
-                {
-                    console.log("Product Adding Failed" , response)
+                else {
+                    console.log("Product Adding Failed", response)
                     return {
                         status: STATUS_NOT_FOUND,
                         payload: {}
                     }
 
                 }
-                
+
             } catch (error) {
                 console.log(error)
                 return {
@@ -621,7 +619,7 @@ export default async function product_management(action) {
                 }
             }
 
-            
+
         case "UPDATE_PRODUCT_DATA":
 
             const { productName, UPD_productName, UPD_description, UPD_price, UPD_discount } = action.payload;
@@ -656,9 +654,9 @@ export default async function product_management(action) {
                         payload: {}
                     }
                 }
-                
+
             } catch (error) {
-                
+
                 console.log(error)
                 return {
                     status: STATUS_SERVER_ERROR,
@@ -690,7 +688,7 @@ export default async function product_management(action) {
             formData.append('imageNumber', imageNumber);
 
             try {
-                
+
                 let response = await fetch(BACKEND_BASE_URL + '/updateImage', {
                     method: 'POST',
                     headers: {
@@ -700,7 +698,7 @@ export default async function product_management(action) {
                     },
                     body: formData,
                 })
-    
+
                 if (response.ok) {
                     return {
                         status: STATUS_OK,
@@ -712,7 +710,7 @@ export default async function product_management(action) {
                         payload: {}
                     }
                 }
-                
+
 
             } catch (error) {
                 console.log(error)
@@ -723,8 +721,45 @@ export default async function product_management(action) {
                 }
             }
 
-            
-          
+        case "DELETE_PRODUCT":
+
+            const { DP_productName } = action.payload;
+
+            try {
+                let response = await fetch(BACKEND_BASE_URL + '/removeProduct', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        productName: DP_productName, //Current product Name
+                    }),
+                })
+
+                console.log(response)
+
+                if (response.ok) {
+                    return {
+                        status: STATUS_OK,
+                        payload: {}
+                    }
+                } else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+            } catch (error) {
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {
+                    }
+                }
+            }
 
         default:
             break;
