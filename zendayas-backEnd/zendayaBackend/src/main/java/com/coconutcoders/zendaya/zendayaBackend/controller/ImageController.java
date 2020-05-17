@@ -249,4 +249,54 @@ public class ImageController {
 
         return new ResponseEntity<>("Image updated", HttpStatus.OK);
     }
+
+
+
+    /**
+     * obtain the image for Product
+     * POST to http://localhost:8080/getImage/{productName}/{imageNumber}
+     *
+     * @param productName
+     * @param imageNumber
+     * @return NOT_FOUND if no such Product in DB, else OK
+     */
+    @RequestMapping(value = "/getImage/{productName}/{imageNumber}", method = RequestMethod.GET, consumes = "application/json", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity getImage(@PathVariable("productName")String productName,@PathVariable("imageNumber")String imageNumber) {
+
+        Image images = imageRepo.findByProductName(productName);
+        if (images == null) {
+            return new ResponseEntity<>("Product Not Found in database", HttpStatus.NOT_FOUND);
+        }
+        Path tempFile = null;
+
+        if(imageNumber.equalsIgnoreCase("0")) // Getting thumbnail
+        {
+            try {
+                tempFile = Files.createTempFile(null, ".jpeg");
+                Files.write(tempFile, images.getThumbnail());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            File fileToSend = tempFile.toFile();
+            return new ResponseEntity<>(new FileSystemResource(fileToSend), HttpStatus.OK);
+        }
+
+        if(!images.getAllImages().containsKey(productName+"_"+imageNumber))
+        {
+            return new ResponseEntity<>("image Not Found for product", HttpStatus.NOT_FOUND);
+        }
+
+        try {
+            tempFile = Files.createTempFile(null, ".jpeg");
+            Files.write(tempFile, images.getAllImages().get(productName+"_"+imageNumber));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        File fileToSend = tempFile.toFile();
+
+        return new ResponseEntity<>(new FileSystemResource(fileToSend), HttpStatus.OK);
+    }
+
+
+
 }
