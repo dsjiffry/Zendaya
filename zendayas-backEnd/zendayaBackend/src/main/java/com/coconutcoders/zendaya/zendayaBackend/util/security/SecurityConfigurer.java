@@ -35,13 +35,16 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/authenticate",
-                                        "/createUser",
-                                        "/getAllCategories",
-                                        "/getProductPricingDetails",
-                                        "/searchProductWithDiscount",
-                                        "/searchProductsByName",
-                                        "/createAdmin",
-                                        "/createStoreManager")
+                        "/createUser",
+                        "/getAllCategories",
+                        "/getProductPricingDetails",
+                        "/searchProductWithDiscount",
+                        "/searchProductsByName",
+                        "/createAdmin",
+                        "/createStoreManager",
+                        "/getAllProductsInCategory",
+                        "/getImages",
+                        "/getImage/{productName}/{imageNumber}")
 
                 .permitAll()
 
@@ -60,11 +63,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder()
-    {
+    public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
     }
-
 
 
 }
