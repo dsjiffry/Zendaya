@@ -260,7 +260,7 @@ public class ImageController {
      * @param imageNumber
      * @return NOT_FOUND if no such Product in DB, else OK
      */
-    @RequestMapping(value = "/getImage/{productName}/{imageNumber}", method = RequestMethod.GET, consumes = "application/json", produces = MediaType.IMAGE_JPEG_VALUE)
+    @RequestMapping(value = "/getImage/{productName}/{imageNumber}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity getImage(@PathVariable("productName")String productName,@PathVariable("imageNumber")String imageNumber) {
 
         Image images = imageRepo.findByProductName(productName);
