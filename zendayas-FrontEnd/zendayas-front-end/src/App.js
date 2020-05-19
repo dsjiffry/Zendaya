@@ -12,9 +12,13 @@ import TestPage from './Pages/TestPage';
 import {initialState as userInitialState, UserContext , reducer as userReducer} from "./Contexts/UserStore"
 
 import {initialState as productInitialState , ProductContext , reducer as productReducer} from "./Contexts/ProductStore" 
+
+import LandingPage from './Pages/LandingPage'
 import AdminLogin from './Pages/AdminLogin';
 import AdminConsole from './Pages/AdminConsole';
 import StoreManagerConsole from './Pages/StoreManagerConsole';
+import UserLogin from './Pages/UserLogin';
+import UserSignUp from './Pages/UserSignUp';
 
 function App() {
 
@@ -52,7 +56,15 @@ function App() {
               <Route path = "/store_managerConsole">
                   <StoreManagerConsole/>
               </Route>
-              
+              <Route path = "/SignUp">
+                  <UserSignUp/>
+              </Route>
+              <Route path = "/userLogin">
+                  <UserLogin/>
+              </Route>
+              <Route path = "/">
+                  <LandingPage/>
+              </Route>
             </Switch>
           </div>
 
