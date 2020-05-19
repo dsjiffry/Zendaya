@@ -8,17 +8,23 @@ import {
     Icon,
     Image,
     Menu,
+    Button,
     Sidebar,
     Responsive
 } from "semantic-ui-react";
 
+import {UserContext} from "../Contexts/UserStore"
+
+import {Redirect} from "react-router-dom"
 
 const NavBarDesktop = ({ leftItems, rightItems }) => {
 
+   
     const cookies = new Cookies();
     let user_info_cookie = cookies.get("USER");
 
-    if (user_info_cookie !== null && user_info_cookie !== {} && user_info_cookie !== undefined) {
+
+    if (user_info_cookie !== null && user_info_cookie !== {} && user_info_cookie !== undefined ) {
         //jwt_token = user_info_cookie.jwt_token;
 
         console.log(user_info_cookie, "Navbar")
@@ -26,7 +32,14 @@ const NavBarDesktop = ({ leftItems, rightItems }) => {
         return (
             <Menu fixed="top" inverted>
                 <Menu.Item>
-                    <Icon disabled name='power off' size="mini" />
+                    <Button inverted
+                        onClick = {() => { console.log("Log Out") ; cookies.remove("USER") ; window.location.reload() }}
+                    >
+                        <Button.Content>
+                            <Icon disabled name='power off' size="large" />
+                        </Button.Content>
+                    </Button>
+                   
                 </Menu.Item>
                 <Menu.Item>
                     Home
