@@ -210,7 +210,8 @@ export default function ProductDisplay() {
                     dispatch={product_dispatch}
                 />
             </Segment>
-            <Segment inverted>
+            <Segment inverted textAlign = "center">
+                <Header as = "h4">Or Search</Header>
             <Input 
                 fluid 
                 action={{ icon: 'search' }} 

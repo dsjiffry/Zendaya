@@ -36,10 +36,6 @@ export default function AdminLogin() {
                 }
             });
 
-            
-
-
-           
         if(result_AUTH_helper.status === 200)
         {
             
