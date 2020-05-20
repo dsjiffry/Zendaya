@@ -1,5 +1,6 @@
 import React from "react"
 import Cookies from 'universal-cookie';
+import product_manager from "../Contexts/Helper_Functions/product_management";
 
 const cookies = new Cookies();
 const ProductContext = React.createContext();
@@ -54,24 +55,46 @@ const initialState = {
             name : "test-product-3"
         }
     ],
-    categoryList : ["Shoes","watches"]
+    categoryList : ["Shoes","watches"],
+    Selected_Category : "Shoes"
+
 };
 
 //Reducer function to Login and store user credential in browser state  
 //Never rewrite the state , Always Append 
 const reducer = (state, action) => {
   switch (action.type) {
-    
-    case "LOAD_IMAGES" : 
-        console.log("LOAD_IMAGES")
+
+    case "LOAD_PRODUCTS" : 
+
+        console.log("LOAD_PRODUCTS",action.payload)
+
+        // let productList = initialState.productList;
+        
+        // let command_GET_PRODUCT_BY_CATEGORY = {};
+
         return {
             ...state,
             productList : action.payload.productList
         }
+
     case "LOAD_CATEGORIES":
+
+        console.log(action.payload)
         return {
             ...state,
             categoryList : action.payload.categoryList
+        }
+        
+        
+
+       
+    case "CHANGE_SELECTED_CATEGORY" :
+
+        console.log(action.payload.selectedCategory)
+        return {
+            ...state,
+            Selected_Category : action.payload.selectedCategory
         }
 
     case "TEST":

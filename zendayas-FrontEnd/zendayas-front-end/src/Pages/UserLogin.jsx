@@ -7,7 +7,7 @@ import user_helper_function from "../Contexts/Helper_Functions/user_management"
 
 import {Redirect} from 'react-router-dom'
 
-export default function AdminLogin() {
+export default function UserLogin() {
 
     const {state,dispatch} = React.useContext(UserContext);
 
@@ -24,7 +24,7 @@ export default function AdminLogin() {
     React.useEffect(
         () => {console.log(state,dispatch, "submit form() Admin Login use Effect")}, [state]
     )
-
+  
     const submitForm = async () => {
       
         let result_AUTH_helper = await user_helper_function(
@@ -84,7 +84,7 @@ export default function AdminLogin() {
                     <GridRow></GridRow>
                     <GridRow>
                         <GridColumn width="16" >
-                            <Header as = "h1" textAlign = "left">Admin Login</Header>
+                            <Header as = "h1" textAlign = "left">Login</Header>
                             <br/>
                             <br/>
                             <GridRow>
@@ -104,6 +104,9 @@ export default function AdminLogin() {
                             >
                                 Login
                             </Button>
+                            <br/>
+                            <Header>Dont have an Account ? </Header>
+                            <a>Click Here</a>
                         </GridColumn>
                             <br/>
                             <hr/>
@@ -112,7 +115,7 @@ export default function AdminLogin() {
                     </GridRow>
                 </Grid>
             </Section>
-            {data.success ? <Redirect to = {`/${String(state.type).toLowerCase()}Console`}/> : null}
+            {data.success ? <Redirect to = "/"/> : null}
         </Container>
     )
 }
