@@ -152,15 +152,7 @@ export default function CategoryManager() {
                     </Segment>
                     <Segment>
                         <Grid>
-                            <Grid.Row>
-                                <Grid.Column width="12" textAlign="left">
-                                    Shoes
-                                    </Grid.Column>
-                                <Grid.Column width="4">
-                                    <Button negative fluid>Remove</Button>
-                                </Grid.Column>
-                            </Grid.Row>
-                            {
+                                                        {
                                 categoryObjects
                             }
                         </Grid>
