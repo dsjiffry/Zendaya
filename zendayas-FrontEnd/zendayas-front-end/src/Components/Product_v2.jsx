@@ -2,6 +2,7 @@ import React from 'react'
 import {Redirect} from "react-router-dom"
 import Cookies from "universal-cookie"
 import wishList_manager from "../Contexts/Helper_Functions/wishList_management"
+import cart_manager from "../Contexts/Helper_Functions/cart_management"
 
 import { Modal,Segment, Reveal, Card, Header, Image, Icon, Transition, Button, Grid , Rating, GridRow, Placeholder, Divider } from "semantic-ui-react"
 import ProductDetails from './ProductDetails';
@@ -19,6 +20,8 @@ export default function Product_v2(props) {
 
     const [openWishListModal , setOpenWishListModal] = React.useState(false);
 
+    const [openCartModal , setOpenCartModal] = React.useState(false);
+
     const {
         productName,
         originalPrice,
@@ -35,6 +38,31 @@ export default function Product_v2(props) {
 
     const cookies = new Cookies();
     let user_info_cookie = cookies.get("USER");
+
+    const addToCart = async (productName) => 
+    {
+        let command_ADD_ITEM_TO_CART = {
+            type : "ADD_ITEM_TO_CART",
+            payload : {
+                AITC_username :  user_info_cookie.username,
+                AITC_productName : productName
+            }
+        }
+        
+        let result_ADD_ITEM_TO_CART = await cart_manager(command_ADD_ITEM_TO_CART)
+
+        //console.log(result_REMOVE_WISH_LIST_ITEM)
+
+        if(result_ADD_ITEM_TO_CART.status === 200)
+        {
+            alert("Successfully Added to Cart")
+            //fetchWishListItems()
+        }
+        else
+        {
+            alert("Fail to Add To Cart")
+        }
+    }
 
 
     const AddProductToWishList = async () => 
@@ -96,9 +124,36 @@ export default function Product_v2(props) {
                                </Grid.Row>
                                <Grid.Row>
                                <Grid.Column width={8} textAlign = "center">
-                                        <Button fluid color = "yellow" centered>
-                                            <Icon  name='shop' />
-                                        </Button>
+                                            <Modal
+                                                open = {openCartModal} 
+                                                trigger={
+                                                                <Button 
+                                                                    fluid color = "yellow" centered
+                                                                    name = {productName}
+                                                                    onClick = {(e) => {setOpenCartModal(true); addToCart(e.target.name)}}
+                                                                    >
+                                                                    <Icon name='cart' />
+                                                                </Button>
+                                                            }  size='small'>
+                                                <Header icon='cart' content='Add Item To Cart ?' />
+                                                <Modal.Content>
+                                                    {
+                                                    (user_info_cookie !== null && user_info_cookie !== undefined ) ?
+                                                    <p>Product Added To Cart ,  Check Cart from The Navigation Bar On Top to Purchase Item!</p>:
+                                                    <>
+                                                        <Header as = "h3">Please Log In and Try Again</Header>
+                                                        <Button fluid primary onClick = {() => {setToLogin(true)}}>Login In Here</Button>
+                                                        <Divider/>
+                                                    </>
+                                                    }
+                                                    
+                                                </Modal.Content>
+                                                <Modal.Actions>
+                                                    <Button basic color='red'  onClick = {() => {setOpenCartModal(false)}}>
+                                                        <Icon name='remove' /> Dismiss
+                                                    </Button>
+                                                </Modal.Actions>
+                                        </Modal>
                                     </Grid.Column>
                                     <Grid.Column width={8}>
                                         

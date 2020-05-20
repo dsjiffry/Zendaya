@@ -8,7 +8,6 @@ import cart_manager from "../Contexts/Helper_Functions/cart_management"
 
 export default function WishList() {
 
-
     const cookies = new Cookies();
     let user_info_cookie = cookies.get("USER");
 
