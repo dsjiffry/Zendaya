@@ -61,7 +61,7 @@ export default function AddProduct() {
 
             if(result_ADD_PRODUCT.status === 200)
             {
-                alert("Success !")
+                alert("Success !: Now Add Relevent Categories from Product Manager")
             }
             else
             {
