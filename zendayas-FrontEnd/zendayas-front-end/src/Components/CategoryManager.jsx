@@ -152,7 +152,7 @@ export default function CategoryManager() {
                     </Segment>
                     <Segment>
                         <Grid>
-                                                        {
+                            {
                                 categoryObjects
                             }
                         </Grid>

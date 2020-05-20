@@ -1,23 +1,22 @@
 import React from 'react'
+import {Redirect} from "react-router-dom"
+import Cookies from "universal-cookie"
 
-
-
-import { Segment, Reveal, Card, Header, Image, Icon, Transition, Button, Grid , Rating, GridRow, Placeholder } from "semantic-ui-react"
+import { Modal,Segment, Reveal, Card, Header, Image, Icon, Transition, Button, Grid , Rating, GridRow, Placeholder, Divider } from "semantic-ui-react"
 import ProductDetails from './ProductDetails';
+import UserLogin from '../Pages/UserLogin';
 
 const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+
 
 
 export default function Product_v2(props) {
 
     const [page, setPage] = React.useState(0)
 
-    // const [images,setImages] = React.useState({
-    //     MAIN_IMAGE : "",
-    //     SECONDARY_IMAGE : "",
-    //     TERTIARY_IMAGE : "",
-    //     THUMBNAIL : ""
-    // })
+    const [toLogin,setToLogin] = React.useState(false)
+
+    const [openWishListModal , setOpenWishListModal] = React.useState(false);
 
     const {
         productName,
@@ -34,47 +33,13 @@ export default function Product_v2(props) {
     } = props;
 
 
-    // let imageFetcher = async (number,productName) => 
-    //     {
-    //         let response = await fetch(BACKEND_BASE_URL + `/getImage/${productName}/${number}`, {
-    //             method: 'GET',
-    //             headers: {
-    //                 Accept: 'image/webp,*/*',
-    //                 'Content-Type': 'application/json'
-    //             }
-                
-    //         });
+    const AddProductToWishList = () => 
+    {
+        
+    }
 
-    //         console.log(response);
-
-    //         let data = await response.blob();
-
-    //         console.log(data)
-
-    //         let image = URL.createObjectURL(data)
-
-    //         console.log(image)
-
-    //         setImages({...images, MAIN_IMAGE : image})
-
-    //     }
-
-    React.useEffect(() => {
-
-        //imageFetcher(1,"Shirt")
-
-        // let timer = setInterval(() => {
-
-           
-        //    setPage(page + 1)
-
-        // }, 1000 * 1.5);
-
-        return () => {
-            // console.log("Clear")
-            // clearInterval(timer)
-        }
-    },[])
+    const cookies = new Cookies();
+    let user_info_cookie = cookies.get("USER");
 
     return (
         <>
@@ -112,17 +77,43 @@ export default function Product_v2(props) {
                                <Grid.Row>
                                <Grid.Column width={8} textAlign = "center">
                                         <Button fluid color = "yellow" centered>
-                                          
-                                                <Icon  name='shop'  />
-                                           
+                                            <Icon  name='shop' />
                                         </Button>
                                     </Grid.Column>
                                     <Grid.Column width={8}>
-                                        <Button fluid inverted color = "youtube" centered>
-                                          
-                                                <Icon name='heart' />
+                                        
+                                    <Modal
+                                        open = {openWishListModal} 
+                                        trigger={
+                                                        <Button 
+                                                            fluid 
+                                                            inverted 
+                                                            color = "youtube" 
+                                                            centered
+                                                            onClick = {() => {setOpenWishListModal(true); AddProductToWishList()}}
+                                                            >
+                                                            <Icon name='heart' />
+                                                        </Button>
+                                                    }  size='small'>
+                                        <Header icon='heart' content='Add Item To WishList ?' />
+                                        <Modal.Content>
+                                            {
+                                               (user_info_cookie !== null && user_info_cookie !== undefined ) ?
+                                               <p>Product Added To WishList ,  Check Wish list from The Navigation Bar On Top !</p>:
+                                               <>
+                                                <Header as = "h3">Please Log In and Try Again</Header>
+                                                <Button fluid primary onClick = {() => {setToLogin(true)}}>Login In Here</Button>
+                                                <Divider/>
+                                               </>
+                                            }
                                             
-                                        </Button>
+                                        </Modal.Content>
+                                        <Modal.Actions>
+                                            <Button basic color='red'  onClick = {() => {setOpenWishListModal(false)}}>
+                                                <Icon name='remove' /> Dismiss
+                                            </Button>
+                                        </Modal.Actions>
+                                    </Modal>
                                     </Grid.Column>
                                </Grid.Row>
                                 <Grid.Row centered >
@@ -145,9 +136,9 @@ export default function Product_v2(props) {
 
                     </Card.Content>
                 </Card>
-           
+                {toLogin ? <Redirect to = "/userLogin"/> : <></>}
         </>
-
+       
 
     )
 }
