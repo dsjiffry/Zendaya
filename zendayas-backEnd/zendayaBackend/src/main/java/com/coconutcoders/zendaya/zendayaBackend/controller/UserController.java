@@ -8,9 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -99,7 +103,7 @@ public class UserController {
         final String SM_Email = payload.get("StoreManagerEmail");
 
         User admin = userRepo.findUserByUsername(AdminUsername);
-        if (!admin.isThisThePassword(AdminPassword)) {
+        if (admin == null || admin.getRole() != UserRoles.ADMIN || !admin.isThisThePassword(AdminPassword)) {
             return new ResponseEntity<>("Invalid Admin login", HttpStatus.UNAUTHORIZED);
         }
 
@@ -115,6 +119,33 @@ public class UserController {
         User user = new User(SM_Username, SM_Password,SM_Email);
         user.setStoreManager();
         userRepo.save(user);
+
+        //Sending email to store manager
+        Properties properties = new java.util.Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.transport.protocol", "smtp");
+        properties.put("mail.smtp.host", "smtp.gmail.com"); //Need to allow less secure apps in Gmail account security settings
+        properties.put("mail.smtp.port", "587");
+        properties.put("mail.smtp.starttls.enable","true");
+        properties.put("mail.smtp.starttls.required","true");
+        Session session = Session.getInstance(properties,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication("zendayafashionstore@gmail.com", "FAdTHMmVkRe82CH");
+                    }
+                });
+
+        Message message = new MimeMessage(session);
+        try {
+            message.setFrom(new InternetAddress("zendayafashionstore@gmail.com"));
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(SM_Email));
+            message.setSubject("Zendaya Store Manager");
+            message.setText(SM_Username+" You are now a Store Manager for Zendaya");
+
+            Transport.send(message);
+        } catch (MessagingException ignored) {
+        }
+
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
