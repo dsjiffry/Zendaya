@@ -20,6 +20,7 @@ import StoreManagerConsole from './Pages/StoreManagerConsole';
 import UserLogin from './Pages/UserLogin';
 import UserSignUp from './Pages/UserSignUp';
 import WishList from './Pages/WishList';
+import Cart from './Pages/Cart';
 
 function App() {
 
@@ -62,6 +63,9 @@ function App() {
               </Route>
               <Route path = "/WishList">
                   <WishList/>
+              </Route>
+              <Route path = "/Cart">
+                  <Cart/>
               </Route>
               <Route path = "/userLogin">
                   <UserLogin/>
