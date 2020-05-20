@@ -21,6 +21,31 @@ export default function Cart() {
 
     }, []);
 
+    const removeFromCart = async (productName) => 
+    {
+        let command_DELETE_ITEM_FROM_CART = {
+            type : "DELETE_ITEM_FROM_CART",
+            payload : {
+                DIFC_username :  user_info_cookie.username,
+                DIFC_productName : productName
+            }
+        }
+        
+        let result_DELETE_ITEM_FROM_CART = await cart_manager(command_DELETE_ITEM_FROM_CART)
+
+        //console.log(result_REMOVE_WISH_LIST_ITEM)
+
+        if(result_DELETE_ITEM_FROM_CART.status === 200)
+        {
+            //alert("Successfully Added to Wish List")
+            fetchCartListItems()
+        }
+        else
+        {
+            alert("Fail to Remove from Wish List")
+        }
+    }
+
     const fetchCartListItems = async () => {
         if (user_info_cookie !== null && user_info_cookie !== undefined) {
             const result_GET_CART_ITEMS = await cart_manager({
@@ -73,7 +98,12 @@ export default function Cart() {
                             {Number(item.price.finalPrice) * Number(item.quantity)}
                         </Table.Cell>
                         <Table.Cell>
-                            <Button negative fluid>Remove</Button>
+                            <Button 
+                                negative 
+                                fluid
+                                name = {key}
+                                onClick = {(e) => {removeFromCart(e.target.name)}}
+                            >Remove</Button>
                         </Table.Cell>
                     </Table.Row>
                    )
