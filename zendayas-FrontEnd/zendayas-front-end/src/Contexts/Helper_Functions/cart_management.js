@@ -85,7 +85,7 @@ export default async function cart_management(action) {
                         productNames.push(key);
                     });
 
-                    productNames.forEach(function (product) {
+                    productNames.forEach(async function (product) {
 
                         //Fetching Thumbnails from the server
                         let response3 = await fetch(BACKEND_BASE_URL + '/getThumbnail', {
@@ -93,7 +93,7 @@ export default async function cart_management(action) {
                             headers: {
                                 Accept: 'image/jpeg',
                                 'Content-Type': 'application/json',
-                                'Authorization': 'Bearer ' + jwt
+                                'Authorization': 'Bearer ' + jwt_token
                             },
                             body: JSON.stringify({
                                 productName: product
@@ -115,18 +115,11 @@ export default async function cart_management(action) {
                         }
                         //-----End Of ProductNames for each loop-------
                     });
-                }
-                else {
-                    return {
-                        status: STATUS_NOT_FOUND,
-                        payload: {}
-                    }
-                }
 
-                //Getting cart Total
+                    //Getting cart Total
                 let TotalPrice = 0;
 
-                let response = await fetch(BACKEND_BASE_URL + '/getTotalPriceAndNumberOfItems', {
+                let response4 = await fetch(BACKEND_BASE_URL + '/getTotalPriceAndNumberOfItems', {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
@@ -140,8 +133,8 @@ export default async function cart_management(action) {
 
                 if (response.ok) {
 
-                    let data = await response.json();
-                    TotalPrice = data.totalPrice;
+                    let data2 = await response4.json();
+                    TotalPrice = data2.totalPrice;
 
                 }
                 else {
@@ -159,6 +152,15 @@ export default async function cart_management(action) {
                         cartTotal: TotalPrice
                     }
                 }
+                }
+                else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+
+                
 
             }
 
