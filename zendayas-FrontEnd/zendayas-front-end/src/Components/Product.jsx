@@ -21,25 +21,12 @@ export default function Product(props) {
     return (
         <Card fluid>
             <Segment fluid>
-                <Reveal animated='fade'>
-                    <Reveal.Content hidden>
-                        <Image
-                            centered
-                            fluid
-                            src={SECONDARY_IMAGE}
-                            wrapped
-                            ui={true}
-                             />
-                    </Reveal.Content>
-                    <Reveal.Content visible>
-                        <Image src={MAIN_IMAGE}
+                <Image src={MAIN_IMAGE}
                             wrapped
                             centered
                             ui={true}
                             fluid
                         />
-                    </Reveal.Content>
-                </Reveal>
             </Segment>
 
 
