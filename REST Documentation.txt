@@ -1,5 +1,5 @@
 
-# last update -> 15/05/2020
+# last update -> 20/05/2020
 
 We can make POST requests to these urls to obtain specific functionalities. They will return HTTP status codes based on the result.
 The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error code will be returned
@@ -109,6 +109,11 @@ The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error
 
 	* Transfers a product from the wish list to the Shopping Cart
 		-> POST to http://35.208.41.87:8080/moveToShoppingCart
+		-> with JSON body with key(s): "username" and "productName"
+		-> will return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
+		
+	* Transfers a product from the Shopping Cart to the wishlist
+		-> POST to http://localhost:8080/moveToWishList
 		-> with JSON body with key(s): "username" and "productName"
 		-> will return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
 		

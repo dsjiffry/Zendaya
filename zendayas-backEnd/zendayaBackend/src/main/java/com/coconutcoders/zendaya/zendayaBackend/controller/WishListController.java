@@ -32,14 +32,13 @@ public class WishListController {
     /**
      * Checks for product in database and then adds it to the user's wish list
      * POST to http://localhost:8080/addToWishList
+     *
      * @param payload Should contain JSON key-value pairs with key(s): "username" and "productName"
      * @return NOT FOUND if product is not in database, else OK
      */
     @RequestMapping(value = "/addToWishList", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity addToWishList(@RequestBody Map<String, String> payload)
-    {
-        if(!payload.containsKey("productName") || !payload.containsKey("username"))
-        {
+    public ResponseEntity addToWishList(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName") || !payload.containsKey("username")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
@@ -47,8 +46,7 @@ public class WishListController {
 
         //Checking for Product in DB
         Product product = productRepo.findByNameIgnoreCase(productName);
-        if(product == null)
-        {
+        if (product == null) {
             return new ResponseEntity<>("Product was not found", HttpStatus.NOT_FOUND);
         }
         //Since this can only be called after the user signs in, will not be verifying username.
@@ -56,36 +54,33 @@ public class WishListController {
 
         WishList wishList = wishListRepo.findByUsername(username);
 
-        if(wishList == null)    //need to create a new wishlist for this user
+        if (wishList == null)    //need to create a new wishlist for this user
         {
             wishList = new WishList(username);
             wishList.addProduct(productName);
-        }
-        else    //this user already has a wishlist
+        } else    //this user already has a wishlist
         {
-            if(!wishList.isProductAlreadyInWishList(productName))
-            {
+            if (!wishList.isProductAlreadyInWishList(productName)) {
                 wishList.addProduct(productName);
             }
         }
 
         wishListRepo.save(wishList);
 
-        return new ResponseEntity<>(productName+" added to "+username+"'s wish list", HttpStatus.OK);
+        return new ResponseEntity<>(productName + " added to " + username + "'s wish list", HttpStatus.OK);
     }
 
 
     /**
      * Checks for product in database and then removes it from the user's wish list
      * POST to http://localhost:8080/removeFromWishList
+     *
      * @param payload Should contain JSON key-value pairs with key(s): "username" and "productName"
      * @return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
      */
     @RequestMapping(value = "/removeFromWishList", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity removeFromWishList(@RequestBody Map<String, String> payload)
-    {
-        if(!payload.containsKey("productName") || !payload.containsKey("username"))
-        {
+    public ResponseEntity removeFromWishList(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName") || !payload.containsKey("username")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
@@ -93,8 +88,7 @@ public class WishListController {
 
         //Checking for Product in DB
         Product product = productRepo.findByNameIgnoreCase(productName);
-        if(product == null)
-        {
+        if (product == null) {
             return new ResponseEntity<>("Product was not found", HttpStatus.NOT_FOUND);
         }
         //Since this can only be called after the user signs in, will not be verifying username.
@@ -102,35 +96,32 @@ public class WishListController {
 
         WishList wishList = wishListRepo.findByUsername(username);
 
-        if(wishList == null)    //User doesn't have a wish list
+        if (wishList == null)    //User doesn't have a wish list
         {
             return new ResponseEntity<>("Wish list was not found", HttpStatus.NOT_FOUND);
-        }
-        else    //this user has a wish list
+        } else    //this user has a wish list
         {
-            if(wishList.isProductAlreadyInWishList(productName))
-            {
+            if (wishList.isProductAlreadyInWishList(productName)) {
                 wishList.removeProduct(productName);
             }
         }
 
         wishListRepo.save(wishList);
 
-        return new ResponseEntity<>(productName+" removed from "+username+"'s wish list", HttpStatus.OK);
+        return new ResponseEntity<>(productName + " removed from " + username + "'s wish list", HttpStatus.OK);
     }
 
 
     /**
      * Transfers a product from the wish list to the Shopping Cart
      * POST to http://localhost:8080/moveToShoppingCart
+     *
      * @param payload Should contain JSON key-value pairs with key(s): "username" and "productName"
      * @return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
      */
     @RequestMapping(value = "/moveToShoppingCart", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity moveToShoppingCart(@RequestBody Map<String, String> payload)
-    {
-        if(!payload.containsKey("productName") || !payload.containsKey("username"))
-        {
+    public ResponseEntity moveToShoppingCart(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName") || !payload.containsKey("username")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
@@ -139,24 +130,23 @@ public class WishListController {
 
         //Checking for Product in DB
         Product product = productRepo.findByNameIgnoreCase(productName);
-        if(product == null)
-        {
+        if (product == null) {
             return new ResponseEntity<>("Product was not found", HttpStatus.NOT_FOUND);
         }
 
         WishList wishList = wishListRepo.findByUsername(username);
 
-        if(wishList == null)    //user does not have a wishlist
+        if (wishList == null)    //user does not have a wishlist
         {
             return new ResponseEntity<>("Wish list was not found", HttpStatus.NOT_FOUND);
         }
-        if(!wishList.isProductAlreadyInWishList(productName))    //Product was not found in wish list
+        if (!wishList.isProductAlreadyInWishList(productName))    //Product was not found in wish list
         {
             return new ResponseEntity<>("No such product in wish list", HttpStatus.NOT_FOUND);
         }
 
         ShoppingCart sCart = shoppingCartRepo.findByUsername(username);
-        if(sCart == null)   //User does not have a shopping cart
+        if (sCart == null)   //User does not have a shopping cart
         {
             sCart = new ShoppingCart(username);
         }
@@ -164,7 +154,54 @@ public class WishListController {
         shoppingCartRepo.save(sCart);
         removeFromWishList(payload);
 
-        return new ResponseEntity<>(productName+" moved to Shopping Cart", HttpStatus.OK);
+        return new ResponseEntity<>(productName + " moved to Shopping Cart", HttpStatus.OK);
+    }
+
+    /**
+     * Transfers a product from the Shopping Cart to the wishlist
+     * POST to http://localhost:8080/moveToWishList
+     *
+     * @param payload Should contain JSON key-value pairs with key(s): "username" and "productName"
+     * @return NOT FOUND if product is not in database or if user doesn't have a wish list, else OK
+     */
+    @RequestMapping(value = "/moveToWishList", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity moveToWishList(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("productName") || !payload.containsKey("username")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String productName = payload.get("productName");
+        final String username = payload.get("username");
+
+        ShoppingCart sCart = shoppingCartRepo.findByUsername(username);
+        if (sCart == null)   //User does not have a shopping cart
+        {
+            return new ResponseEntity<>("Shopping cart was not found", HttpStatus.NOT_FOUND);
+        }
+
+        if (!sCart.isProductAlreadyInCart(productName)) {
+            return new ResponseEntity<>("Product not in shopping cart", HttpStatus.NOT_FOUND);
+        }
+
+        //Checking for Product in DB
+        Product product = productRepo.findByNameIgnoreCase(productName);
+        if (product == null) {
+            return new ResponseEntity<>("Product was not found in database", HttpStatus.NOT_FOUND);
+        }
+
+        WishList wishList = wishListRepo.findByUsername(username);
+
+        if (wishList == null)    //user does not have a wishlist
+        {
+            wishList = new WishList(username);
+        }
+
+        wishList.addProduct(productName);
+        wishListRepo.save(wishList);
+
+        sCart.removeProduct(productName);
+        shoppingCartRepo.save(sCart);
+
+        return new ResponseEntity<>(productName + " moved to Wish List", HttpStatus.OK);
     }
 
     /**

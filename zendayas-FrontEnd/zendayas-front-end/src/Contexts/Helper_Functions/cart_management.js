@@ -299,6 +299,48 @@ export default async function cart_management(action) {
 
             }
 
+            case "ADD_CART_ITEM_TO_WISH_LIST":
+
+                const { ACITWL_username, ACITWL_productName } = action.payload;
+    
+                try {
+    
+                    let response = await fetch(BACKEND_BASE_URL + '/moveToWishList', {
+                        method: 'POST',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + jwt_token
+                        },
+                        body: JSON.stringify({
+                            username: ACITWL_username,
+                            productName: ACITWL_productName
+                        }),
+                    })
+    
+                    if (response.ok) {
+                        return {
+                            status: STATUS_OK,
+                            payload: {}
+                        }
+    
+                    } else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {}
+                        }
+                    }
+    
+                } catch (error) {
+    
+                    console.log(error)
+                    return {
+                        status: STATUS_SERVER_ERROR,
+                        payload: {}
+                    }
+    
+                }
+
 
         default:
             break;
