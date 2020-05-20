@@ -84,7 +84,7 @@ export default async function wish_list_management(action) {
                         productNames.push(key);
                     });
 
-                    productNames.forEach(function (product) {
+                    productNames.forEach(async function (product) {
 
                         //Fetching Thumbnails from the server
                         let response3 = await fetch(BACKEND_BASE_URL + '/getThumbnail', {
@@ -92,7 +92,7 @@ export default async function wish_list_management(action) {
                             headers: {
                                 Accept: 'image/jpeg',
                                 'Content-Type': 'application/json',
-                                'Authorization': 'Bearer ' + jwt
+                                'Authorization': 'Bearer ' + jwt_token
                             },
                             body: JSON.stringify({
                                 productName: product
@@ -125,7 +125,7 @@ export default async function wish_list_management(action) {
                 //Getting cart Total
                 let TotalPrice = 0;
 
-                let response = await fetch(BACKEND_BASE_URL + '/getWishListTotalPriceAndNumberOfItems', {
+                let response4 = await fetch(BACKEND_BASE_URL + '/getWishListTotalPriceAndNumberOfItems', {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
@@ -137,10 +137,18 @@ export default async function wish_list_management(action) {
                     }),
                 });
 
-                if (response.ok) {
+                if (response4.ok) {
 
                     let data = await response.json();
                     TotalPrice = data.totalPrice;
+
+                    return {
+                        status: STATUS_OK,
+                        payload: {
+                            cartItems: data,
+                            cartTotal: TotalPrice
+                        }
+                    }
 
                 }
                 else {
@@ -151,13 +159,7 @@ export default async function wish_list_management(action) {
                 }
 
                 //If All Loops Ran Successfully
-                return {
-                    status: STATUS_OK,
-                    payload: {
-                        cartItems: data,
-                        cartTotal: TotalPrice
-                    }
-                }
+               
 
             }
 
@@ -211,6 +213,49 @@ export default async function wish_list_management(action) {
                 }
 
             }
+
+        ///addToWishList
+        case "ADD_WISH_LIST_ITEM" : 
+            
+        const { AWLI_username, AWLI_productName } = action.payload;
+
+        try {
+
+            let response = await fetch(BACKEND_BASE_URL + '/addToWishList', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwt_token
+                },
+                body: JSON.stringify({
+                    username: AWLI_username,
+                    productName: AWLI_productName
+                }),
+            })
+
+            if (response.ok) {
+                return {
+                    status: STATUS_OK,
+                    payload: {}
+                }
+
+            } else {
+                return {
+                    status: STATUS_NOT_FOUND,
+                    payload: {}
+                }
+            }
+
+        } catch (error) {
+
+            console.log(error)
+            return {
+                status: STATUS_SERVER_ERROR,
+                payload: {}
+            }
+
+        }
 
 
         case "DELETE_WISH_LIST_ITEM_FROM_CART": // Assuming this means remove item from wishlist, otherwise will be identical to DELETE_ITEM_FROM_CART

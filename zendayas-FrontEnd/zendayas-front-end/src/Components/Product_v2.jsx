@@ -1,10 +1,11 @@
 import React from 'react'
 import {Redirect} from "react-router-dom"
 import Cookies from "universal-cookie"
+import wishList_manager from "../Contexts/Helper_Functions/wishList_management"
 
 import { Modal,Segment, Reveal, Card, Header, Image, Icon, Transition, Button, Grid , Rating, GridRow, Placeholder, Divider } from "semantic-ui-react"
 import ProductDetails from './ProductDetails';
-import 
+
 
 const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
@@ -38,9 +39,23 @@ export default function Product_v2(props) {
 
     const AddProductToWishList = async () => 
     {
-        if(user_info_cookie !== null && user_info_cookie !== undefined )
-        {
+        let command_ADD_WISH_LIST_ITEM = {
+            type : "ADD_WISH_LIST_ITEM",
+            payload : {
+                AWLI_username :  user_info_cookie.username,
+                AWLI_productName : productName
+            }
+        }
+        
+        let result_ADD_WISH_LIST_ITEM = await wishList_manager(command_ADD_WISH_LIST_ITEM)
 
+        if(result_ADD_WISH_LIST_ITEM.status === 200)
+        {
+            alert("Successfully Added to Wish List")
+        }
+        else
+        {
+            alert("Fail to Add to Wish List")
         }
 
     }
