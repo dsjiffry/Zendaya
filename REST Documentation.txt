@@ -1,5 +1,5 @@
 
-# last update -> 09/05/2020
+# last update -> 15/05/2020
 
 We can make POST requests to these urls to obtain specific functionalities. They will return HTTP status codes based on the result.
 The JSON keys mentioned MUST be included in the body otherwise a NOT FOUND error code will be returned
