@@ -219,6 +219,8 @@ export default async function cart_management(action) {
 
             const { UIQ_username, UIQ_productName, UIQ_newQuantity } = action.payload;
 
+            console.log(UIQ_newQuantity,UIQ_productName)
+            
             try {
 
                 let response = await fetch(BACKEND_BASE_URL + '/addToShoppingCart', {

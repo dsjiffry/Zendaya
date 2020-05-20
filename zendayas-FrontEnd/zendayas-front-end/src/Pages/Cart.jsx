@@ -46,6 +46,31 @@ export default function Cart() {
         }
     }
 
+    const updateQty = async (productName,qty) => 
+    {
+        let result_UPDATE_ITEM_QUANTITY = await cart_manager(
+            {
+                type : "UPDATE_ITEM_QUANTITY",
+                payload : {
+                    UIQ_username : user_info_cookie.username , 
+                    UIQ_productName : productName, 
+                    UIQ_newQuantity : qty
+                }
+            }
+        )
+
+        if(result_UPDATE_ITEM_QUANTITY.status === 200)
+        {
+            console.log(result_UPDATE_ITEM_QUANTITY)
+            fetchCartListItems()
+        }
+        else
+        {
+            alert("Quantity Update Failuire")
+        }
+
+    }
+
     const fetchCartListItems = async () => {
         if (user_info_cookie !== null && user_info_cookie !== undefined) {
             const result_GET_CART_ITEMS = await cart_manager({
@@ -56,6 +81,8 @@ export default function Cart() {
             })
 
             let item_array = [];
+
+            console.log(result_GET_CART_ITEMS)
 
             if (result_GET_CART_ITEMS.status === 200) {
                 setState({ ...state, total: result_GET_CART_ITEMS.payload.cartTotal })
@@ -75,7 +102,12 @@ export default function Cart() {
                             <Grid>
                                 <Grid.Row>
                                     <Grid.Column width = "5">
-                                        <Button size = "small" secondary>
+                                        <Button 
+                                            size = "small" 
+                                            secondary
+                                            name = {key}
+                                            onClick = {(e) => {updateQty( (e.target.name) , Number(item.quantity) + 1 )  }}
+                                            >
                                             +
                                         </Button>
                                     </Grid.Column> 
@@ -86,7 +118,13 @@ export default function Cart() {
                                     </Grid.Column>
                                        
                                     <Grid.Column width = "5">
-                                        <Button size = "small" secondary>
+                                        <Button 
+                                            size = "small" 
+                                            secondary
+                                            disabled = {Number(item.quantity) === 1}
+                                            name = {key}
+                                            onClick = {(e) => {updateQty(  e.target.name , Number(item.quantity) - 1 )    }}
+                                            >
                                             -
                                         </Button>
                                     </Grid.Column> 
