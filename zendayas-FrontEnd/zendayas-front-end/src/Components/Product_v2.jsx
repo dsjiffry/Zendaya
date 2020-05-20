@@ -4,7 +4,7 @@ import Cookies from "universal-cookie"
 
 import { Modal,Segment, Reveal, Card, Header, Image, Icon, Transition, Button, Grid , Rating, GridRow, Placeholder, Divider } from "semantic-ui-react"
 import ProductDetails from './ProductDetails';
-import UserLogin from '../Pages/UserLogin';
+import 
 
 const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
@@ -32,14 +32,19 @@ export default function Product_v2(props) {
         reviews
     } = props;
 
-
-    const AddProductToWishList = () => 
-    {
-        
-    }
-
     const cookies = new Cookies();
     let user_info_cookie = cookies.get("USER");
+
+
+    const AddProductToWishList = async () => 
+    {
+        if(user_info_cookie !== null && user_info_cookie !== undefined )
+        {
+
+        }
+
+    }
+
 
     return (
         <>
