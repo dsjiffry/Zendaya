@@ -19,6 +19,7 @@ import AdminConsole from './Pages/AdminConsole';
 import StoreManagerConsole from './Pages/StoreManagerConsole';
 import UserLogin from './Pages/UserLogin';
 import UserSignUp from './Pages/UserSignUp';
+import WishList from './Pages/WishList';
 
 function App() {
 
@@ -58,6 +59,9 @@ function App() {
               </Route>
               <Route path = "/SignUp">
                   <UserSignUp/>
+              </Route>
+              <Route path = "/WishList">
+                  <WishList/>
               </Route>
               <Route path = "/userLogin">
                   <UserLogin/>

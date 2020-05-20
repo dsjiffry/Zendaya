@@ -75,54 +75,9 @@ export default async function wish_list_management(action) {
 
                 if (response.ok) {
 
-                    let data = await response.json();
+                let data = await response.json();
 
-                    //Getting the images
-                    var productNames = [];
-
-                    Object.keys(data).forEach(function (key) {
-                        productNames.push(key);
-                    });
-
-                    productNames.forEach(async function (product) {
-
-                        //Fetching Thumbnails from the server
-                        let response3 = await fetch(BACKEND_BASE_URL + '/getThumbnail', {
-                            method: 'POST',
-                            headers: {
-                                Accept: 'image/jpeg',
-                                'Content-Type': 'application/json',
-                                'Authorization': 'Bearer ' + jwt_token
-                            },
-                            body: JSON.stringify({
-                                productName: product
-                            }),
-                        })
-
-                        if (response3.ok) {
-                            let thumbnailBlob = await response3.blob();
-
-                            if (thumbnailBlob) {
-                                data[product] = { ...data[product], thumbnail_url: URL.createObjectURL(thumbnailBlob) }
-                            }
-                        }
-                        else {
-                            return {
-                                status: STATUS_NOT_FOUND,
-                                payload: {}
-                            }
-                        }
-                        //-----End Of ProductNames for each loop-------
-                    });
-                }
-                else {
-                    return {
-                        status: STATUS_NOT_FOUND,
-                        payload: {}
-                    }
-                }
-
-                //Getting cart Total
+                    //Getting cart Total
                 let TotalPrice = 0;
 
                 let response4 = await fetch(BACKEND_BASE_URL + '/getWishListTotalPriceAndNumberOfItems', {
@@ -137,26 +92,30 @@ export default async function wish_list_management(action) {
                     }),
                 });
 
-                if (response4.ok) {
+                    if (response4.ok) {
 
-                    let data = await response.json();
-                    TotalPrice = data.totalPrice;
+                        let data2 = await response4.json();
+                        TotalPrice = data2.totalPrice;
 
-                    return {
-                        status: STATUS_OK,
-                        payload: {
-                            cartItems: data,
-                            cartTotal: TotalPrice
+                        return {
+                            status: STATUS_OK,
+                            payload: {
+                                cartItems: data,
+                                cartTotal: TotalPrice
+                            }
+                        }
+
+                    }
+                    else {
+                        return {
+                            status: STATUS_NOT_FOUND,
+                            payload: {}
                         }
                     }
+                   
+                }
 
-                }
-                else {
-                    return {
-                        status: STATUS_NOT_FOUND,
-                        payload: {}
-                    }
-                }
+                
 
                 //If All Loops Ran Successfully
                
@@ -256,6 +215,52 @@ export default async function wish_list_management(action) {
             }
 
         }
+
+          ///addToWishList
+          case "REMOVE_WISH_LIST_ITEM" : 
+            
+          const { RWLI_username, RWLI_productName } = action.payload;
+  
+          try {
+  
+              let response = await fetch(BACKEND_BASE_URL + '/removeFromWishList', {
+                  method: 'POST',
+                  headers: {
+                      Accept: 'application/json',
+                      'Content-Type': 'application/json',
+                      'Authorization': 'Bearer ' + jwt_token
+                  },
+                  body: JSON.stringify({
+                      username: RWLI_username,
+                      productName: RWLI_productName
+                  }),
+              })
+
+             
+  
+              if (response.ok) {
+                  return {
+                      status: STATUS_OK,
+                      payload: {}
+                  }
+  
+              } else {
+                //console.log(response)
+                  return {
+                      status: STATUS_NOT_FOUND,
+                      payload: {}
+                  }
+              }
+  
+          } catch (error) {
+  
+              console.log(error)
+              return {
+                  status: STATUS_SERVER_ERROR,
+                  payload: {}
+              }
+  
+          }
 
 
         case "DELETE_WISH_LIST_ITEM_FROM_CART": // Assuming this means remove item from wishlist, otherwise will be identical to DELETE_ITEM_FROM_CART
