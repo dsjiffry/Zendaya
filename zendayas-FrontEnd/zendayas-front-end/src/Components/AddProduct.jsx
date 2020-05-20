@@ -86,7 +86,7 @@ export default function AddProduct() {
 
     React.useEffect(() => {
         
-        if(state.price !== 0 && state.discount !== 0 )
+        if(state.price !== 0 )
         {
             let finalPrice = state.price - ( (state.price / 100) * state.discount)
             setState({...state , finalPrice : finalPrice})
