@@ -223,7 +223,7 @@ export default async function cart_management(action) {
             
             try {
 
-                let response = await fetch(BACKEND_BASE_URL + '/addToShoppingCart', {
+                let response = await fetch(BACKEND_BASE_URL + '/updateCartQuantity', {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',

@@ -246,4 +246,34 @@ public class ShoppingCartController {
         shoppingCartRepo.delete(shoppingCart);
         return new ResponseEntity<>("Payment Successful", HttpStatus.OK);
     }
+
+    /**
+     * Update the quantity of a product
+     * POST to http://localhost:8080/updateCartQuantity
+     *
+     * @param payload Should contain JSON key-value pairs with key(s): "username" and "productName" and "quantity"
+     * @return NOT FOUND if no product in cart, else OK
+     */
+    @RequestMapping(value = "/updateCartQuantity", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity updateCartQuantity(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username") || !payload.containsKey("productName") || !payload.containsKey("quantity")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+        final String productName = payload.get("productName");
+        final int quantity = Integer.parseInt(payload.get("quantity"));
+
+        ShoppingCart sCart = shoppingCartRepo.findByUsername(username);
+
+        if (sCart == null) {
+            return new ResponseEntity<>("No shopping cart found for user " + username, HttpStatus.NOT_FOUND);
+        }
+        if(!sCart.getProductAndQuantity().containsKey(productName))
+        {
+            return new ResponseEntity<>("Product not found in cart" + username, HttpStatus.NOT_FOUND);
+        }
+        sCart.getProductAndQuantity().put(productName,quantity);
+        shoppingCartRepo.save(sCart);
+        return new ResponseEntity<>("Changed Quantity", HttpStatus.OK);
+    }
 }

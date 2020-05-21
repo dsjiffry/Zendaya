@@ -1,12 +1,8 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
 
-import com.coconutcoders.zendaya.zendayaBackend.model.Image;
-import com.coconutcoders.zendaya.zendayaBackend.model.Product;
-import com.coconutcoders.zendaya.zendayaBackend.model.ProductCategory;
-import com.coconutcoders.zendaya.zendayaBackend.repo.ImageRepo;
-import com.coconutcoders.zendaya.zendayaBackend.repo.ProductCategoryRepo;
-import com.coconutcoders.zendaya.zendayaBackend.repo.ProductRepo;
+import com.coconutcoders.zendaya.zendayaBackend.model.*;
+import com.coconutcoders.zendaya.zendayaBackend.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +21,10 @@ public class ProductController {
     private ImageRepo imageRepo;
     @Autowired
     private ProductCategoryRepo productCategoryRepo;
+    @Autowired
+    private ShoppingCartRepo shoppingCartRepo;
+    @Autowired
+    private WishListRepo wishListRepo;
 
     /**
      * Adds Product to Database
@@ -141,16 +141,42 @@ public class ProductController {
         }
 
         productRepo.delete(product);
+
+        //Deleting Product images
         Image image = imageRepo.findByProductName(productName);
         if (image != null) {
             imageRepo.delete(image);
         }
+
+        //Deleting product from categories
         List<ProductCategory> productCategories = productCategoryRepo.findAll();
         if (productCategories != null && !productCategories.isEmpty()) {
             for (ProductCategory productCategory : productCategories) {
                 if (productCategory.doesCategoryContainProduct(productName)) {
                     productCategory.removeProductFromCategory(productName);
                     productCategoryRepo.save(productCategory);
+                }
+            }
+        }
+
+        //Deleting product from Shopping carts
+        List<ShoppingCart> shoppingCarts = shoppingCartRepo.findAll();
+        if (shoppingCarts != null && !shoppingCarts.isEmpty()) {
+            for (ShoppingCart shoppingCart : shoppingCarts) {
+                if (shoppingCart.isProductAlreadyInCart(productName)) {
+                    shoppingCart.removeProduct(productName);
+                    shoppingCartRepo.save(shoppingCart);
+                }
+            }
+        }
+
+        //Deleting product from Shopping carts
+        List<WishList> wishLists = wishListRepo.findAll();
+        if (wishLists != null && !wishLists.isEmpty()) {
+            for (WishList wishlist : wishLists) {
+                if (wishlist.isProductAlreadyInWishList(productName)) {
+                    wishlist.removeProduct(productName);
+                    wishListRepo.save(wishlist);
                 }
             }
         }
