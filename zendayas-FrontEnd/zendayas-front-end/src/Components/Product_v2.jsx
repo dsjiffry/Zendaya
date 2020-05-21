@@ -41,50 +41,58 @@ export default function Product_v2(props) {
 
     const addToCart = async (productName) => 
     {
-        let command_ADD_ITEM_TO_CART = {
-            type : "ADD_ITEM_TO_CART",
-            payload : {
-                AITC_username :  user_info_cookie.username,
-                AITC_productName : productName
+        if(user_info_cookie !== null && user_info_cookie !== undefined)
+        {
+            let command_ADD_ITEM_TO_CART = {
+                type : "ADD_ITEM_TO_CART",
+                payload : {
+                    AITC_username :  user_info_cookie.username,
+                    AITC_productName : productName
+                }
+            }
+            
+            let result_ADD_ITEM_TO_CART = await cart_manager(command_ADD_ITEM_TO_CART)
+    
+            //console.log(result_REMOVE_WISH_LIST_ITEM)
+    
+            if(result_ADD_ITEM_TO_CART.status === 200)
+            {
+                alert("Successfully Added to Cart")
+                //fetchWishListItems()
+            }
+            else
+            {
+                alert("Fail to Add To Cart")
             }
         }
         
-        let result_ADD_ITEM_TO_CART = await cart_manager(command_ADD_ITEM_TO_CART)
-
-        //console.log(result_REMOVE_WISH_LIST_ITEM)
-
-        if(result_ADD_ITEM_TO_CART.status === 200)
-        {
-            alert("Successfully Added to Cart")
-            //fetchWishListItems()
-        }
-        else
-        {
-            alert("Fail to Add To Cart")
-        }
     }
 
 
     const AddProductToWishList = async () => 
     {
-        let command_ADD_WISH_LIST_ITEM = {
-            type : "ADD_WISH_LIST_ITEM",
-            payload : {
-                AWLI_username :  user_info_cookie.username,
-                AWLI_productName : productName
+        if(user_info_cookie !== null && user_info_cookie !== undefined)
+        {
+            let command_ADD_WISH_LIST_ITEM = {
+                type : "ADD_WISH_LIST_ITEM",
+                payload : {
+                    AWLI_username :  user_info_cookie.username,
+                    AWLI_productName : productName
+                }
+            }
+            
+            let result_ADD_WISH_LIST_ITEM = await wishList_manager(command_ADD_WISH_LIST_ITEM)
+    
+            if(result_ADD_WISH_LIST_ITEM.status === 200)
+            {
+                alert("Successfully Added to Wish List")
+            }
+            else
+            {
+                alert("Fail to Add to Wish List")
             }
         }
         
-        let result_ADD_WISH_LIST_ITEM = await wishList_manager(command_ADD_WISH_LIST_ITEM)
-
-        if(result_ADD_WISH_LIST_ITEM.status === 200)
-        {
-            alert("Successfully Added to Wish List")
-        }
-        else
-        {
-            alert("Fail to Add to Wish List")
-        }
 
     }
 
