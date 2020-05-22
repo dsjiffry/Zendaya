@@ -15,7 +15,7 @@ import {
 
 import {UserContext} from "../Contexts/UserStore"
 
-import {Redirect} from "react-router-dom"
+import {Redirect,Link} from "react-router-dom"
 
 const NavBarDesktop = ({ leftItems, rightItems }) => {
 
@@ -41,18 +41,18 @@ const NavBarDesktop = ({ leftItems, rightItems }) => {
                     </Button>
                    
                 </Menu.Item>
-                <Menu.Item>
-                    Home
-                    </Menu.Item>
-                <Menu.Menu position="right">
                     <Menu.Item>
-                        Cart
-                    </Menu.Item>
+                            <Link to="/">Home</Link>
+                        </Menu.Item>
+                    <Menu.Menu position="right">
                     <Menu.Item>
-                        Wish List
+                        <Link to="/Cart">Cart</Link>
                     </Menu.Item>
                     <Menu.Item>
-                        Orders
+                        <Link to="/WishList">Wish List</Link>
+                    </Menu.Item>
+                    <Menu.Item>
+                        <Link to="/myOrders">My Orders</Link>
                     </Menu.Item>
 
                 </Menu.Menu>
@@ -68,15 +68,15 @@ const NavBarDesktop = ({ leftItems, rightItems }) => {
                     <Image size="mini" src="https://react.semantic-ui.com/logo.png" />
                 </Menu.Item>
                 <Menu.Item>
-                    Home
+                    <Link to="/">Home</Link>
                 </Menu.Item>
 
                 <Menu.Menu position="right">
                     <Menu.Item>
-                        Login
+                        <Link to="/userLogin">Login</Link>
                     </Menu.Item>
                     <Menu.Item>
-                        Sign Up
+                        <Link to="/SignUp">Sign Up</Link>
                     </Menu.Item>
                 </Menu.Menu>
             </Menu>

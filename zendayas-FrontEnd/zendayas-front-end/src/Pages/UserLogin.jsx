@@ -5,7 +5,7 @@ import { Container, Divider , Header , Grid , GridRow , GridColumn , Input , Seg
 import {UserContext} from "../Contexts/UserStore"
 import user_helper_function from "../Contexts/Helper_Functions/user_management"
 
-import {Redirect} from 'react-router-dom'
+import {Redirect,Link} from 'react-router-dom'
 
 export default function UserLogin() {
 
@@ -106,7 +106,7 @@ export default function UserLogin() {
                             </Button>
                             <br/>
                             <Header>Dont have an Account ? </Header>
-                            <a>Click Here</a>
+                            <Link to="/SignUp">Click Here</Link>
                         </GridColumn>
                             <br/>
                             <hr/>
