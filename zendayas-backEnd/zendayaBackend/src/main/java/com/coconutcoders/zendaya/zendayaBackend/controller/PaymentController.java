@@ -78,13 +78,12 @@ public class PaymentController {
         for (Payment payment : payments) {
             if (payment.getDateTime().equals(dateTime)) {
 
-                for (Map.Entry<String, HashMap<String, Number>> product : payment.getItemsPurchased().entrySet())
-                {
+                for (Map.Entry<String, HashMap<String, Number>> product : payment.getItemsPurchased().entrySet()) {
                     HashMap<String, Object> temp = new HashMap<>();
-                    temp.put("productName",product.getKey());
+                    temp.put("productName", product.getKey());
                     temp.put("quanity", product.getValue().get("quantity"));
                     temp.put("pricePerItem", product.getValue().get("pricePerItem"));
-                    response.put(product.getKey(),temp);
+                    response.put(product.getKey(), temp);
                 }
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
@@ -191,27 +190,70 @@ public class PaymentController {
         int i = 0;
 
         List<Payment> payments = paymentRepo.findAll();
-        for(Payment payment : payments)
-        {
+        for (Payment payment : payments) {
             HashMap<String, Object> temp = new HashMap<>();
-            temp.put("username",payment.getUsername());
+            temp.put("username", payment.getUsername());
             temp.put("email", userRepo.findUserByUsername(payment.getUsername()).getEmail());
-            temp.put("order_status",payment.getOrderStatus());
-            temp.put("order_date",payment.getDateTime());
-            temp.put("total",payment.getTotalPrice());
+            temp.put("order_status", payment.getOrderStatus());
+            temp.put("order_date", payment.getDateTime());
+            temp.put("total", payment.getTotalPrice());
 
             HashMap<String, Object> productDetails = new HashMap<>();
             for (Map.Entry<String, HashMap<String, Number>> product : payment.getItemsPurchased().entrySet()) {
                 HashMap<String, Object> tempProduct = new HashMap<>();
-                tempProduct.put("product_name",product.getKey());
-                tempProduct.put("quanity",product.getValue().get("quantity"));
-                productDetails.put(product.getKey(),tempProduct);
+                tempProduct.put("product_name", product.getKey());
+                tempProduct.put("quanity", product.getValue().get("quantity"));
+                productDetails.put(product.getKey(), tempProduct);
             }
-            temp.put("items",productDetails);
-            response.put("order_"+i, temp);
+            temp.put("items", productDetails);
+            response.put("order_" + i, temp);
             i++;
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    /**
+     * get all orders made by perticular user
+     * POST to http://localhost:8080/getAllOrdersOfUser
+     *
+     * @param payload Should contain JSON key-value pairs with key(s): "username"
+     * @return NOT FOUND if no orders, else OK with Order status
+     */
+    @RequestMapping(value = "/getAllOrdersOfUser", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity getAllOrdersOfUser(@RequestBody Map<String, String> payload) {
+
+        if (!payload.containsKey("username")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+
+        HashMap<String, Object> response = new HashMap<>();
+        int i = 0;
+
+        List<Payment> payments = paymentRepo.findByUsername(username);
+        for (Payment payment : payments) {
+            HashMap<String, Object> temp = new HashMap<>();
+            temp.put("username", payment.getUsername());
+            temp.put("email", userRepo.findUserByUsername(payment.getUsername()).getEmail());
+            temp.put("order_status", payment.getOrderStatus());
+            temp.put("order_date", payment.getDateTime());
+            temp.put("total", payment.getTotalPrice());
+
+            HashMap<String, Object> productDetails = new HashMap<>();
+            for (Map.Entry<String, HashMap<String, Number>> product : payment.getItemsPurchased().entrySet()) {
+                HashMap<String, Object> tempProduct = new HashMap<>();
+                tempProduct.put("product_name", product.getKey());
+                tempProduct.put("quanity", product.getValue().get("quantity"));
+                productDetails.put(product.getKey(), tempProduct);
+            }
+            temp.put("items", productDetails);
+            response.put("order_" + i, temp);
+            i++;
+
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
