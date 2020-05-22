@@ -81,10 +81,60 @@ export default async function order_management(action) {
 
     switch (action.type) {
 
+        case "GET_ALL_USER_ORDERS":
+            const {GAUO_username} = action.payload;
+
+            try {
+
+                //GET ALL products from 
+                let response = await fetch(BACKEND_BASE_URL + '/getAllOrdersOfUser', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + jwt_token
+                    },
+                    body: JSON.stringify({
+                        username: GAUO_username
+                    }),
+                });
+
+                if (response.ok) {
+
+                    let data = await response.json();
+
+                    
+
+                    return {
+                        status: STATUS_OK,
+                        payload: {
+                            order_list: data
+                        }
+                       
+                    }
+
+                }
+                else {
+                    return {
+                        status: STATUS_NOT_FOUND,
+                        payload: {}
+                    }
+                }
+            }
+            catch (error) {
+                console.log(error)
+                return {
+                    status: STATUS_SERVER_ERROR,
+                    payload: {}
+                }
+
+            }
+
+
         case "GET_ORDERED_ITEMS":
             //Get All Products from the cart     
 
-            const { GOI_username, GOI_dateTime } = action.payload;
+            const { GOI_username , GOI_dateTime } = action.payload;
 
 
             try {

@@ -5,7 +5,7 @@ import { Button, Header, Icon, Image, Modal, Grid, Comment, Segment, Message,Div
 
 export default function ProductDetails(props) {
 
-    const { productName, reviews, MAIN_IMAGE, SECONDARY_IMAGE, TERTIARY_IMAGE } = props
+    const { productName, reviews, MAIN_IMAGE, SECONDARY_IMAGE, THUMBNAIL } = props
 
     const [elements , setElements] = React.useState([])
 
@@ -62,7 +62,7 @@ export default function ProductDetails(props) {
             <Modal.Header>{productName}</Modal.Header>
             <Modal.Content image scrolling>
                 <Modal.Description>
-                    <Header>Modal Header</Header>
+                   
 
                 </Modal.Description>
 
@@ -75,7 +75,7 @@ export default function ProductDetails(props) {
                             {SECONDARY_IMAGE}
                         </Grid.Column>
                         <Grid.Column width={5}>
-                            {TERTIARY_IMAGE}
+                            {THUMBNAIL}
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
@@ -95,9 +95,7 @@ export default function ProductDetails(props) {
 
             </Modal.Content>
             <Modal.Actions>
-                <Button primary>
-                    Proceed <Icon name='chevron right' />
-                </Button>
+                
             </Modal.Actions>
         </Modal>
     )

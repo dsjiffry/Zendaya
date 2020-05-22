@@ -204,7 +204,7 @@ export default function Product_v2(props) {
                                         <ProductDetails
                                             MAIN_IMAGE = { <Image src={MAIN_IMAGE} fluid />}
                                             SECONDARY_IMAGE = {<Image src={SECONDARY_IMAGE} fluid />}
-                                            TERTIARY_IMAGE = {<Image src={TERTIARY_IMAGE} fluid />}
+                                            THUMBNAIL = {<Image src={`http://35.208.41.87:8080/getImage/${productName}/2`} fluid />}
                                             reviews = {reviews}
                                         />
                                     </Grid.Column>
