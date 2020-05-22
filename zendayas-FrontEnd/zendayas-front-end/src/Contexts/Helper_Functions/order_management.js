@@ -77,6 +77,8 @@ export default async function order_management(action) {
         rating: 3.5
     }
 
+    console.log(action)
+
     switch (action.type) {
 
         case "GET_ORDERED_ITEMS":
@@ -110,14 +112,14 @@ export default async function order_management(action) {
                     Object.keys(data).forEach(function (key) {
                         productNames.push(key);
                     });
-                    productNames.forEach(function (product) {
+                    productNames.forEach(async function (product) {
                         //Fetching Thumbnails from the server
                         let response3 = await fetch(BACKEND_BASE_URL + '/getThumbnail', {
                             method: 'POST',
                             headers: {
                                 Accept: 'image/jpeg',
                                 'Content-Type': 'application/json',
-                                'Authorization': 'Bearer ' + jwt
+                                'Authorization': 'Bearer ' + jwt_token
                             },
                             body: JSON.stringify({
                                 productName: product
@@ -163,7 +165,7 @@ export default async function order_management(action) {
 
         case "ORDER_ITEMS":
             //Order Items
-
+            console.log(action)
             const { OI_username, OI_payment_mode, OI_address } = action.payload;
             const { OI_CC_number, OI_CC_expiry_month, OI_CC_expiry_year, OI_CC_cvc } = action.payload;
 
@@ -186,6 +188,7 @@ export default async function order_management(action) {
                     }),
                 })
 
+                console.log(response)
                 if (response.ok) {
                     return {
                         status: STATUS_OK,

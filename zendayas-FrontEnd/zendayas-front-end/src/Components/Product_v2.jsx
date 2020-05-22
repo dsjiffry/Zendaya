@@ -99,7 +99,6 @@ export default function Product_v2(props) {
 
     return (
         <>
-           
                 <Card fluid onClick={() => { setPage(1) }}>
                     <Transition visible={page === 0} unmountOnHide animation='scale' duration={350}>
                         <Image src={MAIN_IMAGE} fluid />

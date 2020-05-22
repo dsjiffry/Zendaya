@@ -21,6 +21,7 @@ import UserLogin from './Pages/UserLogin';
 import UserSignUp from './Pages/UserSignUp';
 import WishList from './Pages/WishList';
 import Cart from './Pages/Cart';
+import MyOrders from './Pages/MyOrders';
 
 function App() {
 
@@ -66,6 +67,9 @@ function App() {
               </Route>
               <Route path = "/Cart">
                   <Cart/>
+              </Route>
+              <Route path = "/myOrders">
+                <MyOrders/>
               </Route>
               <Route path = "/userLogin">
                   <UserLogin/>

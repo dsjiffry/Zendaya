@@ -5,6 +5,7 @@ import NavBar from '../Components/Navbar'
 
 //import wishList_Manager from "../Contexts/Helper_Functions/wishList_management"
 import cart_manager from "../Contexts/Helper_Functions/cart_management"
+import CheckOutModel from '../Components/CheckOutModel'
 
 
 export default function Cart() {
@@ -15,11 +16,21 @@ export default function Cart() {
     const [elements, setElements] = React.useState([])
 
     const [state, setState] = React.useState({ total: 0 })
+    const [total, setTotal] = React.useState(0)
+    
 
     React.useEffect(() => {
+        
         fetchCartListItems()
 
     }, []);
+
+    React.useEffect(() => {
+        
+        //fetchCartListItems()
+        setTotal(state.total)
+
+    }, [state]);
 
     const removeFromCart = async (productName) => 
     {
@@ -81,15 +92,17 @@ export default function Cart() {
             })
 
             let item_array = [];
-
+            let item_state_array = [];
             console.log(result_GET_CART_ITEMS)
 
             if (result_GET_CART_ITEMS.status === 200) {
                 setState({ ...state, total: result_GET_CART_ITEMS.payload.cartTotal })
+                
                 Object.keys(result_GET_CART_ITEMS.payload.cartItems).forEach((key) => {
                     //console.log(result_GET_CART_ITEMS.payload.cartItems[key])
                    
                     let item = result_GET_CART_ITEMS.payload.cartItems[key]
+                    item_state_array.push(item)
                     item_array.push(
                     <Table.Row key = {key}>
                         <Table.Cell>
@@ -148,6 +161,7 @@ export default function Cart() {
                    
                 })
 
+                //setState({...state})
                 setElements(item_array)
             }
 
@@ -169,18 +183,12 @@ export default function Cart() {
                         </Grid.Row>
                         <Grid.Row>
                             <Grid.Column width="16">
-                                <Header as="h2">LKR {state.total}.00</Header>
+                                <Header as="h2">LKR {total}.00</Header>
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row>
                             <Grid.Column width="16">
-                                <Button
-                                    positive
-                                    fluid
-                                    disabled={state.total === 0}
-                                >
-                                    Proceed To Checkout
-                                </Button>
+                                <CheckOutModel state = {state}/>
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>

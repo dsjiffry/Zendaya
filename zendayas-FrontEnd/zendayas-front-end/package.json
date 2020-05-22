@@ -13,6 +13,7 @@
     "filepond-plugin-image-preview": "^4.6.3",
     "lodash": "^4.17.15",
     "react": "^16.13.0",
+    "react-credit-card-input": "^1.1.5",
     "react-dom": "^16.13.0",
     "react-dropzone": "^11.0.1",
     "react-filepond": "^7.0.1",
@@ -20,6 +21,7 @@
     "react-scripts": "3.4.0",
     "react-ui-cards": "^2.0.0",
     "semantic-ui-react": "^0.88.2",
+    "styled-components": "^5.1.0",
     "universal-cookie": "^4.0.3"
   },
   "scripts": {
