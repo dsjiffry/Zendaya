@@ -28,6 +28,15 @@ Online Fashion Store webapp for AF Module SLIIT 2020
       going through payment methods. (No need of integrating to a payment gateway,
       but until the step of payment the system should be implemented).
       
- 
+      
+## Screenshots
+
+ <p float="left">
+  <img src="https://github.com/Aqeel-Zeid/Zendaya/raw/master/.github/screenshots/homepage.PNG" width="49%">
+  <img src="https://github.com/Aqeel-Zeid/Zendaya/raw/master/.github/screenshots/register.PNG" width="49%">
+  <img src="https://github.com/Aqeel-Zeid/Zendaya/raw/master/.github/screenshots/login.PNG" width="49%">
+  <img src="https://github.com/Aqeel-Zeid/Zendaya/raw/master/.github/screenshots/wishlist.PNG" width="49%">
+  <img src="https://github.com/Aqeel-Zeid/Zendaya/raw/master/.github/screenshots/cart.PNG" width="49%">
+ </p>
  
  
