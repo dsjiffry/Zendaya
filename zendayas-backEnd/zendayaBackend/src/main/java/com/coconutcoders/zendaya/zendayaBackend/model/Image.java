@@ -14,6 +14,7 @@ public class Image implements MultipartFile {
 
     private String productName;
     private HashMap<String, byte[]> allImages;
+    private byte[] thumbnail;
     private int numberOfImages = 0;
 
     public Image(String productName)
@@ -30,6 +31,26 @@ public class Image implements MultipartFile {
     {
         numberOfImages++;
         allImages.put(productName+"_"+numberOfImages,image);
+    }
+
+    public byte[] getImage(int imageNumber)
+    {
+        return allImages.get(productName+"_"+imageNumber);
+    }
+
+    public void updateImage(int imageNumber,byte[] image)
+    {
+        allImages.put(productName+"_"+imageNumber,image);
+    }
+
+    public void setThumbnail(byte[] image)
+    {
+        this.thumbnail = image;
+    }
+
+    public byte[] getThumbnail()
+    {
+        return thumbnail;
     }
 
     public void removeImage(String imageNumber)

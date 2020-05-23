@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 
 @EnableWebSecurity
@@ -34,9 +35,16 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/authenticate",
-                                        "/createUser",
-                                        "/createAdmin",
-                                        "/createStoreManager")
+                        "/createUser",
+                        "/getAllCategories",
+                        "/getProductPricingDetails",
+                        "/searchProductWithDiscount",
+                        "/searchProductsByName",
+                        "/createAdmin",
+                        "/createStoreManager",
+                        "/getAllProductsInCategory",
+                        "/getImages",
+                        "/getImage/{productName}/{imageNumber}")
 
                 .permitAll()
 
@@ -44,6 +52,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
+
     }
 
     @Override
@@ -53,11 +63,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder()
-    {
+    public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
     }
-
 
 
 }

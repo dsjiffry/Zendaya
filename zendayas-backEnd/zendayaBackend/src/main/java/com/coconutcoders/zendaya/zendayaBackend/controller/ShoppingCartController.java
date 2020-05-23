@@ -1,27 +1,31 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
+import com.coconutcoders.zendaya.zendayaBackend.enums.PaymentMethod;
+import com.coconutcoders.zendaya.zendayaBackend.model.Payment;
 import com.coconutcoders.zendaya.zendayaBackend.model.Product;
 import com.coconutcoders.zendaya.zendayaBackend.model.ShoppingCart;
+import com.coconutcoders.zendaya.zendayaBackend.repo.PaymentRepo;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ProductRepo;
 import com.coconutcoders.zendaya.zendayaBackend.repo.ShoppingCartRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class ShoppingCartController {
     @Autowired
     private ProductRepo productRepo;
 
     @Autowired
     private ShoppingCartRepo shoppingCartRepo;
+
+    @Autowired
+    private PaymentRepo paymentRepo;
 
     /**
      * Checks for product in database and then adds it to the user's Shopping Cart
@@ -134,18 +138,10 @@ public class ShoppingCartController {
         if (sCart == null) {
             return new ResponseEntity<>("No shopping cart found for user " + username, HttpStatus.NOT_FOUND);
         } else {
-            double noOfItems = 0;
-            double totalPrice = 0;
-            HashMap<String, Integer> productList = sCart.getProductAndQuantity();
-            for (Map.Entry<String, Integer> product : productList.entrySet()) {
-                double price = productRepo.findByNameIgnoreCase(product.getKey()).getPriceWithDiscount();
-                totalPrice = totalPrice + (price * product.getValue());
-                noOfItems += product.getValue();
-            }
 
-            Map<String, Double> response = new HashMap<>();
-            response.put("numberOfItems", noOfItems);
-            response.put("totalPrice", totalPrice);
+            Map<String, Number> response = new HashMap<>();
+            response.put("numberOfItems", sCart.getNumberOfItems());
+            response.put("totalPrice", sCart.getTotalPrice(productRepo));
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
@@ -170,7 +166,7 @@ public class ShoppingCartController {
         if (sCart == null) {
             return new ResponseEntity<>("No shopping cart found for user " + username, HttpStatus.NOT_FOUND);
         } else {
-            Map<String, HashMap<String, Number>> response = new HashMap<>();
+            Map<String, HashMap<String, Object>> response = new HashMap<>();
 
             HashMap<String, Integer> productList = sCart.getProductAndQuantity();
             for (Map.Entry<String, Integer> product : productList.entrySet()) {
@@ -178,12 +174,19 @@ public class ShoppingCartController {
                 int quantity = product.getValue();
 
                 Product tempProduct = productRepo.findByNameIgnoreCase(productName);
-                HashMap<String, Number> temp = new HashMap<>();
+                HashMap<String, Object> temp = new HashMap<>();
 
+                temp.put("productName", tempProduct.getName());
                 temp.put("quantity", quantity);
-                temp.put("originalPrice", tempProduct.getPrice());
-                temp.put("discountPercentage", tempProduct.getDiscountPercentage());
-                temp.put("finalPrice", tempProduct.getPriceWithDiscount());
+
+                HashMap<String, Number> priceDetails = new HashMap<>();
+
+                priceDetails.put("originalPrice", tempProduct.getPrice());
+                priceDetails.put("discountPercentage", tempProduct.getDiscountPercentage());
+                priceDetails.put("finalPrice", tempProduct.getPriceWithDiscount());
+
+                temp.put("price", priceDetails);
+                temp.put("average_rating",tempProduct.getAvgRating());
 
                 response.put(productName, temp);
             }
@@ -193,4 +196,84 @@ public class ShoppingCartController {
         }
     }
 
+    /**
+     * Make the Payment for the items in the shopping cart
+     * POST to http://localhost:8080/purchaseItemsInCart
+     *
+     * @param payload Should contain JSON key-value pairs with key(s): "username", "paymentMode", "address"
+     *                if "paymentMode" is "card" then: "creditCardNumber","creditCardCVC", "creditCardExpiryDate"
+     * @return NOT FOUND if no cart for user, else OK
+     */
+    @RequestMapping(value = "/purchaseItemsInCart", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity purchaseItemsInCart(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username") || !payload.containsKey("paymentMode") || !payload.containsKey("address")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+        final String address = payload.get("address");
+
+        ShoppingCart shoppingCart = shoppingCartRepo.findByUsername(username);
+        if (shoppingCart == null) {
+            return new ResponseEntity<>("No shopping cart found for this user", HttpStatus.NOT_FOUND);
+        }
+
+        Payment payment = new Payment(username);
+        PaymentMethod paymentMode;
+
+        if (payload.get("paymentMode").equalsIgnoreCase("cash")) {
+            payment.setPaymentCash(address);
+
+        } else if (payload.get("paymentMode").equalsIgnoreCase("credit card")) {
+            if (!payload.containsKey("creditCardNumber") || !payload.containsKey("creditCardCVC") || !payload.containsKey("creditCardExpiryDate")) {
+                return new ResponseEntity<>("Credit card details not found", HttpStatus.NOT_FOUND);
+            }
+            final String creditCardNumber = payload.get("creditCardNumber");
+            final int creditCardCVC = Integer.valueOf(payload.get("creditCardCVC"));
+            final String creditCardExpiryDate = payload.get("creditCardExpiryDate");
+            payment.setPaymentCard(creditCardNumber, creditCardCVC, creditCardExpiryDate, address);
+
+        } else {
+            return new ResponseEntity<>("Invalid Payment method", HttpStatus.NOT_FOUND);
+        }
+
+
+        //Implement Payment Gateway here
+
+
+        payment.setItems(shoppingCart, productRepo);
+        paymentRepo.save(payment);
+
+        shoppingCartRepo.delete(shoppingCart);
+        return new ResponseEntity<>("Payment Successful", HttpStatus.OK);
+    }
+
+    /**
+     * Update the quantity of a product
+     * POST to http://localhost:8080/updateCartQuantity
+     *
+     * @param payload Should contain JSON key-value pairs with key(s): "username" and "productName" and "quantity"
+     * @return NOT FOUND if no product in cart, else OK
+     */
+    @RequestMapping(value = "/updateCartQuantity", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity updateCartQuantity(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username") || !payload.containsKey("productName") || !payload.containsKey("quantity")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+        final String productName = payload.get("productName");
+        final int quantity = Integer.parseInt(payload.get("quantity"));
+
+        ShoppingCart sCart = shoppingCartRepo.findByUsername(username);
+
+        if (sCart == null) {
+            return new ResponseEntity<>("No shopping cart found for user " + username, HttpStatus.NOT_FOUND);
+        }
+        if(!sCart.getProductAndQuantity().containsKey(productName))
+        {
+            return new ResponseEntity<>("Product not found in cart" + username, HttpStatus.NOT_FOUND);
+        }
+        sCart.getProductAndQuantity().put(productName,quantity);
+        shoppingCartRepo.save(sCart);
+        return new ResponseEntity<>("Changed Quantity", HttpStatus.OK);
+    }
 }

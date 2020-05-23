@@ -1,28 +1,30 @@
 package com.coconutcoders.zendaya.zendayaBackend.controller;
 
 
-import com.coconutcoders.zendaya.zendayaBackend.model.Image;
-import com.coconutcoders.zendaya.zendayaBackend.model.Product;
-import com.coconutcoders.zendaya.zendayaBackend.repo.ImageRepo;
-import com.coconutcoders.zendaya.zendayaBackend.repo.ProductRepo;
+import com.coconutcoders.zendaya.zendayaBackend.model.*;
+import com.coconutcoders.zendaya.zendayaBackend.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class ProductController {
     @Autowired
     private ProductRepo productRepo;
     @Autowired
     private ImageRepo imageRepo;
+    @Autowired
+    private ProductCategoryRepo productCategoryRepo;
+    @Autowired
+    private ShoppingCartRepo shoppingCartRepo;
+    @Autowired
+    private WishListRepo wishListRepo;
 
     /**
      * Adds Product to Database
@@ -86,6 +88,40 @@ public class ProductController {
     }
 
     /**
+     * gets reviews made by user
+     * POST to http://localhost:8080/getReviews
+     *
+     * @param payload should contain JSON key-value pairs with key(s): "username"
+     * @return NOT FOUND if product is not in database, else OK
+     */
+    @RequestMapping(value = "/getReviews", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity getReviews(@RequestBody Map<String, String> payload) {
+        if (!payload.containsKey("username")) {
+            return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
+        }
+        final String username = payload.get("username");
+
+        List<Product> productList = productRepo.findAll();
+        if (productList == null || productList.isEmpty()) {
+            return new ResponseEntity<>("Product Not Found in database", HttpStatus.NOT_FOUND);
+        }
+
+        HashMap<String, Object> response = new HashMap<>();
+        for (Product product : productList) {
+            if (product.getUserReview(username) != null) {
+                HashMap<String, Object> temp = new HashMap<>();
+                temp.put("productName", product.getName());
+                temp.put("review", product.getUserReview(username));
+                temp.put("rating", product.getUserRating(username));
+                temp.put("timeStamp", product.getUserTimeStamp(username));
+                response.put(product.getName(), temp);
+            }
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    /**
      * Removes Product from Database
      * POST to http://localhost:8080/removeProduct
      *
@@ -105,10 +141,46 @@ public class ProductController {
         }
 
         productRepo.delete(product);
+
+        //Deleting Product images
         Image image = imageRepo.findByProductName(productName);
         if (image != null) {
             imageRepo.delete(image);
         }
+
+        //Deleting product from categories
+        List<ProductCategory> productCategories = productCategoryRepo.findAll();
+        if (productCategories != null && !productCategories.isEmpty()) {
+            for (ProductCategory productCategory : productCategories) {
+                if (productCategory.doesCategoryContainProduct(productName)) {
+                    productCategory.removeProductFromCategory(productName);
+                    productCategoryRepo.save(productCategory);
+                }
+            }
+        }
+
+        //Deleting product from Shopping carts
+        List<ShoppingCart> shoppingCarts = shoppingCartRepo.findAll();
+        if (shoppingCarts != null && !shoppingCarts.isEmpty()) {
+            for (ShoppingCart shoppingCart : shoppingCarts) {
+                if (shoppingCart.isProductAlreadyInCart(productName)) {
+                    shoppingCart.removeProduct(productName);
+                    shoppingCartRepo.save(shoppingCart);
+                }
+            }
+        }
+
+        //Deleting product from Shopping carts
+        List<WishList> wishLists = wishListRepo.findAll();
+        if (wishLists != null && !wishLists.isEmpty()) {
+            for (WishList wishlist : wishLists) {
+                if (wishlist.isProductAlreadyInWishList(productName)) {
+                    wishlist.removeProduct(productName);
+                    wishListRepo.save(wishlist);
+                }
+            }
+        }
+
         return new ResponseEntity<>(product.getName() + " Deleted from Database", HttpStatus.OK);
     }
 
@@ -116,17 +188,20 @@ public class ProductController {
      * Update existing Product in Database
      * POST to http://localhost:8080/updateProduct
      *
-     * @param payload should contain JSON key-value pairs with key(s): "productName" "description", "price".
+     * @param payload should contain JSON key-value pairs with key(s): "productName", "newProductName", "description", "price", "discount"
      * @return NOT_FOUND if no such Product in DB, else OK
      */
     @RequestMapping(value = "/updateProduct", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity updateProduct(@RequestBody Map<String, String> payload) {
-        if (!payload.containsKey("productName") || !payload.containsKey("description") || !payload.containsKey("price")) {
+        if (!payload.containsKey("productName") || !payload.containsKey("newProductName") || !payload.containsKey("description")
+                || !payload.containsKey("price") || !payload.containsKey("discount")) {
             return new ResponseEntity<>("required key(s) not found in JSON Body", HttpStatus.NOT_FOUND);
         }
         final String productName = payload.get("productName");
+        final String newProductName = payload.get("newProductName");
         final String description = payload.get("description");
         final double price = Double.parseDouble(payload.get("price"));
+        final int discount = Integer.parseInt(payload.get("discount"));
 
         Product product = productRepo.findByNameIgnoreCase(productName);
         if (product == null) {
@@ -135,6 +210,8 @@ public class ProductController {
 
         product.setDescription(description);
         product.setPrice(price);
+        product.setDiscountPercentage(discount);
+        product.setName(newProductName);
 
         productRepo.save(product);
         return new ResponseEntity<>(product.getName() + " updated in Database", HttpStatus.OK);
@@ -188,10 +265,34 @@ public class ProductController {
         final String productName = payload.get("productName");
 
         List<Product> products = productRepo.findByNameIgnoreCaseContaining(productName);
-        Map<String, Product> response = new HashMap<>();
+        Map<String, Map<String, Object>> response = new HashMap<>();
 
         for (Product product : products) {
-            response.put(product.getName(), product);
+            Map<String, Object> productDetails = new HashMap<>();
+
+            productDetails.put("name", product.getName());
+
+            HashMap<String, Number> priceDetails = new HashMap<>();
+            priceDetails.put("originalPrice", product.getPrice());
+            priceDetails.put("discountPercentage", product.getDiscountPercentage());
+            priceDetails.put("finalPrice", product.getPriceWithDiscount());
+            productDetails.put("price", priceDetails);
+
+            productDetails.put("description", product.getDescription());
+            productDetails.put("average_rating", product.getAvgRating());
+
+            HashMap<String, HashMap<String, Object>> reviews = new HashMap<>();
+            for (Map.Entry<String, HashMap<String, String>> reviewDetails : product.getReviews().entrySet()) {
+                HashMap<String, Object> temp = new HashMap<>();
+                temp.put("time_stamp", reviewDetails.getValue().get("timeStamp"));
+                temp.put("username", reviewDetails.getKey());
+                temp.put("review", reviewDetails.getValue().get("review"));
+                temp.put("rating", reviewDetails.getValue().get("rating"));
+                reviews.put(reviewDetails.getKey(), temp);
+            }
+            productDetails.put("reviews", reviews);
+
+            response.put(product.getName(), productDetails);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -254,6 +355,10 @@ public class ProductController {
         final String productName = payload.get("productName");
 
         Product product = productRepo.findByNameIgnoreCase(productName);
+
+        if (product == null) {
+            return new ResponseEntity<>("no such product found", HttpStatus.NOT_FOUND);
+        }
 
         Map<String, Number> response = new HashMap<>();
         response.put("originalPrice", product.getPrice());
