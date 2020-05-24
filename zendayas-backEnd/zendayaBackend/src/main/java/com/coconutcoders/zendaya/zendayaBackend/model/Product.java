@@ -107,18 +107,15 @@ public class Product {
         this.name = name;
     }
 
-    public String getUserReview(String username)
-    {
+    public String getUserReview(String username) {
         return reviews.get(username);
     }
 
-    public Double getUserRating(String username)
-    {
+    public Double getUserRating(String username) {
         return ratings.get(username);
     }
 
-    public Date getUserTimeStamp(String username)
-    {
+    public Date getUserTimeStamp(String username) {
         return reviewTimeStamp.get(username);
     }
 }

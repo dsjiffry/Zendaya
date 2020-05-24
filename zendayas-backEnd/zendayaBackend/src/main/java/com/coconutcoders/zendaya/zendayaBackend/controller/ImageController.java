@@ -225,11 +225,11 @@ public class ImageController {
      *
      * @param imageNumber
      * @param productName
-     * @param file a multipart file with the image
+     * @param file        a multipart file with the image
      * @return NOT_FOUND if no such Product in DB, else OK
      */
     @RequestMapping(value = "/updateImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity updateImage(@RequestParam String productName,@RequestParam int imageNumber, @RequestParam MultipartFile file) {
+    public ResponseEntity updateImage(@RequestParam String productName, @RequestParam int imageNumber, @RequestParam MultipartFile file) {
 
         if (productRepo.findByNameIgnoreCase(productName) == null) {
             return new ResponseEntity<>("No such product in DB", HttpStatus.NOT_FOUND);
@@ -251,7 +251,6 @@ public class ImageController {
     }
 
 
-
     /**
      * obtain the image for Product
      * POST to http://localhost:8080/getImage/{productName}/{imageNumber}
@@ -261,7 +260,7 @@ public class ImageController {
      * @return NOT_FOUND if no such Product in DB, else OK
      */
     @RequestMapping(value = "/getImage/{productName}/{imageNumber}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity getImage(@PathVariable("productName")String productName,@PathVariable("imageNumber")String imageNumber) {
+    public ResponseEntity getImage(@PathVariable("productName") String productName, @PathVariable("imageNumber") String imageNumber) {
 
         Image images = imageRepo.findByProductName(productName);
         if (images == null) {
@@ -269,7 +268,7 @@ public class ImageController {
         }
         Path tempFile = null;
 
-        if(imageNumber.equalsIgnoreCase("0")) // Getting thumbnail
+        if (imageNumber.equalsIgnoreCase("0")) // Getting thumbnail
         {
             try {
                 tempFile = Files.createTempFile(null, ".jpeg");
@@ -281,14 +280,13 @@ public class ImageController {
             return new ResponseEntity<>(new FileSystemResource(fileToSend), HttpStatus.OK);
         }
 
-        if(!images.getAllImages().containsKey(productName+"_"+imageNumber))
-        {
+        if (!images.getAllImages().containsKey(productName + "_" + imageNumber)) {
             return new ResponseEntity<>("image Not Found for product", HttpStatus.NOT_FOUND);
         }
 
         try {
             tempFile = Files.createTempFile(null, ".jpeg");
-            Files.write(tempFile, images.getAllImages().get(productName+"_"+imageNumber));
+            Files.write(tempFile, images.getAllImages().get(productName + "_" + imageNumber));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -296,7 +294,6 @@ public class ImageController {
 
         return new ResponseEntity<>(new FileSystemResource(fileToSend), HttpStatus.OK);
     }
-
 
 
 }

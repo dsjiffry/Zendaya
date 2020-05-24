@@ -187,18 +187,17 @@ public class ProductCategoryController {
             productDetails.put("average_rating", product.getAvgRating());
 
             HashMap<String, HashMap<String, Object>> reviews = new HashMap<>();
-            for (Map.Entry<String, HashMap<String, String>> reviewDetails : product.getReviews().entrySet())
-            {
+            for (Map.Entry<String, HashMap<String, String>> reviewDetails : product.getReviews().entrySet()) {
                 HashMap<String, Object> temp = new HashMap<>();
-                temp.put("time_stamp",reviewDetails.getValue().get("timeStamp"));
+                temp.put("time_stamp", reviewDetails.getValue().get("timeStamp"));
                 temp.put("username", reviewDetails.getKey());
-                temp.put("review",reviewDetails.getValue().get("review"));
-                temp.put("rating",reviewDetails.getValue().get("rating"));
-                reviews.put(reviewDetails.getKey(),temp);
+                temp.put("review", reviewDetails.getValue().get("review"));
+                temp.put("rating", reviewDetails.getValue().get("rating"));
+                reviews.put(reviewDetails.getKey(), temp);
             }
-            productDetails.put("reviews",reviews);
+            productDetails.put("reviews", reviews);
 
-            response.put(product.getName(),productDetails);
+            response.put(product.getName(), productDetails);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -219,8 +218,7 @@ public class ProductCategoryController {
         }
         final String productName = payload.get("productName");
 
-        if(productRepo.findByNameIgnoreCase(productName) == null)
-        {
+        if (productRepo.findByNameIgnoreCase(productName) == null) {
             return new ResponseEntity<>("no such product in database", HttpStatus.NOT_FOUND);
         }
 
@@ -231,8 +229,7 @@ public class ProductCategoryController {
 
         ArrayList<String> response = new ArrayList<>();
         for (ProductCategory productCategory : productCategories) {
-            if(productCategory.getProducts().contains(productName))
-            {
+            if (productCategory.getProducts().contains(productName)) {
                 response.add(productCategory.getName());
             }
         }

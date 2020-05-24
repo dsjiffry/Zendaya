@@ -1,6 +1,5 @@
 package com.coconutcoders.zendaya.zendayaBackend.util.filter;
 
-import com.coconutcoders.zendaya.zendayaBackend.util.security.M_UserDetailsService;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.MyUserDetailService;
 import com.coconutcoders.zendaya.zendayaBackend.util.security.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,25 +30,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         final String autherizationHeader = httpServletRequest.getHeader("Authorization");
 
-        String username =  null;
+        String username = null;
         String jwt = null;
 
-        if(autherizationHeader  != null && autherizationHeader.startsWith("Bearer "))
-        {
+        if (autherizationHeader != null && autherizationHeader.startsWith("Bearer ")) {
             jwt = autherizationHeader.substring(7);
             username = jwtUtil.extractUsername(jwt);
         }
 
-        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null )
-        {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
-            usernamePasswordAuthenticationToken.setDetails( new WebAuthenticationDetailsSource().buildDetails(httpServletRequest) );
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
         }
 
-        filterChain.doFilter(httpServletRequest,httpServletResponse);
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 }

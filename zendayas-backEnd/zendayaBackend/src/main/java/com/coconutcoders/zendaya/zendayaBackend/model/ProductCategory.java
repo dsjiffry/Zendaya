@@ -3,7 +3,8 @@ package com.coconutcoders.zendaya.zendayaBackend.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ProductCategory {
 
@@ -12,7 +13,9 @@ public class ProductCategory {
     private String name;
     private Set<String> products;
 
-    private ProductCategory() {}
+    private ProductCategory() {
+    }
+
     public ProductCategory(String category) {
         this.name = category;
         products = new HashSet<>();
@@ -26,8 +29,7 @@ public class ProductCategory {
         products.remove(productName);
     }
 
-    public boolean doesCategoryContainProduct(String productName)
-    {
+    public boolean doesCategoryContainProduct(String productName) {
         return products.contains(productName);
     }
 

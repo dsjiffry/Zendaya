@@ -19,8 +19,7 @@ public class MyUserDetailService implements UserDetailsService {
 
         User user = userRepo.findUserByUsername(userName);
         //System.out.println(user.getUsername() + " - " + userName);
-        if( user == null)
-        {
+        if (user == null) {
             throw new UsernameNotFoundException(userName);
         }
 

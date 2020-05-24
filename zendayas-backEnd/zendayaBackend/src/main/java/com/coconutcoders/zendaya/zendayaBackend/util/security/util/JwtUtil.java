@@ -17,14 +17,12 @@ public class JwtUtil {
 
     private String SECRET_KEY = "secret";
 
-    public String extractUsername(String token)
-    {
+    public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public Date extractExpiration(String token)
-    {
-        return extractClaim(token,Claims::getExpiration);
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -34,26 +32,22 @@ public class JwtUtil {
 
     }
 
-    public Claims extractAllClaims(String token)
-    {
-       return Jwts.parser().setSigningKey(SECRET_KEY)
-               .parseClaimsJws(token).getBody();
+    public Claims extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token).getBody();
 
     }
 
-    public Boolean isTokenExpired(String token)
-    {
+    public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails)
-    {
-        Map<String,Object> claims = new HashMap<>();
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername());
     }
 
-    public String createToken(Map<String, Object> claims, String subject)
-    {
+    public String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
@@ -63,12 +57,10 @@ public class JwtUtil {
 
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails)
-    {
+    public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-
 
 
 }

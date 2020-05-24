@@ -4,7 +4,10 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 public class Image implements MultipartFile {
@@ -17,8 +20,7 @@ public class Image implements MultipartFile {
     private byte[] thumbnail;
     private int numberOfImages = 0;
 
-    public Image(String productName)
-    {
+    public Image(String productName) {
         this.productName = productName;
         this.allImages = new HashMap<>();
     }
@@ -27,36 +29,30 @@ public class Image implements MultipartFile {
         return productName;
     }
 
-    public void addImage(byte[] image)
-    {
+    public void addImage(byte[] image) {
         numberOfImages++;
-        allImages.put(productName+"_"+numberOfImages,image);
+        allImages.put(productName + "_" + numberOfImages, image);
     }
 
-    public byte[] getImage(int imageNumber)
-    {
-        return allImages.get(productName+"_"+imageNumber);
+    public byte[] getImage(int imageNumber) {
+        return allImages.get(productName + "_" + imageNumber);
     }
 
-    public void updateImage(int imageNumber,byte[] image)
-    {
-        allImages.put(productName+"_"+imageNumber,image);
+    public void updateImage(int imageNumber, byte[] image) {
+        allImages.put(productName + "_" + imageNumber, image);
     }
 
-    public void setThumbnail(byte[] image)
-    {
+    public void setThumbnail(byte[] image) {
         this.thumbnail = image;
     }
 
-    public byte[] getThumbnail()
-    {
+    public byte[] getThumbnail() {
         return thumbnail;
     }
 
-    public void removeImage(String imageNumber)
-    {
+    public void removeImage(String imageNumber) {
         numberOfImages--;
-        allImages.remove(productName+"_"+imageNumber);
+        allImages.remove(productName + "_" + imageNumber);
     }
 
     public HashMap<String, byte[]> getAllImages() {

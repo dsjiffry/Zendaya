@@ -186,7 +186,7 @@ public class ShoppingCartController {
                 priceDetails.put("finalPrice", tempProduct.getPriceWithDiscount());
 
                 temp.put("price", priceDetails);
-                temp.put("average_rating",tempProduct.getAvgRating());
+                temp.put("average_rating", tempProduct.getAvgRating());
 
                 response.put(productName, temp);
             }
@@ -268,11 +268,10 @@ public class ShoppingCartController {
         if (sCart == null) {
             return new ResponseEntity<>("No shopping cart found for user " + username, HttpStatus.NOT_FOUND);
         }
-        if(!sCart.getProductAndQuantity().containsKey(productName))
-        {
+        if (!sCart.getProductAndQuantity().containsKey(productName)) {
             return new ResponseEntity<>("Product not found in cart" + username, HttpStatus.NOT_FOUND);
         }
-        sCart.getProductAndQuantity().put(productName,quantity);
+        sCart.getProductAndQuantity().put(productName, quantity);
         shoppingCartRepo.save(sCart);
         return new ResponseEntity<>("Changed Quantity", HttpStatus.OK);
     }

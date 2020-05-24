@@ -32,14 +32,13 @@ public class AuthenticationController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception
-    {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             authenticationRequest.getUserName(),
                             String.valueOf(authenticationRequest.getPassword().hashCode()))
-                    );
+            );
         } catch (BadCredentialsException e) {
             throw new Exception("Incorrect Username and Password");
         }

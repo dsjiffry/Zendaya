@@ -116,7 +116,7 @@ public class UserController {
         }
 
 
-        User user = new User(SM_Username, SM_Password,SM_Email);
+        User user = new User(SM_Username, SM_Password, SM_Email);
         user.setStoreManager();
         userRepo.save(user);
 
@@ -126,8 +126,8 @@ public class UserController {
         properties.put("mail.transport.protocol", "smtp");
         properties.put("mail.smtp.host", "smtp.gmail.com"); //Need to allow less secure apps in Gmail account security settings
         properties.put("mail.smtp.port", "587");
-        properties.put("mail.smtp.starttls.enable","true");
-        properties.put("mail.smtp.starttls.required","true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.starttls.required", "true");
         Session session = Session.getInstance(properties,
                 new javax.mail.Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
@@ -140,7 +140,7 @@ public class UserController {
             message.setFrom(new InternetAddress("zendayafashionstore@gmail.com"));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(SM_Email));
             message.setSubject("Zendaya Store Manager");
-            message.setText(SM_Username+" You are now a Store Manager for Zendaya");
+            message.setText(SM_Username + " You are now a Store Manager for Zendaya");
 
             Transport.send(message);
         } catch (MessagingException ignored) {
@@ -194,15 +194,15 @@ public class UserController {
         final String StoreManagerName = payload.get("StoreManagerName");
 
         List<User> managers = userRepo.findByUsernameIgnoreCaseContaining(StoreManagerName);
-        Map<String, HashMap<String,String>> response = new HashMap<>();
+        Map<String, HashMap<String, String>> response = new HashMap<>();
 
         for (User sm : managers) {
-            if(sm.getRole() == UserRoles.STORE_MANAGER) {
-                HashMap<String,String> temp = new HashMap<>();
-                temp.put("username",sm.getUsername());
-                temp.put("password",sm.getPassword());
-                temp.put("email",sm.getEmail());
-                response.put(sm.getUsername(),temp);
+            if (sm.getRole() == UserRoles.STORE_MANAGER) {
+                HashMap<String, String> temp = new HashMap<>();
+                temp.put("username", sm.getUsername());
+                temp.put("password", sm.getPassword());
+                temp.put("email", sm.getEmail());
+                response.put(sm.getUsername(), temp);
             }
         }
 
@@ -224,15 +224,15 @@ public class UserController {
         final String username = payload.get("username");
 
         List<User> users = userRepo.findByUsernameIgnoreCaseContaining(username);
-        Map<String, HashMap<String,String>> response = new HashMap<>();
+        Map<String, HashMap<String, String>> response = new HashMap<>();
 
         for (User user : users) {
-            if(user.getRole() == UserRoles.USER) {
-                HashMap<String,String> temp = new HashMap<>();
-                temp.put("username",user.getUsername());
-                temp.put("password",user.getPassword());
-                temp.put("email",user.getEmail());
-                response.put(user.getUsername(),temp);
+            if (user.getRole() == UserRoles.USER) {
+                HashMap<String, String> temp = new HashMap<>();
+                temp.put("username", user.getUsername());
+                temp.put("password", user.getPassword());
+                temp.put("email", user.getEmail());
+                response.put(user.getUsername(), temp);
             }
         }
 
@@ -254,15 +254,14 @@ public class UserController {
         final String username = payload.get("username");
 
         User user = userRepo.findUserByUsername(username);
-        if(user == null)
-        {
+        if (user == null) {
             return new ResponseEntity<>("No such user", HttpStatus.NOT_FOUND);
         }
         Map<String, String> response = new HashMap<>();
 
         response.put("username", user.getUsername());
-        response.put("email",user.getEmail());
-        response.put("password",user.getPassword());
+        response.put("email", user.getEmail());
+        response.put("password", user.getPassword());
         response.put("type", String.valueOf(user.getRole()));
 
         return new ResponseEntity<>(response, HttpStatus.OK);

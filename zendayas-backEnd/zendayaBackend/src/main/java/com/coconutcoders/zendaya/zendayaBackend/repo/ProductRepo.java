@@ -8,10 +8,12 @@ import java.util.List;
 
 
 @Repository
-public interface ProductRepo extends MongoRepository<Product, String>
-{
+public interface ProductRepo extends MongoRepository<Product, String> {
     Product findByNameIgnoreCase(String name);
+
     List<Product> findByNameIgnoreCaseContaining(String name);
+
     List<Product> findByDiscountPercentageGreaterThan(double value);
+
     List<Product> findByAvgRatingGreaterThanEqual(double value);
 }
