@@ -40,3 +40,9 @@ Online Fashion Store webapp for AF Module SLIIT 2020
  </p>
  
  
+
+## Members and Details
+ * IT18050318 - M.A. Zeid    - it18050318@my.sliit.lk
+ * IT17029896 - D.S. Jiffry  - dsjiffry@gmail.com
+ * IT18060690 - M.R.M. Rifan - Mohamedrifan@live.com
+ * IT18200034 - M.A.F. Hasna - hanaanees95@gmail.com
